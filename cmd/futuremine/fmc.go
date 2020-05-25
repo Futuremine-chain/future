@@ -8,7 +8,8 @@ import (
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/service/rpc"
-	"github.com/Futuremine-chain/futuremine/service/sync"
+	sync_service "github.com/Futuremine-chain/futuremine/service/sync"
+	"sync"
 	"os"
 	"os/signal"
 	"runtime"
@@ -69,7 +70,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	rpcSv := rpc.NewRpc()
 	connectSv := connect.NewConnect()
 	poolSv := pool.NewPool()
-	syncSv := sync.NewSync()
+	syncSv := sync_service.NewSync()
 	generateSv := generate.NewGenerate()
 	node := node.NewFMCNode()
 	node.Register(peersSv)
