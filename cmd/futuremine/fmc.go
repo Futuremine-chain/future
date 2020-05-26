@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/Futuremine-chain/futuremine/fmc/node"
+	"github.com/Futuremine-chain/futuremine/futuremine/node"
+	"github.com/Futuremine-chain/futuremine/config"
 	"github.com/Futuremine-chain/futuremine/service/connect"
 	"github.com/Futuremine-chain/futuremine/service/generate"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
@@ -9,10 +10,10 @@ import (
 	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/service/rpc"
 	sync_service "github.com/Futuremine-chain/futuremine/service/sync"
-	"sync"
 	"os"
 	"os/signal"
 	"runtime"
+	"sync"
 	"syscall"
 )
 
@@ -65,6 +66,11 @@ func FMCMain() error {
 
 
 func createFMCNode() (*node.FMCNode, error) {
+	_, err := config.LoadConfig(new(FMC))
+	if err != nil{
+		return nil, err
+	}
+
 	peersSv := peers.NewPeers()
 	p2pSv := p2p.NewP2p()
 	rpcSv := rpc.NewRpc()

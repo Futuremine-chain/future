@@ -1,6 +1,8 @@
 package p2p
 
-import log "github.com/Futuremine-chain/futuremine/log/log15"
+import (
+	log "github.com/Futuremine-chain/futuremine/log/log15"
+)
 
 const module = "p2p"
 

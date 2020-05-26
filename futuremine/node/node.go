@@ -1,7 +1,6 @@
 package node
 
 import (
-	"fmt"
 	log "github.com/Futuremine-chain/futuremine/log/log15"
 	"github.com/Futuremine-chain/futuremine/server"
 )
@@ -11,6 +10,8 @@ const module = "fmc_node"
 type FMCNode struct {
 	services []server.IService
 }
+
+
 
 func NewFMCNode() *FMCNode {
 	return &FMCNode{
@@ -40,9 +41,7 @@ func (fmc *FMCNode) Register(s server.IService) {
 }
 
 func (fmc *FMCNode) startServices() error {
-
 	for _, s := range fmc.services {
-		fmt.Println(1)
 		if err := s.Start(); err != nil {
 			log.Error("Service failed to start", "module", module, "service", s.Name(), "error", err.Error())
 		}

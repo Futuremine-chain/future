@@ -4,7 +4,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/log/log15/term"
 	"github.com/jrick/logrotate/rotator"
 	"github.com/mattn/go-colorable"
-	"github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable"
 	"io"
 	"os"
 )
