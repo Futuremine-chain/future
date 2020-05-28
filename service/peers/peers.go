@@ -9,21 +9,20 @@ import (
 )
 
 const (
-	module            = "peers"
-	maxPeers          = 1000000
-	checkPeerInterval = 10
+	module             = "peers"
+	maxPeers           = 1000000
+	monitoringInterval = 10
 )
 
 type Peers struct {
 	local  *Peer
 	cache  map[string]*Peer
-	rwm    sync.RWMutex
-	userId string
 	idList []string
+	rwm    sync.RWMutex
 }
 
 func NewPeers() *Peers {
-	return &Peers{}
+	return &Peers{cache: make(map[string]*Peer, maxPeers)}
 }
 
 func (p *Peers) Name() string {
@@ -32,6 +31,7 @@ func (p *Peers) Name() string {
 
 func (p *Peers) Start() error {
 	log.Info("Peers started successfully", "module", module)
+	go p.Monitoring()
 	return nil
 }
 
@@ -80,12 +80,12 @@ func (p *Peers) RemovePeer(reId string) {
 }
 
 func (p *Peers) Monitoring() {
-	t := time.NewTicker(time.Second * checkPeerInterval)
+	t := time.NewTicker(time.Second * monitoringInterval)
 	defer t.Stop()
 
 	for range t.C {
 		for id, peer := range p.cache {
-			if id != p.userId {
+			if id != p.local.Address.ID.String() {
 				if !p.isAlive(peer) {
 					p.RemovePeer(id)
 				}

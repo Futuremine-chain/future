@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/config"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/service/generate"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
@@ -31,6 +33,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	// Work around defer not working after os.Exit()
 	if err := FMCMain(); err != nil {
+		fmt.Println("faild to start, ", err)
 		os.Exit(1)
 	}
 }
@@ -68,10 +71,10 @@ func createFMCNode() (*node.FMCNode, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	chain := blockchain.NewBlockChain()
 	peersSv := peers.NewPeers()
-	connectSv := request.NewRequestHandler()
-	p2pSv, err := p2p.NewP2p(cfg, peersSv, connectSv, nil)
+	reqHandler := request.NewRequestHandler(chain)
+	p2pSv, err := p2p.NewP2p(cfg, peersSv, reqHandler, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +86,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	node.Register(peersSv)
 	node.Register(p2pSv)
 	node.Register(rpcSv)
-	node.Register(connectSv)
+	node.Register(reqHandler)
 	node.Register(poolSv)
 	node.Register(syncSv)
 	node.Register(generateSv)

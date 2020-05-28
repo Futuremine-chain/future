@@ -43,8 +43,8 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler *request.RequestHand
 		close:      make(chan bool),
 		closed:     make(chan bool),
 	}
-	if cfg.Bootstrap != "" {
-		ma, err := multiaddr.NewMultiaddr(cfg.Bootstrap)
+	if cfg.Boot != "" {
+		ma, err := multiaddr.NewMultiaddr(cfg.Boot)
 		if err != nil {
 			return nil, fmt.Errorf("incorrect bootstrap node address， %s", err)
 		}
@@ -59,10 +59,11 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler *request.RequestHand
 	ser.local = peers.NewPeer(priv,
 		&peer.AddrInfo{
 			ID:    host.ID(),
-			Addrs: host.Addrs()},
-		nil)
+			Addrs: host.Addrs()}, nil)
+	ser.initP2pHandle()
+	ps.SetLocal(ser.local)
 	log.Info("P2p host created", "module", module, "id", host.ID(), "address", host.Addrs())
-	return &P2p{}, nil
+	return ser, nil
 }
 
 func newP2PHost(private crypto.PrivKey, ip, port, external string) (core.Host, error) {
@@ -98,8 +99,6 @@ func (p *P2p) Name() string {
 }
 
 func (p *P2p) Start() error {
-	p.initP2pHandle()
-
 	if err := p.connectBootNode(); err != nil {
 		log.Error("Failed to connect the boot node!", "module", module, "error", err)
 		return err
@@ -138,7 +137,7 @@ func (p *P2p) newStream(id peer.ID) (network.Stream, error) {
 }
 
 func (p *P2p) initP2pHandle() {
-	p.host.SetStreamHandler(protocol.ID(config.App.P2pNetWork()), p.reqHandler.HandleRequest)
+	p.host.SetStreamHandler(protocol.ID(config.App.P2pNetWork()), p.reqHandler.SendToReady)
 }
 
 func (p *P2p) connectBootNode() error {

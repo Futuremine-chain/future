@@ -27,7 +27,7 @@ type Config struct {
 	Data       string `long:"data" description:"Path to application data directory"`
 	Logging    bool   `long:"logging" description:"Logging switch"`
 	ExternalIp string `long:"externalip" description:"External network IP address"`
-	Bootstrap  string `long:"bootstrap" description:"Custom bootstrap"`
+	Boot       string `long:"boot" description:"Custom boot"`
 	P2PPort    string `long:"p2pport" description:"Add an interface/port to listen for connections"`
 	RpcPort    string `long:"rpcport" description:"Add an interface/port to listen for RPC connections"`
 	RpcTLS     bool   `long:"rpctls" description:"Open TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
