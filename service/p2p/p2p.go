@@ -51,7 +51,7 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler *request.RequestHand
 		CustomBootPeers = append(CustomBootPeers, ma)
 	}
 
-	host, err := newP2PHost(priv, cfg.ExternalIp, cfg.P2PPort)
+	host, err := newP2PHost(priv, cfg.ExternalIp, cfg.P2PPort, cfg.ExternalIp)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +153,6 @@ func (p *P2p) connectBootNode() error {
 		return err
 	}
 
-	// Preferably use a custom boot node
 	boots := DefaultBootPeers
 	if len(CustomBootPeers) > 0 {
 		boots = CustomBootPeers
@@ -207,12 +206,12 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 				if addrInfo.ID == p.local.Address.ID || IsBootPeers(addrInfo.ID) {
 					continue
 				}
-				if !p.peers.PeerExist(&addrInfo) {
+				if !p.peers.AddressExist(&addrInfo) {
 					if !p.isAlive(addrInfo.ID) {
-						p.peers.Remove(addrInfo.ID.String())
+						p.peers.RemovePeer(addrInfo.ID.String())
 						continue
 					}
-					p.peers.Add(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream))
+					p.peers.AddPeer(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream))
 				}
 			} else {
 				return
@@ -221,7 +220,6 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 	}
 }
 
-// Determine whether the peer is alive
 func (p *P2p) isAlive(id peer.ID) bool {
 	stream, err := p.newStream(id)
 	if err != nil {

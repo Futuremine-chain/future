@@ -30,6 +30,10 @@ const (
 type FMC struct {
 }
 
+func NewFmcApp() *FMC {
+	return &FMC{}
+}
+
 func (F *FMC) AppName() string {
 	return AppName
 }

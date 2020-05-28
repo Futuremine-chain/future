@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/Futuremine-chain/futuremine/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
-	"github.com/Futuremine-chain/futuremine/service/connect"
 	"github.com/Futuremine-chain/futuremine/service/generate"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
 	"github.com/Futuremine-chain/futuremine/service/peers"
@@ -65,8 +64,7 @@ func FMCMain() error {
 }
 
 func createFMCNode() (*node.FMCNode, error) {
-	fmcApp := &FMC{}
-	cfg, err := config.LoadConfig(fmcApp)
+	cfg, err := config.LoadConfig(NewFmcApp())
 	if err != nil {
 		return nil, err
 	}
