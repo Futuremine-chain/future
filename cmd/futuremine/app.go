@@ -15,7 +15,7 @@ var (
 	// Current network
 	NetWork = MainNet
 	// Network logo
-	P2pNetWork = "_FUTURE_MINER_CHAIN"
+	P2pNetWork = "_FUTURE_MINE_CHAIN"
 
 	Version = "0.0.0"
 )
@@ -27,9 +27,7 @@ const (
 	MinCoinCount = 1000
 )
 
-
-type FMC struct{
-	
+type FMC struct {
 }
 
 func (F *FMC) AppName() string {
@@ -48,19 +46,18 @@ func (F *FMC) P2pNetWork() string {
 	return P2pNetWork
 }
 
-
-func (F *FMC) TestNet()string{
+func (F *FMC) TestNet() string {
 	return TestNet
 }
 
-func (F *FMC) MainNet()string{
+func (F *FMC) MainNet() string {
 	return MainNet
 }
 
-func (F *FMC)InitTestNet(){
+func (F *FMC) InitTestNet() {
 	NetWork = TestNet
 }
 
-func (F *FMC)InitP2pNet(){
+func (F *FMC) InitP2pNet() {
 	P2pNetWork = NetWork + P2pNetWork
 }

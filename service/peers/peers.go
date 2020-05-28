@@ -1,10 +1,16 @@
 package peers
 
-import log "github.com/Futuremine-chain/futuremine/log/log15"
+import (
+	log "github.com/Futuremine-chain/futuremine/log/log15"
+	"github.com/libp2p/go-libp2p-core/peer"
+)
 
 const module = "peers"
 
 type Peers struct {
+	PeerExist func(info *peer.AddrInfo) bool
+	Add       func(*Peer)
+	Remove    func(string)
 }
 
 func NewPeers() *Peers {

@@ -1,11 +1,10 @@
 package config
 
 import (
-	"errors"
+	"github.com/BurntSushi/toml"
 	log2 "github.com/Futuremine-chain/futuremine/log"
 	log "github.com/Futuremine-chain/futuremine/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
-	"github.com/BurntSushi/toml"
 	"github.com/jessevdk/go-flags"
 	"os"
 	"path/filepath"
@@ -14,40 +13,40 @@ import (
 
 var App IApp
 var DefaultHomeDir string
-var defaultP2pPort     = "20000"
-var DefaultRpcPort     = "20001"
+var defaultP2pPort = "20000"
+var DefaultRpcPort = "20001"
 var defaultPrivateFile = "key.json"
-var defaultKey         = "future_mine_chain"
-var defaultExternalIp  = "0.0.0.0"
-var DefaultFallBack    = int64(-1)
+var defaultKey = "future_mine_chain"
+var defaultExternalIp = "0.0.0.0"
+var DefaultFallBack = int64(-1)
 
 // Config is the node startup parameter
 type Config struct {
-	ConfigFile  string `long:"config" description:"Start with a configuration file"`
-	HomeDir     string `long:"appdata" description:"Path to application home directory"`
-	DataDir     string `long:"data" description:"Path to application data directory"`
-	FileLogging bool   `long:"filelogging" description:"Logging switch"`
-	ExternalIp  string `long:"externalip" description:"External network IP address"`
-	Bootstrap   string `long:"bootstrap" description:"Custom bootstrap"`
-	P2pPort     string `long:"p2pport" description:"Add an interface/port to listen for connections"`
-	RpcPort     string `long:"rpcport" description:"Add an interface/port to listen for RPC connections"`
-	RpcTLS      bool   `long:"rpctls" description:"Open TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
-	RpcCert     string `long:"rpccert" description:"File containing the certificate file"`
-	RpcKey      string `long:"rpckey" description:"File containing the certificate key"`
-	RpcPass     string `long:"rpcpass" description:"Password for RPC connections"`
-	TestNet     bool   `long:"testnet" description:"Use the test network"`
-	KeyFile     string `long:"keyfile" description:"If you participate in mining, you need to configure the mining address key file"`
-	KeyPass     string `long:"keypass" description:"The decryption password for key file"`
-	FallBackTo  int64  `long:"fallbackto" description:"Force back to a height"`
-	//NodePrivate *NodePrivate
+	ConfigFile string `long:"config" description:"Start with a configuration file"`
+	Home       string `long:"appdata" description:"Path to application home directory"`
+	Data       string `long:"data" description:"Path to application data directory"`
+	Logging    bool   `long:"logging" description:"Logging switch"`
+	ExternalIp string `long:"externalip" description:"External network IP address"`
+	Bootstrap  string `long:"bootstrap" description:"Custom bootstrap"`
+	P2PPort    string `long:"p2pport" description:"Add an interface/port to listen for connections"`
+	RpcPort    string `long:"rpcport" description:"Add an interface/port to listen for RPC connections"`
+	RpcTLS     bool   `long:"rpctls" description:"Open TLS for the RPC server -- NOTE: This is only allowed if the RPC server is bound to localhost"`
+	RpcCert    string `long:"rpccert" description:"File containing the certificate file"`
+	RpcKey     string `long:"rpckey" description:"File containing the certificate key"`
+	RpcPass    string `long:"rpcpass" description:"Password for RPC connections"`
+	TestNet    bool   `long:"testnet" description:"Use the test network"`
+	KeyFile    string `long:"keyfile" description:"If you participate in mining, you need to configure the mining address key file"`
+	KeyPass    string `long:"keypass" description:"The decryption password for key file"`
+	FallBackTo int64  `long:"fallbackto" description:"Force back to a height"`
 }
 
 // LoadConfig load the parse node startup parameter
 func LoadConfig(app IApp) (*Config, error) {
+	App = app
 	DefaultHomeDir = utils.AppDataDir(App.AppName(), false)
 	cfg := &Config{
-		HomeDir:    DefaultHomeDir,
-		P2pPort:    defaultP2pPort,
+		Home:       DefaultHomeDir,
+		P2PPort:    defaultP2pPort,
 		RpcPort:    DefaultRpcPort,
 		FallBackTo: DefaultFallBack,
 	}
@@ -78,13 +77,13 @@ func LoadConfig(app IApp) (*Config, error) {
 
 	// Node data and file storage directory, if not set,
 	// use the default directory
-	if cfg.HomeDir == "" {
-		cfg.HomeDir = DefaultHomeDir
+	if cfg.Home == "" {
+		cfg.Home = DefaultHomeDir
 	}
 
 	// p2p service listening port, if not, use the default port
-	if cfg.P2pPort == "" {
-		cfg.P2pPort = defaultP2pPort
+	if cfg.P2PPort == "" {
+		cfg.P2PPort = defaultP2pPort
 	}
 
 	// rpc service listening port, if not, use the default port
@@ -99,16 +98,16 @@ func LoadConfig(app IApp) (*Config, error) {
 	// p2p same network label, the label is different and cannot communicate
 	app.InitP2pNet()
 
-	if !utils.IsExist(cfg.HomeDir) {
-		if err := os.Mkdir(cfg.HomeDir, os.ModePerm); err != nil {
+	if !utils.IsExist(cfg.Home) {
+		if err := os.Mkdir(cfg.Home, os.ModePerm); err != nil {
 			return nil, err
 		}
 	}
-	if cfg.DataDir == "" {
-		cfg.DataDir = cfg.HomeDir + "/" + cfg.P2pPort
+	if cfg.Data == "" {
+		cfg.Data = cfg.Home + "/" + cfg.P2PPort
 	}
-	if !utils.IsExist(cfg.DataDir) {
-		if err := os.Mkdir(cfg.DataDir, os.ModePerm); err != nil {
+	if !utils.IsExist(cfg.Data) {
+		if err := os.Mkdir(cfg.Data, os.ModePerm); err != nil {
 			return nil, err
 		}
 	}
@@ -153,8 +152,8 @@ func LoadConfig(app IApp) (*Config, error) {
 	}*/
 
 	// If this parameter is true, the log is also written to the file
-	if cfg.FileLogging {
-		logDir := cfg.DataDir + "/log"
+	if cfg.Logging {
+		logDir := cfg.Data + "/log"
 		if !utils.IsExist(logDir) {
 			if err := os.Mkdir(logDir, os.ModePerm); err != nil {
 				return nil, err
@@ -162,29 +161,13 @@ func LoadConfig(app IApp) (*Config, error) {
 		}
 		utils.CleanAndExpandPath(logDir)
 		logDir = filepath.Join(logDir, App.NetWork())
-		log2.InitLogRotator(filepath.Join(logDir, "blockchain.log"))
-
+		log2.InitLogRotator(filepath.Join(logDir, "future_mine.log"))
 	}
-	log.Info("chain data directory", "path", cfg.DataDir)
+	log.Info("chain data directory", "module", "config", "path", cfg.Data)
 	return cfg, nil
 }
 
 func newConfigParser(cfg *Config, options flags.Options) *flags.Parser {
 	parser := flags.NewParser(cfg, options)
 	return parser
-}
-
-
-// Read the password entered by stdin
-func readPassWd() ([]byte, error) {
-	var passWd [33]byte
-
-	n, err := os.Stdin.Read(passWd[:])
-	if err != nil {
-		return nil, err
-	}
-	if n <= 1 {
-		return nil, errors.New("not read")
-	}
-	return passWd[:n-1], nil
 }

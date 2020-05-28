@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/config"
+	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/service/connect"
 	"github.com/Futuremine-chain/futuremine/service/generate"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/pool"
+	"github.com/Futuremine-chain/futuremine/service/request"
 	"github.com/Futuremine-chain/futuremine/service/rpc"
 	sync_service "github.com/Futuremine-chain/futuremine/service/sync"
 	"os"
@@ -16,7 +17,6 @@ import (
 	"sync"
 	"syscall"
 )
-
 
 // interruptSignals defines the default signals to catch in order to do a proper
 // shutdown.  This may be modified during init depending on the platform.
@@ -64,17 +64,20 @@ func FMCMain() error {
 	return nil
 }
 
-
 func createFMCNode() (*node.FMCNode, error) {
-	_, err := config.LoadConfig(new(FMC))
-	if err != nil{
+	fmcApp := &FMC{}
+	cfg, err := config.LoadConfig(fmcApp)
+	if err != nil {
 		return nil, err
 	}
 
 	peersSv := peers.NewPeers()
-	p2pSv := p2p.NewP2p()
+	connectSv := request.NewRequestHandler()
+	p2pSv, err := p2p.NewP2p(cfg, peersSv, connectSv, nil)
+	if err != nil {
+		return nil, err
+	}
 	rpcSv := rpc.NewRpc()
-	connectSv := connect.NewConnect()
 	poolSv := pool.NewPool()
 	syncSv := sync_service.NewSync()
 	generateSv := generate.NewGenerate()
