@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/common/txlist"
-	"github.com/Futuremine-chain/futuremine/common/validator"
 	log "github.com/Futuremine-chain/futuremine/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -23,11 +22,10 @@ const (
 type Pool struct {
 	txMgt       txlist.ITxList
 	horn        *horn.Horn
-	validator   validator.IValidator
 	broadcastCh chan types.ITransaction
 }
 
-func NewPool(horn *horn.Horn) *Pool {
+func NewPool(horn *horn.Horn, txMgt txlist.ITxList) *Pool {
 	return &Pool{
 		horn:        horn,
 		broadcastCh: make(chan types.ITransaction, 100),
