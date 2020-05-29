@@ -4,7 +4,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/service/gorutinue"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
-	"github.com/Futuremine-chain/futuremine/tools/log/log15"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
@@ -34,7 +34,7 @@ func (h *Horn) BroadcastTx(transaction types.ITransaction) {
 				func() error {
 					return h.request.SendTx(peer.Conn, transaction)
 				})); err != nil {
-				log15.Warn("Adding the task to send the transaction failed", "module", module,
+				log.Warn("Adding the task to send the transaction failed", "module", module,
 					"hash", transaction.Hash().String(), "target", peer.Address.String())
 			}
 		}
