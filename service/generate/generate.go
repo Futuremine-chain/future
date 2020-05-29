@@ -1,6 +1,6 @@
 package generate
 
-import log "github.com/Futuremine-chain/futuremine/log/log15"
+import log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 
 const module = "generate"
 

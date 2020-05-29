@@ -2,8 +2,7 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
-	log2 "github.com/Futuremine-chain/futuremine/log"
-	log "github.com/Futuremine-chain/futuremine/log/log15"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/jessevdk/go-flags"
 	"os"

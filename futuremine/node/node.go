@@ -1,8 +1,8 @@
 package node
 
 import (
-	log "github.com/Futuremine-chain/futuremine/log/log15"
 	"github.com/Futuremine-chain/futuremine/server"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 )
 
 const module = "fmc_node"
@@ -10,8 +10,6 @@ const module = "fmc_node"
 type FMCNode struct {
 	services []server.IService
 }
-
-
 
 func NewFMCNode() *FMCNode {
 	return &FMCNode{

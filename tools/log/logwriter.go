@@ -1,7 +1,7 @@
 package log
 
 import (
-	"github.com/Futuremine-chain/futuremine/log/log15/term"
+	"github.com/jhdriver/UBaseCoin/log/log15/term"
 	"github.com/jrick/logrotate/rotator"
 	"github.com/mattn/go-colorable"
 	"io"
