@@ -3,8 +3,8 @@ package p2p
 import (
 	"context"
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/private"
-	"github.com/Futuremine-chain/futuremine/config"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func IsExist(fileName string) bool {
+func Exist(fileName string) bool {
 	_, err := os.Stat(fileName)
 	if err != nil {
 		if os.IsNotExist(err) {

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/horn"
-	"github.com/Futuremine-chain/futuremine/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/txlist"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"

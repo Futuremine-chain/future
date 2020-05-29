@@ -37,7 +37,7 @@ type crypto struct {
 }
 
 func GenerateKeyJson(net string, dir string, private *secp256k1.PrivateKey, mnemonicStr string, passWd []byte) (*Key, error) {
-	if !utils.IsExist(dir) {
+	if !utils.Exist(dir) {
 		if err := os.Mkdir(dir, os.ModePerm); err != nil {
 			return nil, fmt.Errorf("create folder %s failed! %s", dir, err.Error())
 		}

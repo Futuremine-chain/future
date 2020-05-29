@@ -96,9 +96,9 @@ func LoadConfig(app IApp) (*Config, error) {
 	}
 
 	// p2p same network label, the label is different and cannot communicate
-	app.InitP2pNet()
+	App.InitP2pNet()
 
-	if !utils.IsExist(cfg.Home) {
+	if !utils.Exist(cfg.Home) {
 		if err := os.Mkdir(cfg.Home, os.ModePerm); err != nil {
 			return nil, err
 		}
@@ -106,7 +106,7 @@ func LoadConfig(app IApp) (*Config, error) {
 	if cfg.Data == "" {
 		cfg.Data = cfg.Home + "/" + cfg.P2PPort
 	}
-	if !utils.IsExist(cfg.Data) {
+	if !utils.Exist(cfg.Data) {
 		if err := os.Mkdir(cfg.Data, os.ModePerm); err != nil {
 			return nil, err
 		}
@@ -154,7 +154,7 @@ func LoadConfig(app IApp) (*Config, error) {
 	// If this parameter is true, the log is also written to the file
 	if cfg.Logging {
 		logDir := cfg.Data + "/log"
-		if !utils.IsExist(logDir) {
+		if !utils.Exist(logDir) {
 			if err := os.Mkdir(logDir, os.ModePerm); err != nil {
 				return nil, err
 			}
