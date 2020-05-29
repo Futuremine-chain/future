@@ -40,3 +40,18 @@ func (h *Horn) BroadcastTx(transaction types.ITransaction) {
 		}
 	}
 }
+
+func (h *Horn) BroadcastBlock(block types.IBlock) {
+	peers := h.peers.PeersMap()
+	for id, peer := range peers {
+		if id != h.local.Address.ID.String() {
+			if err := h.gPool.AddTask(gorutinue.NewTask(
+				func() error {
+					return h.request.SendBlock(peer.Conn, block)
+				})); err != nil {
+				log.Warn("Adding the task to send the block failed", "module", module,
+					"height", block.Hash().String(), "target", peer.Address.String())
+			}
+		}
+	}
+}

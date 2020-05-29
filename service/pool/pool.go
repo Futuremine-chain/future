@@ -67,6 +67,11 @@ func (p *Pool) Put(tx types.ITransaction, isPeer bool) error {
 	return nil
 }
 
+func (p *Pool) NeedPackaged(count int) types.ITransactions {
+	txs := p.txMgt.NeedPackaged(count)
+	return txs
+}
+
 func (p *Pool) startChan() {
 	for {
 		select {

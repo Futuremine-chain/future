@@ -40,7 +40,7 @@ func (t *Sorted) All() types.ITransactions {
 	return all
 }
 
-func (t *Sorted) Gets(count int) types.ITransactions {
+func (t *Sorted) NeedPackaged(count int) types.ITransactions {
 	var txs types.ITransactions
 	rIndex := t.index.CopySelf()
 

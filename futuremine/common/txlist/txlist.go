@@ -85,11 +85,11 @@ func (t *TxManagement) DeleteEnd(newTx types.ITransaction) {
 	t.ready.PopMin(newTx.Fee())
 }
 
-func (t *TxManagement) Gets(count int) types.ITransactions {
+func (t *TxManagement) NeedPackaged(count int) types.ITransactions {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
 
-	return t.ready.Gets(count)
+	return t.ready.NeedPackaged(count)
 }
 
 func (t *TxManagement) GetAll() (types.ITransactions, types.ITransactions) {

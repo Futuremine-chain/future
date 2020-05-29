@@ -11,5 +11,6 @@ type ITxList interface {
 	Update()
 	Exist(types.ITransaction) bool
 	Put(types.ITransaction) error
+	NeedPackaged(count int) types.ITransactions
 	Count() int
 }
