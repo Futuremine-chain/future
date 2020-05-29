@@ -45,7 +45,6 @@ func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
 }
 
 func (r *RequestHandler) SendTx(conn *peers.Conn, tx types.ITransaction) error {
-	var height uint64 = 0
 	s, err := conn.Stream.Conn().NewStream()
 	if err != nil {
 		return err
@@ -56,26 +55,20 @@ func (r *RequestHandler) SendTx(conn *peers.Conn, tx types.ITransaction) error {
 	}()
 
 	s.SetDeadline(time.Unix(utils.NowUnix()+timeOut, 0))
-	//body := xx
-	req := NewRequest(sendTx, nil)
+	req := NewRequest(sendTx, tx.ToRlp().Bytes())
 	err = requestStream(req, s)
 	if err != nil {
 		return err
 	}
 	response, err := r.UnmarshalResponse(s)
 	if response != nil && response.Code == Success {
-		err := rlp.DecodeBytes(response.Body, &height)
-		if err != nil {
-			return err
-		}
+		return nil
 	} else {
 		return fmt.Errorf("peer error: %v", err)
 	}
-	return nil
 }
 
 func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
-	var height uint64 = 0
 	s, err := conn.Stream.Conn().NewStream()
 	if err != nil {
 		return err
@@ -87,19 +80,15 @@ func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 
 	s.SetDeadline(time.Unix(utils.NowUnix()+timeOut, 0))
 	//body := xx
-	req := NewRequest(sendBlock, nil)
+	req := NewRequest(sendBlock, block.ToRlp().Bytes())
 	err = requestStream(req, s)
 	if err != nil {
 		return err
 	}
 	response, err := r.UnmarshalResponse(s)
 	if response != nil && response.Code == Success {
-		err := rlp.DecodeBytes(response.Body, &height)
-		if err != nil {
-			return err
-		}
+		return nil
 	} else {
 		return fmt.Errorf("peer error: %v", err)
 	}
-	return nil
 }
