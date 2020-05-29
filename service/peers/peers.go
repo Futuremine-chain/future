@@ -26,7 +26,7 @@ func NewPeers() *Peers {
 }
 
 func (p *Peers) Name() string {
-	return "peers"
+	return module
 }
 
 func (p *Peers) Start() error {

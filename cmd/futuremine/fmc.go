@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/service/generate"
+	"github.com/Futuremine-chain/futuremine/service/gorutinue"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/pool"
@@ -71,6 +73,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	chain := blockchain.NewBlockChain()
 	peersSv := peers.NewPeers()
 	reqHandler := request.NewRequestHandler(chain)
@@ -79,7 +82,10 @@ func createFMCNode() (*node.FMCNode, error) {
 		return nil, err
 	}
 	rpcSv := rpc.NewRpc()
-	poolSv := pool.NewPool()
+
+	gPool := gorutinue.NewPool()
+	horn := horn.NewHorn(peersSv, gPool)
+	poolSv := pool.NewPool(horn)
 	syncSv := sync_service.NewSync()
 	generateSv := generate.NewGenerate()
 	node := node.NewFMCNode()
@@ -87,6 +93,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	node.Register(p2pSv)
 	node.Register(rpcSv)
 	node.Register(reqHandler)
+	node.Register(gPool)
 	node.Register(poolSv)
 	node.Register(syncSv)
 	node.Register(generateSv)

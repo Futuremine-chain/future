@@ -12,7 +12,7 @@ func NewRpc() *Rpc {
 }
 
 func (r *Rpc) Name() string {
-	return "rpc"
+	return module
 }
 
 func (r *Rpc) Start() error {

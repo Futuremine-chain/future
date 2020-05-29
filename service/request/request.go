@@ -44,7 +44,7 @@ func NewRequestHandler(chain blockchain.IBlockChain) *RequestHandler {
 }
 
 func (r *RequestHandler) Name() string {
-	return "RequestHandler"
+	return module
 }
 
 func (r *RequestHandler) Stop() error {

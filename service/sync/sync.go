@@ -12,7 +12,7 @@ func NewSync() *Sync {
 }
 
 func (s *Sync) Name() string {
-	return "sync"
+	return module
 }
 
 func (s *Sync) Start() error {

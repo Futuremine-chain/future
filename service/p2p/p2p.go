@@ -95,7 +95,7 @@ func newFactory(ips []string, port string) p2pcfg.AddrsFactory {
 }
 
 func (p *P2p) Name() string {
-	return "p2p"
+	return module
 }
 
 func (p *P2p) Start() error {

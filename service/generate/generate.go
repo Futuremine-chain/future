@@ -2,7 +2,7 @@ package generate
 
 import log "github.com/Futuremine-chain/futuremine/log/log15"
 
-const module = "pool"
+const module = "generate"
 
 type Generate struct {
 }
@@ -12,7 +12,7 @@ func NewGenerate() *Generate {
 }
 
 func (g *Generate) Name() string {
-	return "generate"
+	return module
 }
 
 func (g *Generate) Start() error {
