@@ -2,9 +2,9 @@ package request
 
 import (
 	"fmt"
-	request2 "github.com/Futuremine-chain/futuremine/common/request"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/peers"
+	request2 "github.com/Futuremine-chain/futuremine/service/request"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"

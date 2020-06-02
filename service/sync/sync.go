@@ -3,8 +3,8 @@ package sync
 import (
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
-	"github.com/Futuremine-chain/futuremine/common/request"
 	"github.com/Futuremine-chain/futuremine/service/peers"
+	"github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"math/rand"
