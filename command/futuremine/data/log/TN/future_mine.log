@@ -1,0 +1,10 @@
+2020-06-02|14:12:15.156 [[32mINFO [0m] Data storage directory              [32mmodule[0m=config [32mpath[0m=data
+2020-06-02|14:12:15.427 [[32mINFO [0m] P2p host created                    [32mmodule[0m=p2p    [32mid[0m=QmZQeALct6jmpbDHgHe7iUFHPMvVBy9ScQuu4fzZaLMitE [32maddress[0m="[/ip4/192.168.31.140/tcp/33330 /ip4/0.0.0.0/tcp/33330]"
+2020-06-02|14:12:15.450 [[32mINFO [0m] Peers started successfully          [32mmodule[0m=peers
+2020-06-02|14:12:15.450 [[32mINFO [0m] Initializing node DHT               [32mmodule[0m=p2p
+2020-06-02|14:12:15.801 [[32mINFO [0m] Connection established with boot node [32mmodule[0m=p2p    [32mpeer[0m="{16Uiu2HAkwQ1tmB5WrVgT83nD5KYZKanugXNVDM51vaTJw8TtxLa6: [/ip4/47.57.100.253/tcp/2211]}"
+2020-06-02|14:12:15.801 [[32mINFO [0m] P2P started successfully            [32mmodule[0m=p2p
+2020-06-02|14:12:15.801 [[32mINFO [0m] Rpc started successfully            [32mmodule[0m=rpc
+2020-06-02|14:12:15.801 [[32mINFO [0m] Request handler started successfully [32mmodule[0m=request
+2020-06-02|14:12:15.801 [[32mINFO [0m] Look for other peers...             [32mmodule[0m=p2p
+2020-06-02|14:12:24.436 [[32mINFO [0m] Look for other peers...             [32mmodule[0m=p2p

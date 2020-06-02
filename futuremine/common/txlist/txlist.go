@@ -3,6 +3,8 @@ package txlist
 import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/account"
+	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/common/db/txlist"
 	"github.com/Futuremine-chain/futuremine/common/validator"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
@@ -14,22 +16,35 @@ type TxManagement struct {
 	validator validator.IValidator
 	actStatus account.IActStatus
 	mutex     sync.RWMutex
+	txDB      ITxListDB
 }
 
-func NewTxManagement(validator validator.IValidator, actStatus account.IActStatus) *TxManagement {
+func NewTxManagement(validator validator.IValidator, actStatus account.IActStatus) (*TxManagement, error) {
+	txDB, err := txlist.NewTxListDB(config.App.Setting().Data)
+	if err != nil {
+		return nil, err
+	}
 	return &TxManagement{
 		cache:     NewCache(),
 		ready:     NewSorted(),
 		validator: validator,
 		actStatus: actStatus,
-	}
+		txDB:      txDB,
+	}, nil
 }
 
 func (t *TxManagement) Read() error {
+	txs := t.txDB.Read()
+	if txs != nil {
+		for _, tx := range txs {
+			t.Put(tx)
+		}
+	}
 	return nil
 }
 
 func (t *TxManagement) Close() error {
+	t.txDB.Close()
 	return nil
 }
 

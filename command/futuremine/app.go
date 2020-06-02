@@ -1,5 +1,7 @@
 package main
 
+import "github.com/Futuremine-chain/futuremine/common/config"
+
 const (
 	// Mainnet logo
 	MainNet = "MN"
@@ -18,6 +20,8 @@ var (
 	P2pNetWork = "_FUTURE_MINE_CHAIN"
 
 	Version = "0.0.0"
+
+	Setting *config.Config
 )
 
 const (
@@ -62,6 +66,14 @@ func (F *FMC) InitTestNet() {
 	NetWork = TestNet
 }
 
+func (F *FMC) Setting() *config.Config {
+	return Setting
+}
+
 func (F *FMC) InitP2pNet() {
 	P2pNetWork = NetWork + P2pNetWork
+}
+
+func (F *FMC) InitSetting(cfg *config.Config) {
+	Setting = cfg
 }

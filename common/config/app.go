@@ -5,8 +5,10 @@ type IApp interface {
 	Version() string
 	NetWork() string
 	P2pNetWork() string
-	TestNet()string
-	MainNet()string
+	TestNet() string
+	MainNet() string
+	Setting() *Config
 	InitTestNet()
 	InitP2pNet()
+	InitSetting(*Config)
 }

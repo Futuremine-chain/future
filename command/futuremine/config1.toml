@@ -5,7 +5,7 @@ TestNet = true
 Home = ""
 
 # chain data directory
-Data = ""
+Data = "data"
 
 # Logging switch
 Logging = true

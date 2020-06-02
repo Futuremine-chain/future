@@ -10,13 +10,15 @@ type Sorted struct {
 	txs   map[string]types.ITransaction
 	cache map[string]types.ITransaction
 	index *txInfos
+	db    ITxListDB
 }
 
-func NewSorted() *Sorted {
+func NewSorted(db ITxListDB) *Sorted {
 	return &Sorted{
 		txs:   make(map[string]types.ITransaction),
 		cache: make(map[string]types.ITransaction),
 		index: new(txInfos),
+		db:    db,
 	}
 }
 
@@ -30,6 +32,7 @@ func (t *Sorted) Put(tx types.ITransaction) {
 		nonce:   tx.Nonce(),
 		time:    tx.Time(),
 	})
+	t.db.Save(tx)
 }
 
 func (t *Sorted) All() types.ITransactions {
@@ -65,6 +68,7 @@ func (t *Sorted) PopMin(fees uint64) types.ITransaction {
 			tx := t.txs[ti.address]
 			delete(t.txs, ti.address)
 			delete(t.cache, ti.address)
+			t.db.Delete(tx)
 			return tx
 		}
 	}
@@ -87,6 +91,7 @@ func (t *Sorted) Remove(tx types.ITransaction) {
 			heap.Remove(t.index, i)
 			delete(t.txs, tx.From().String())
 			delete(t.cache, tx.From().String())
+			t.db.Delete(tx)
 			return
 		}
 	}

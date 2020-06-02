@@ -164,6 +164,7 @@ func LoadConfig(app IApp) (*Config, error) {
 		log2.InitLogRotator(filepath.Join(logDir, "future_mine.log"))
 	}
 	log.Info("Data storage directory", "module", "config", "path", cfg.Data)
+	App.InitSetting(cfg)
 	return cfg, nil
 }
 
