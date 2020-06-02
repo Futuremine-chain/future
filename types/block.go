@@ -1,10 +1,12 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/types/rlp"
-
 type IBlock interface {
 	IHeader
 	IBody
+	Header() IHeader
+	ToRlp() IRlpTransaction
+}
 
-	ToRlp() rlp.IRlpTransaction
+type IBlocks interface {
+	Blocks() []IBlock
 }

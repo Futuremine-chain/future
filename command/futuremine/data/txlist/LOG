@@ -4,3 +4,12 @@
 14:12:15.428646 version@stat F·[] S·0B[] Sc·[]
 14:12:15.447186 db@janitor F·2 G·0
 14:12:15.450629 db@open done T·22.148538ms
+=============== Jun 2, 2020 (CST) ===============
+16:39:33.089697 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:39:33.089852 version@stat F·[] S·0B[] Sc·[]
+16:39:33.089869 db@open opening
+16:39:33.089916 journal@recovery F·1
+16:39:33.090001 journal@recovery recovering @1
+16:39:33.090187 version@stat F·[] S·0B[] Sc·[]
+16:39:33.090638 db@janitor F·2 G·0
+16:39:33.090659 db@open done T·781.746µs

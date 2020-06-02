@@ -5,6 +5,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/request"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/txlist"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/service/generate"
@@ -12,7 +13,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/service/p2p"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/pool"
-	"github.com/Futuremine-chain/futuremine/service/request"
 	"github.com/Futuremine-chain/futuremine/service/rpc"
 	sync_service "github.com/Futuremine-chain/futuremine/service/sync"
 	"os"
@@ -90,7 +90,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	gPool := gorutinue.NewPool()
 	horn := horn.NewHorn(peersSv, gPool)
 	poolSv := pool.NewPool(horn, txmanage)
-	syncSv := sync_service.NewSync()
+	syncSv := sync_service.NewSync(peersSv, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain)
 	node := node.NewFMCNode()
 

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/private"
+	"github.com/Futuremine-chain/futuremine/common/request"
 	"github.com/Futuremine-chain/futuremine/service/peers"
-	"github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/libp2p/go-libp2p"
@@ -30,12 +30,12 @@ type P2p struct {
 	local      *peers.Peer
 	dht        *dht.IpfsDHT
 	peers      *peers.Peers
-	reqHandler *request.RequestHandler
+	reqHandler request.IRequestHandler
 	close      chan bool
 	closed     chan bool
 }
 
-func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler *request.RequestHandler, priv crypto.PrivKey) (*P2p, error) {
+func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler, priv crypto.PrivKey) (*P2p, error) {
 	var err error
 	ser := &P2p{
 		peers:      ps,

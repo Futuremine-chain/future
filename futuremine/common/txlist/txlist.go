@@ -25,8 +25,8 @@ func NewTxManagement(validator validator.IValidator, actStatus account.IActStatu
 		return nil, err
 	}
 	return &TxManagement{
-		cache:     NewCache(),
-		ready:     NewSorted(),
+		cache:     NewCache(txDB),
+		ready:     NewSorted(txDB),
 		validator: validator,
 		actStatus: actStatus,
 		txDB:      txDB,
@@ -135,7 +135,7 @@ func (t *TxManagement) Update() {
 
 func (t *TxManagement) update() {
 	t.ready.RemoveExecuted(t.validator)
-	for _, tx := range t.cache.Txs {
+	for _, tx := range t.cache.txs {
 		nonce := t.actStatus.Nonce(tx.From())
 		if nonce < tx.Nonce()-1 {
 			continue
@@ -153,7 +153,7 @@ func (t *TxManagement) DeleteExpired(timeThreshold int64) {
 
 	t.ready.RemoveExpiredTx(timeThreshold)
 
-	for _, tx := range t.cache.Txs {
+	for _, tx := range t.cache.txs {
 		if tx.Time() <= timeThreshold {
 			t.cache.Remove(tx)
 		}
