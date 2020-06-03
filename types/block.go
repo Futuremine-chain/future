@@ -4,7 +4,7 @@ type IBlock interface {
 	IHeader
 	IBody
 	Header() IHeader
-	ToRlp() IRlpTransaction
+	ToRlpBlock() IRlpBlock
 }
 
 type IBlocks interface {

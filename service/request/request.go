@@ -26,6 +26,7 @@ type ISend interface {
 	SendBlock(conn *peers.Conn, block types.IBlock) error
 	GetBlocks(conn *peers.Conn, height uint64) ([]types.IBlock, error)
 	GetBlock(conn *peers.Conn, height uint64) (types.IBlock, error)
+	IsEqual(conn *peers.Conn, header types.IHeader) (bool, error)
 }
 
 type IRegister interface {

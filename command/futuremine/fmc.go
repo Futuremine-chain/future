@@ -90,7 +90,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	gPool := gorutinue.NewPool()
 	horn := horn.NewHorn(peersSv, gPool)
 	poolSv := pool.NewPool(horn, txmanage)
-	syncSv := sync_service.NewSync(peersSv, reqHandler, chain)
+	syncSv := sync_service.NewSync(peersSv, nil, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain)
 	node := node.NewFMCNode()
 

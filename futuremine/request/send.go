@@ -17,6 +17,7 @@ var (
 	sendBlock  = Method("sendBlock")
 	getBlocks  = Method("getBlocks")
 	getBlock   = Method("getBlock")
+	isEqual    = Method("isEqual")
 )
 
 func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
@@ -84,7 +85,7 @@ func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 
 	s.SetDeadline(time.Unix(utils.NowUnix()+timeOut, 0))
 	//body := xx
-	req := NewRequest(sendBlock, block.ToRlp().Bytes())
+	req := NewRequest(sendBlock, block.ToRlpBlock().Bytes())
 	err = requestStream(req, s)
 	if err != nil {
 		return err
@@ -163,4 +164,31 @@ func (r *RequestHandler) GetBlock(conn *peers.Conn, height uint64) (types.IBlock
 	} else {
 		return nil, request2.Err_PeerClosed
 	}
+}
+
+func (r *RequestHandler) IsEqual(conn *peers.Conn, header types.IHeader) (bool, error) {
+	s, err := conn.Stream.Conn().NewStream()
+	if err != nil {
+		return false, err
+	}
+	defer func() {
+		s.Reset()
+		s.Close()
+	}()
+
+	s.SetDeadline(time.Unix(time.Now().Unix()+timeOut, 0))
+
+	request := NewRequest(isEqual, header.ToRlpHeader().Bytes())
+	err = requestStream(request, s)
+	response, err := r.UnmarshalResponse(s)
+	var rs bool
+	if response != nil && response.Code == Success {
+		err := rlp.DecodeBytes(response.Body, &rs)
+		if err != nil {
+			return false, err
+		}
+	} else {
+		return false, fmt.Errorf("peer error: %v", err)
+	}
+	return rs, nil
 }

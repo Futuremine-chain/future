@@ -3,11 +3,11 @@ package sync
 import (
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
+	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
-	"math/rand"
 	"time"
 )
 
@@ -18,14 +18,16 @@ type Sync struct {
 	request request.IRequestHandler
 	peers   *peers.Peers
 	curPeer *peers.Peer
+	dpos    dpos.IDPos
 	stop    chan bool
 	stopped chan bool
 }
 
-func NewSync(peers *peers.Peers, request request.IRequestHandler, chain blockchain.IBlockChain) *Sync {
+func NewSync(peers *peers.Peers, dpos dpos.IDPos, request request.IRequestHandler, chain blockchain.IBlockChain) *Sync {
 	s := &Sync{
 		chain:   chain,
 		peers:   peers,
+		dpos:    dpos,
 		request: request,
 		stop:    make(chan bool),
 		stopped: make(chan bool),
@@ -142,7 +144,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 		default:
 			if err := s.chain.Insert(block); err != nil {
 				log.Warn("Insert chain failed!", "error", err, "height", block.Height())
-				if s.superValidation(block.Header()) {
+				if s.headerValidation(block.Header()) {
 					s.fallBack()
 					return err
 				}
@@ -159,53 +161,39 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 // block occupies the majority of the currently started super
 // nodes, it means that the block is more likely to be correct,
 // and the block verification is successful.
-func (s *Sync) superValidation(header types.IHeader) bool {
+func (s *Sync) headerValidation(header types.IHeader) bool {
+	localEqual := false
 	if header.Height() <= s.chain.LastConfirmed() {
 		return false
 	}
-	/*ids, err := s.consensus.GetWinnersPeerID(header.Time())
-	if err != nil {
-		return false
-	}
 	localHeader, err := s.chain.GetHeaderHeight(header.Height())
-	if err == nil {
-		if localHeader.Hash().IsEqual(header.Hash()) {
-			return false
-		}
+	if err == nil && localHeader.Hash().IsEqual(header.Hash()) {
+		localEqual = true
 	}
-	compareMap := make(map[string][]string)
+	return s.validation(header, localEqual)
+
+}
+
+func (s *Sync) validation(header types.IHeader, localEqual bool) bool {
+	count := 0
+	ids := s.dpos.SuperIds()
 	for _, id := range ids {
-		peerId := new(peer.ID)
-		if id != bm.peerManager.LocalPeerInfo().AddrInfo.ID.String() {
-			if err = peerId.UnmarshalText([]byte(id)); err == nil {
-				streamCreator := p2p.StreamCreator{PeerId: *peerId, NewStreamFunc: bm.newStream.CreateStream}
-				remoteHeader, err := bm.network.GetHeaderByHeight(&streamCreator, header.Height)
-				if err != nil {
-					continue
-				}
-				if _, ok := compareMap[remoteHeader.HashString()]; ok {
-					compareMap[remoteHeader.HashString()] = append(compareMap[remoteHeader.HashString()], id)
-				} else {
-					compareMap[remoteHeader.HashString()] = []string{id}
+		if id != s.peers.Local().Address.ID.String() {
+			peer := s.peers.Peer(id)
+			if peer != nil {
+				rs, err := s.request.IsEqual(peer.Conn, header)
+				if err == nil && rs {
+					count++
 				}
 			}
-		} else {
-			localHeader, err := bm.blockChain.GetHeaderByHeight(header.Height)
-			if err != nil {
-				return true
-			}
-			if _, ok := compareMap[localHeader.HashString()]; ok {
-				compareMap[localHeader.HashString()] = append(compareMap[localHeader.HashString()], id)
-			} else {
-				compareMap[localHeader.HashString()] = []string{id}
-			}
+		} else if localEqual {
+			count++
 		}
 	}
-	selectedHash := getEffectiveHash(compareMap)
-	if header.HashString() != selectedHash {
-		return false
-	}*/
-	return true
+	if count > len(ids)/2 {
+		return true
+	}
+	return false
 }
 
 // Block chain rolls back to a valid block
@@ -228,7 +216,7 @@ func (s *Sync) receivedBlock(block types.IBlock) error {
 	} else if block.Height() <= localHeight {
 		if localHeader, err := s.chain.GetBlockHeight(block.Height()); err == nil {
 			if !localHeader.Hash().IsEqual(block.Hash()) {
-				if s.superValidation(block.Header()) {
+				if s.headerValidation(block.Header()) {
 					s.fallBack()
 					return err
 				} else {
@@ -244,25 +232,4 @@ func (s *Sync) receivedBlock(block types.IBlock) error {
 		}
 	}
 	return nil
-}
-
-func getEffectiveHash(compareMap map[string][]string) string {
-	hashes := make([]string, 0)
-	var maxCount int
-	for h, peers := range compareMap {
-		if len(peers) == maxCount {
-			hashes = append(hashes, h)
-		} else if len(peers) > maxCount {
-			maxCount = len(peers)
-			hashes = []string{h}
-		}
-	}
-	if len(hashes) > 1 {
-		rand.Intn(len(hashes))
-		return hashes[rand.Intn(len(hashes))]
-	}
-	if len(hashes) == 0 {
-		return ""
-	}
-	return hashes[0]
 }

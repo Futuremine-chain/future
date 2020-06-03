@@ -10,4 +10,5 @@ type IHeader interface {
 	Signer() arry.Address
 	Height() uint64
 	Time() time.Time
+	ToRlpHeader() IRlpHeader
 }

@@ -7,4 +7,6 @@ import (
 
 type IDPos interface {
 	CheckSigner(chain blockchain.IBlockChain, header types.IHeader) error
+
+	SuperIds() []string
 }

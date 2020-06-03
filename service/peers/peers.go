@@ -142,3 +142,11 @@ func (p *Peers) Count() uint32 {
 	count := uint32(len(p.cache))
 	return count
 }
+
+func (p *Peers) Peer(id string) *Peer {
+	p.rwm.RLock()
+	defer p.rwm.RUnlock()
+
+	peer := p.cache[id]
+	return peer
+}
