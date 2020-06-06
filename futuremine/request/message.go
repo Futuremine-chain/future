@@ -2,6 +2,7 @@ package request
 
 const (
 	Success Code = iota
+	Failed
 )
 
 const maxReadBytes = 1024 * 10

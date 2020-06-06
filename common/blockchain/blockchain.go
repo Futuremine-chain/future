@@ -12,6 +12,10 @@ type IBlockChain interface {
 	GetBlockHash(arry.Hash) (types.IBlock, error)
 	GetHeaderHeight(uint64) (types.IHeader, error)
 	GetHeaderHash(arry.Hash) (types.IHeader, error)
+
+	GetRlpBlockHeight(uint64) (types.IRlpBlock, error)
+	GetRlpBlockHash(arry.Hash) (types.IRlpBlock, error)
+
 	NextBlock(types.ITransactions) types.IBlock
 	Insert(block types.IBlock) error
 	Roll() error

@@ -112,6 +112,10 @@ func LoadConfig(app IApp) (*Config, error) {
 		}
 	}
 
+	if cfg.KeyFile == "" {
+		cfg.KeyFile = defaultPrivateFile
+	}
+
 	// Each node requires a secp256k1 private key, which is used as the p2p id
 	// generation and signature of the node that generates the block.
 	// If this parameter is not configured in the startup parameter,

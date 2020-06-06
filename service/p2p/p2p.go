@@ -2,16 +2,18 @@ package p2p
 
 import (
 	"context"
+	"crypto"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/private"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/libp2p/go-libp2p"
 	core "github.com/libp2p/go-libp2p-core"
-	"github.com/libp2p/go-libp2p-core/crypto"
+	crypto2 "github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/libp2p/go-libp2p-core/protocol"
@@ -35,7 +37,7 @@ type P2p struct {
 	closed     chan bool
 }
 
-func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler, priv crypto.PrivKey) (*P2p, error) {
+func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler, priv *secp256k1.PrivateKey) (*P2p, error) {
 	var err error
 	ser := &P2p{
 		peers:      ps,
@@ -66,14 +68,17 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHand
 	return ser, nil
 }
 
-func newP2PHost(private crypto.PrivKey, ip, port, external string) (core.Host, error) {
+func newP2PHost(private *secp256k1.PrivateKey, ip, port, external string) (core.Host, error) {
 	ips := utils.GetLocalIp()
 	ips = append(ips, external)
 	f := newFactory(ips, port)
-
+	p2pKey, err := crypto2.UnmarshalSecp256k1PrivateKey(private.Serialize())
+	if err != nil {
+		return nil, err
+	}
 	opts := []libp2p.Option{
 		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/0.0.0.0/tcp/%s", port)),
-		libp2p.Identity(private),
+		libp2p.Identity(p2pKey),
 		libp2p.DefaultMuxers,
 		libp2p.EnableRelay(),
 		libp2p.AddrsFactory(f),
