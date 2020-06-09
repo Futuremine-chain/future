@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	types2 "github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/aes"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -57,7 +57,7 @@ func PrivateToJson(net string, priv *secp256k1.PrivateKey, mnemonicStr string, p
 		return nil, fmt.Errorf("get rand salt failed! %s", err.Error())
 	}
 
-	address, err := types2.GenerateAddress(net, priv.PubKey())
+	address, err := kit.GenerateAddress(net, priv.PubKey())
 	if err != nil {
 		return nil, fmt.Errorf("generate address failed! %s", err.Error())
 	}

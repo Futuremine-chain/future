@@ -129,3 +129,7 @@ func (p PrivateKey) SerializeSecret() []byte {
 func (p PrivateKey) GetD() *big.Int {
 	return p.D
 }
+
+func (p PrivateKey) GetType() int {
+	return 0
+}

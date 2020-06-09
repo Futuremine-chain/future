@@ -7,8 +7,8 @@ package edwards
 
 import (
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/ed25519/internal/edwards25519"
 	"math/big"
-
 )
 
 // Some notes on primitives in Ed25519:

@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/Qitmeer/qitmeer-lib v0.0.0-20190929044832-b10740b316a8
 	github.com/btcsuite/goleveldb v0.0.0-20160330041536-7834afc9e8cd
 	github.com/go-stack/stack v1.8.0
 	github.com/jessevdk/go-flags v1.4.0
@@ -19,4 +20,5 @@ require (
 	github.com/whyrusleeping/go-smux-multistream v2.0.2+incompatible // indirect
 	github.com/whyrusleeping/go-smux-yamux v2.0.9+incompatible // indirect
 	github.com/whyrusleeping/yamux v1.2.0 // indirect
+	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
 )

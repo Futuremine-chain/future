@@ -11,6 +11,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/bip39/wordlists"
 	"math/big"
 	"strings"
 

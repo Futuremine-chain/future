@@ -12,10 +12,10 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/ed25519/internal/edwards25519"
 	"hash"
 	"io"
 	"math/big"
-
 )
 
 // BIG CAVEAT

@@ -2,7 +2,6 @@ package p2p
 
 import (
 	"context"
-	"crypto"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/private"
@@ -37,7 +36,7 @@ type P2p struct {
 	closed     chan bool
 }
 
-func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler, priv *secp256k1.PrivateKey) (*P2p, error) {
+func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 	var err error
 	ser := &P2p{
 		peers:      ps,
@@ -53,12 +52,12 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHand
 		CustomBootPeers = append(CustomBootPeers, ma)
 	}
 
-	host, err := newP2PHost(priv, cfg.ExternalIp, cfg.P2PPort, cfg.ExternalIp)
+	host, err := newP2PHost(cfg.Private.PrivateKey(), cfg.ExternalIp, cfg.P2PPort, cfg.ExternalIp)
 	if err != nil {
 		return nil, err
 	}
 	ser.host = host
-	ser.local = peers.NewPeer(priv,
+	ser.local = peers.NewPeer(cfg.Private.PrivateKey(),
 		&peer.AddrInfo{
 			ID:    host.ID(),
 			Addrs: host.Addrs()}, nil)
@@ -234,8 +233,8 @@ func (p *P2p) isAlive(id peer.ID) bool {
 	return true
 }
 
-func PrivateToP2pId(key private.Private) (peer.ID, error) {
-	p2pPriKey, err := crypto.UnmarshalSecp256k1PrivateKey(key.Serialize())
+func PrivateToP2pId(key private.IPrivate) (peer.ID, error) {
+	p2pPriKey, err := crypto2.UnmarshalSecp256k1PrivateKey(key.Serialize())
 	if err != nil {
 		return "", err
 	}

@@ -1,6 +1,6 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/futuremine/common/arry"
+import "github.com/Futuremine-chain/futuremine/tools/arry"
 
 type ITransactionHeader interface {
 	Hash() arry.Hash

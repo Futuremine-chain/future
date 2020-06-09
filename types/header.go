@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/common/arry"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"time"
 )
 

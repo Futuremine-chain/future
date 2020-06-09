@@ -2,7 +2,7 @@ package hash
 
 import (
 	"crypto/sha256"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/arry"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"golang.org/x/crypto/ripemd160"
 	"io"
 )

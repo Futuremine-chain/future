@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/Futuremine-chain/futuremine/common/private"
 	log2 "github.com/Futuremine-chain/futuremine/tools/log"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -16,6 +18,7 @@ var DefaultHomeDir string
 var defaultP2pPort = "20000"
 var DefaultRpcPort = "20001"
 var defaultPrivateFile = "key.json"
+var defaultPrivatePass = "fmc"
 var defaultKey = "future_mine_chain"
 var defaultExternalIp = "0.0.0.0"
 var DefaultFallBack = int64(-1)
@@ -38,10 +41,11 @@ type Config struct {
 	KeyFile    string `long:"keyfile" description:"If you participate in mining, you need to configure the mining address key file"`
 	KeyPass    string `long:"keypass" description:"The decryption password for key file"`
 	FallBackTo int64  `long:"fallbackto" description:"Force back to a height"`
+	Private    private.IPrivate
 }
 
 // LoadConfig load the parse node startup parameter
-func LoadConfig(app IApp) (*Config, error) {
+func LoadConfig(app IApp, pri private.IPrivate) (*Config, error) {
 	App = app
 	DefaultHomeDir = utils.AppDataDir(App.AppName(), false)
 	cfg := &Config{
@@ -112,14 +116,32 @@ func LoadConfig(app IApp) (*Config, error) {
 		}
 	}
 
-	if cfg.KeyFile == "" {
-		cfg.KeyFile = defaultPrivateFile
-	}
-
 	// Each node requires a secp256k1 private key, which is used as the p2p id
 	// generation and signature of the node that generates the block.
 	// If this parameter is not configured in the startup parameter,
 	// the node will be automatically generated and loaded automatically at startup
+	cfg.Private = pri
+	if cfg.KeyFile == "" {
+		cfg.KeyFile = defaultPrivateFile
+		if err := cfg.Private.Load(cfg.KeyFile, defaultPrivatePass); err != nil {
+			if err = cfg.Private.Create(App.NetWork(), cfg.KeyFile, defaultPrivatePass); err != nil {
+				return nil, fmt.Errorf("create default priavte failed! %s", err.Error())
+			}
+		}
+	} else {
+		if cfg.KeyPass == "" {
+			fmt.Println("Please enter the password for the key file:")
+			passWd, err := utils.ReadPassWd()
+			if err != nil {
+				return nil, fmt.Errorf("read password failed! %s", err.Error())
+			}
+			cfg.KeyPass = string(passWd)
+		}
+		if err := cfg.Private.Load(cfg.KeyFile, cfg.KeyPass); err != nil {
+			return nil, fmt.Errorf("load private failed! %s", err.Error())
+		}
+	}
+
 	/*if cfg.KeyFile == "" {
 		cfg.KeyFile = defaultPrivateFile
 		cfg.NodePrivate, err = LoadNodePrivate(cfg.DataDir+"/"+cfg.KeyFile, defaultKey)

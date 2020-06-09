@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/common/arry"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
