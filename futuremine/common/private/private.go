@@ -84,6 +84,9 @@ func (p *Private) Create(net, file, key string) error {
 	if err = ioutil.WriteFile(file, bytes, 0644); err != nil {
 		return fmt.Errorf("write json file %s failed! %s", file, err.Error())
 	}
+	p.address = private.address
+	p.priKey = private.priKey
+	p.mnemonic = private.mnemonic
 	return nil
 }
 

@@ -122,7 +122,7 @@ func LoadConfig(app IApp, pri private.IPrivate) (*Config, error) {
 	// the node will be automatically generated and loaded automatically at startup
 	cfg.Private = pri
 	if cfg.KeyFile == "" {
-		cfg.KeyFile = defaultPrivateFile
+		cfg.KeyFile = cfg.Data + "/" + defaultPrivateFile
 		if err := cfg.Private.Load(cfg.KeyFile, defaultPrivatePass); err != nil {
 			if err = cfg.Private.Create(App.NetWork(), cfg.KeyFile, defaultPrivatePass); err != nil {
 				return nil, fmt.Errorf("create default priavte failed! %s", err.Error())
