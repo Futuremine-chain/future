@@ -4,13 +4,13 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/status"
-	"github.com/Futuremine-chain/futuremine/futuremine/db/chain"
+	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
 )
 
-const chain_db = "chain_db"
+const chainDB = "chain_db"
 
 type FMCChain struct {
 	mutex      sync.RWMutex
@@ -27,18 +27,27 @@ type FMCChain struct {
 func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	var err error
 	fmc := &FMCChain{status: status, dPos: dPos}
-	fmc.db, err = chain.OpenChainDB(config.App.Setting().Data + "/" + chain_db)
+	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
 	if err != nil {
 		return nil, err
 	}
-	fmc.actRoot = fmc.db.ActRoot()
-	fmc.dPosRoot = fmc.db.DPosRoot()
-	fmc.tokenRoot = fmc.db.TokenRoot()
+	// Read the status tree root hash
+	if fmc.actRoot, err = fmc.db.ActRoot(); err != nil {
+		return nil, err
+	}
+	if fmc.dPosRoot, err = fmc.db.DPosRoot(); err != nil {
+		return nil, err
+	}
+	if fmc.tokenRoot, err = fmc.db.TokenRoot(); err != nil {
+		return nil, err
+	}
 
+	// Initializes the state root hash
 	if err := fmc.status.InitRoots(fmc.actRoot, fmc.dPosRoot, fmc.tokenRoot); err != nil {
 		return nil, err
 	}
 
+	// Initialize chain height
 	fmc.lastHeight = fmc.db.LastHeight()
 	fmc.UpdateConfirmed(fmc.dPos.Confirmed())
 	return fmc, nil
