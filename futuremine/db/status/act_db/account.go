@@ -41,7 +41,7 @@ func (a *ActDB) Commit() (arry.Hash, error) {
 
 func (a *ActDB) Account(address arry.Address) account.IAccount {
 	bytes := a.trie.Get(address.Bytes())
-	if account := types.DecodeAccount(bytes); account == nil {
+	if account, err := types.DecodeAccount(bytes); err != nil {
 		return types.NewAccount()
 	} else {
 		return account
@@ -54,7 +54,10 @@ func (a *ActDB) SetAccount(account account.IAccount) {
 
 func (a *ActDB) Nonce(address arry.Address) uint64 {
 	bytes := a.trie.Get(address.Bytes())
-	account := types.DecodeAccount(bytes)
+	account, err := types.DecodeAccount(bytes)
+	if err != nil {
+		return 0
+	}
 	return account.Nonce()
 }
 

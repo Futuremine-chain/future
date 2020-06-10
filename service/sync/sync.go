@@ -144,7 +144,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 		default:
 			if err := s.chain.Insert(block); err != nil {
 				log.Warn("Insert chain failed!", "error", err, "height", block.Height())
-				if s.headerValidation(block.Header()) {
+				if s.headerValidation(block.BlockHeader()) {
 					s.fallBack()
 					return err
 				}
@@ -216,7 +216,7 @@ func (s *Sync) receivedBlock(block types.IBlock) error {
 	} else if block.Height() <= localHeight {
 		if localHeader, err := s.chain.GetBlockHeight(block.Height()); err == nil {
 			if !localHeader.Hash().IsEqual(block.Hash()) {
-				if s.headerValidation(block.Header()) {
+				if s.headerValidation(block.BlockHeader()) {
 					s.fallBack()
 					return err
 				} else {

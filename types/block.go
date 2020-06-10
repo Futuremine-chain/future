@@ -3,7 +3,7 @@ package types
 type IBlock interface {
 	IHeader
 	IBody
-	Header() IHeader
+	BlockHeader() IHeader
 	ToRlpBlock() IRlpBlock
 }
 

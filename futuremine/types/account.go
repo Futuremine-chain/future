@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
@@ -31,7 +32,8 @@ func (a *Account) Check(tx types.ITransaction) error {
 }
 
 func (a *Account) Bytes() []byte {
-	return nil
+	bytes, _ := rlp.EncodeToBytes(a)
+	return bytes
 }
 
 func (a *Account) Address() arry.Address {
@@ -46,6 +48,8 @@ func NewAccount() *Account {
 	return &Account{}
 }
 
-func DecodeAccount([]byte) *Account {
-	return nil
+func DecodeAccount(bytes []byte) (*Account, error) {
+	var account *Account
+	err := rlp.DecodeBytes(bytes, account)
+	return account, err
 }

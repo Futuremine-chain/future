@@ -1,10 +1,12 @@
 package blockchain
 
 import (
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
+	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
@@ -29,22 +31,16 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	fmc := &FMCChain{status: status, dPos: dPos}
 	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
 	}
 	// Read the status tree root hash
-	if fmc.actRoot, err = fmc.db.ActRoot(); err != nil {
-		return nil, err
-	}
-	if fmc.dPosRoot, err = fmc.db.DPosRoot(); err != nil {
-		return nil, err
-	}
-	if fmc.tokenRoot, err = fmc.db.TokenRoot(); err != nil {
-		return nil, err
-	}
+	fmc.actRoot, _ = fmc.db.ActRoot()
+	fmc.dPosRoot, _ = fmc.db.DPosRoot()
+	fmc.tokenRoot, _ = fmc.db.TokenRoot()
 
 	// Initializes the state root hash
 	if err := fmc.status.InitRoots(fmc.actRoot, fmc.dPosRoot, fmc.tokenRoot); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to init status root, %s", err.Error())
 	}
 
 	// Initialize chain height
@@ -64,15 +60,92 @@ func (b *FMCChain) NextBlock(txs types.ITransactions) types.IBlock {
 	return nil
 }
 
-func (b *FMCChain) LastConfirmed() uint64                              { return 0 }
-func (b *FMCChain) GetBlockHeight(uint64) (types.IBlock, error)        { return nil, nil }
-func (b *FMCChain) GetBlockHash(arry.Hash) (types.IBlock, error)       { return nil, nil }
-func (b *FMCChain) GetHeaderHeight(uint64) (types.IHeader, error)      { return nil, nil }
-func (b *FMCChain) GetHeaderHash(arry.Hash) (types.IHeader, error)     { return nil, nil }
-func (b *FMCChain) GetRlpBlockHeight(uint64) (types.IRlpBlock, error)  { return nil, nil }
-func (b *FMCChain) GetRlpBlockHash(arry.Hash) (types.IRlpBlock, error) { return nil, nil }
-func (b *FMCChain) Insert(block types.IBlock) error                    { return nil }
-func (b *FMCChain) Roll() error                                        { return nil }
+func (b *FMCChain) LastConfirmed() uint64 {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	return b.confirmed
+}
+
+func (b *FMCChain) GetBlockHeight(height uint64) (types.IBlock, error) {
+	header, err := b.getHeaderHeight(height)
+	if err != nil {
+		return nil, err
+	}
+	txs, err := b.db.GetTransactions(header.TxRoot())
+	if err != nil {
+		return nil, err
+	}
+	rlpBody := &fmctypes.RlpBody{txs}
+	block := &fmctypes.Block{header, rlpBody.ToBody()}
+	return block, nil
+}
+
+func (b *FMCChain) GetBlockHash(hash arry.Hash) (types.IBlock, error) {
+	header, err := b.getHeaderHash(hash)
+	if err != nil {
+		return nil, err
+	}
+	txs, err := b.db.GetTransactions(header.TxRoot())
+	if err != nil {
+		return nil, err
+	}
+	rlpBody := &fmctypes.RlpBody{txs}
+	block := &fmctypes.Block{header, rlpBody.ToBody()}
+	return block, nil
+}
+
+func (b *FMCChain) GetHeaderHeight(height uint64) (types.IHeader, error) {
+	return b.getHeaderHeight(height)
+}
+
+func (b *FMCChain) getHeaderHeight(height uint64) (*fmctypes.Header, error) {
+	if height > b.LastHeight() {
+		return nil, fmt.Errorf("%d block header is not exist", height)
+	}
+	return b.db.GetHeaderHeight(height)
+}
+
+func (b *FMCChain) GetHeaderHash(hash arry.Hash) (types.IHeader, error) {
+	return b.getHeaderHash(hash)
+}
+
+func (b *FMCChain) getHeaderHash(hash arry.Hash) (*fmctypes.Header, error) {
+	return b.db.GetHeaderHash(hash)
+}
+
+func (b *FMCChain) GetRlpBlockHeight(height uint64) (types.IRlpBlock, error) {
+	header, err := b.db.GetHeaderHeight(height)
+	if err != nil {
+		return nil, err
+	}
+	txs, err := b.db.GetTransactions(header.TxRoot())
+	if err != nil {
+		return nil, err
+	}
+	rlpBody := &fmctypes.RlpBody{txs}
+	rlpHeader := header.ToRlpHeader().(*fmctypes.RlpHeader)
+	block := &fmctypes.RlpBlock{rlpHeader, rlpBody}
+	return block, nil
+}
+
+func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
+	header, err := b.db.GetHeaderHash(hash)
+	if err != nil {
+		return nil, err
+	}
+	txs, err := b.db.GetTransactions(header.TxRoot())
+	if err != nil {
+		return nil, err
+	}
+	rlpBody := &fmctypes.RlpBody{txs}
+	rlpHeader := header.ToRlpHeader().(*fmctypes.RlpHeader)
+	block := &fmctypes.RlpBlock{rlpHeader, rlpBody}
+	return block, nil
+}
+
+func (b *FMCChain) Insert(block types.IBlock) error { return nil }
+func (b *FMCChain) Roll() error                     { return nil }
 
 func (b *FMCChain) UpdateConfirmed(height uint64) {
 	b.mutex.Lock()

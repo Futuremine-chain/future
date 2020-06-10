@@ -76,10 +76,10 @@ func (b *ChainDB) GetHeaderHeight(height uint64) (*types.Header, error) {
 	if err != nil {
 		return nil, err
 	}
-	return b.GetHeader(hash)
+	return b.GetHeaderHash(hash)
 }
 
-func (b *ChainDB) GetHeader(hash arry.Hash) (*types.Header, error) {
+func (b *ChainDB) GetHeaderHash(hash arry.Hash) (*types.Header, error) {
 	bytes, err := b.db.GetFromBucket(_header, hash.Bytes())
 	if err != nil {
 		return nil, err

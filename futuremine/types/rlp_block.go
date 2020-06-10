@@ -6,6 +6,13 @@ import (
 )
 
 type RlpBlock struct {
+	*RlpHeader
+	*RlpBody
+}
+
+func (r *RlpBlock) Bytes() []byte {
+	bytes, _ := rlp.EncodeToBytes(r)
+	return bytes
 }
 
 func (r *RlpBlock) ToBlock() types.IBlock {

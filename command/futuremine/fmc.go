@@ -42,7 +42,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	// Work around defer not working after os.Exit()
 	if err := FMCMain(); err != nil {
-		fmt.Println("faild to start, ", err)
+		fmt.Println("Failed to start, ", err)
 		os.Exit(1)
 	}
 }
