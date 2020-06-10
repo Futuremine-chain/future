@@ -84,11 +84,18 @@ func createFMCNode() (*node.FMCNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	dPosStatus := dpos_status.NewDPosStatus()
-	tokenStatus := token_status.NewTokenStatus()
+	dPosStatus, err := dpos_status.NewDPosStatus()
+	if err != nil {
+		return nil, err
+	}
+	tokenStatus, err := token_status.NewTokenStatus()
+	if err != nil {
+		return nil, err
+	}
+
 	dpos := dpos2.NewDPos()
 	status := status2.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
-	chain, err := blockchain.NewFMCChain(status)
+	chain, err := blockchain.NewFMCChain(status, dpos)
 	if err != nil {
 		return nil, err
 	}

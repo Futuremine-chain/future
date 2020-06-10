@@ -19,3 +19,7 @@ func (dpos *DPos) CheckSigner(chain blockchain.IBlockChain, header types.IHeader
 func (dpos *DPos) SuperIds() []string {
 	return nil
 }
+
+func (dpos *DPos) Confirmed() uint64 {
+	return 0
+}
