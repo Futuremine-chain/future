@@ -8,4 +8,5 @@ type ITransactionHeader interface {
 	Nonce() uint64
 	Fee() uint64
 	Time() int64
+	IsCoinBase() bool
 }

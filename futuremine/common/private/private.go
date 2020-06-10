@@ -91,6 +91,5 @@ func (p *Private) Create(net, file, key string) error {
 }
 
 func (p *Private) Serialize() []byte {
-	// TODO
-	return nil
+	return p.priKey.Serialize()
 }

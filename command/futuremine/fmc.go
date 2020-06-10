@@ -7,6 +7,10 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	dpos2 "github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/private"
+	status2 "github.com/Futuremine-chain/futuremine/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/status/act_status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/status/dpos_status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/status/token_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/txlist"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/futuremine/request"
@@ -76,8 +80,18 @@ func createFMCNode() (*node.FMCNode, error) {
 	if err != nil {
 		return nil, err
 	}
+	actStatus, err := act_status.NewActStatus()
+	if err != nil {
+		return nil, err
+	}
+	dPosStatus := dpos_status.NewDPosStatus()
+	tokenStatus := token_status.NewTokenStatus()
 	dpos := dpos2.NewDPos()
-	chain := blockchain.NewBlockChain()
+	status := status2.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
+	chain, err := blockchain.NewFMCChain(status)
+	if err != nil {
+		return nil, err
+	}
 	peersSv := peers.NewPeers()
 	reqHandler := request.NewRequestHandler(chain)
 	p2pSv, err := p2p.NewP2p(cfg, peersSv, reqHandler)

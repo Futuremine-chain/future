@@ -14,14 +14,13 @@ type TxListDB struct {
 	base *base.Base
 }
 
-func NewTxListDB(dir string) (*TxListDB, error) {
-	base, err := base.Open(dir + "/" + path)
+func Open(path string) (*TxListDB, error) {
+	var err error
+	baseDB, err := base.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	return &TxListDB{
-		base: base,
-	}, nil
+	return &TxListDB{base: baseDB}, nil
 }
 
 func (t *TxListDB) Read() []types.ITransaction {

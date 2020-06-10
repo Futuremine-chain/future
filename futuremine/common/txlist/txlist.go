@@ -10,6 +10,8 @@ import (
 	"sync"
 )
 
+const txList_db = "tx_List_db"
+
 type TxManagement struct {
 	cache     *Cache
 	ready     *Sorted
@@ -20,7 +22,7 @@ type TxManagement struct {
 }
 
 func NewTxManagement(validator validator.IValidator, actStatus account.IActStatus) (*TxManagement, error) {
-	txDB, err := txlist.NewTxListDB(config.App.Setting().Data)
+	txDB, err := txlist.Open(config.App.Setting().Data + "/" + txList_db)
 	if err != nil {
 		return nil, err
 	}
