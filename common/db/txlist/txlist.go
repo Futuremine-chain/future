@@ -29,7 +29,7 @@ func (t *TxListDB) Read() []types.ITransaction {
 
 func (t *TxListDB) Save(tx types.ITransaction) {
 	key := base.Key(bucket, tx.Hash().Bytes())
-	t.base.Update(key, tx.ToRlp().Bytes())
+	t.base.Put(key, tx.ToRlp().Bytes())
 }
 
 func (t *TxListDB) Delete(tx types.ITransaction) {
