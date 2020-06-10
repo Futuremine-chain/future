@@ -1,6 +1,9 @@
 package account
 
-import "github.com/Futuremine-chain/futuremine/types"
+import (
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/types"
+)
 
 type IAccount interface {
 	NeedUpdate() bool
@@ -8,4 +11,6 @@ type IAccount interface {
 	FromTransaction(tx types.ITransaction, height uint64) error
 	ToTransaction(tx types.ITransaction, height uint64) error
 	Check(tx types.ITransaction) error
+	Bytes() []byte
+	Address() arry.Address
 }
