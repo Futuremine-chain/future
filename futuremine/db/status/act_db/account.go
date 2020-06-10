@@ -45,6 +45,10 @@ func (a *ActDB) Nonce(address arry.Address) uint64 {
 	panic("implement me")
 }
 
+func (a *ActDB) Close() error {
+	return a.base.Close()
+}
+
 /*
 func (s *StateStorage) InitTrie(stateRoot hasharry.Hash) error {
 	stateTrie, err := trie.New(stateRoot, s.trieDB)
@@ -59,9 +63,7 @@ func (s *StateStorage) Open() error {
 	return s.trieDB.Open()
 }
 
-func (s *StateStorage) Close() error {
-	return s.trieDB.Close()
-}
+
 
 func (s *StateStorage) GetAccountState(stateKey hasharry.Hash) types.IAccount {
 	account := types.NewAccount()

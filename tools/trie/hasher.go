@@ -19,11 +19,10 @@ package trie
 import (
 	"bytes"
 	"crypto/sha256"
-	hash2 "github.com/jhdriver/UBaseCoin/common/hasharry"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"hash"
 	"sync"
-
-	"github.com/jhdriver/UBaseCoin/common/encode/rlp"
 )
 
 type hasher struct {
@@ -106,7 +105,7 @@ func (h *hasher) hashChildren(original node, db DatabaseWriter) (node, node, err
 		// Hash the short node's child, caching the newly hashed subtree
 		collapsed, cached := n.copy(), n.copy()
 		collapsed.Key = hexToCompact(n.Key)
-		cached.Key = hash2.CopyBytes(n.Key)
+		cached.Key = arry.CopyBytes(n.Key)
 
 		if _, ok := n.Val.(valueNode); !ok {
 			collapsed.Val, cached.Val, err = h.hash(n.Val, db, false)

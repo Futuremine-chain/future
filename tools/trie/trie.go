@@ -21,17 +21,16 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	"github.com/jhdriver/UBaseCoin/common/hasharry"
-
-	log "github.com/jhdriver/UBaseCoin/log/log15"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/rcrowley/go-metrics"
 )
 
 var (
 	// This is the known root hash of an empty trie.
-	emptyRoot = hasharry.HexToHash("56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
+	emptyRoot = arry.HexToHash("56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
 	// This is the known hash of an empty state trie entry.
-	emptyState hasharry.Hash
+	emptyState arry.Hash
 )
 
 var (
@@ -85,7 +84,7 @@ type DatabaseWriter interface {
 type Trie struct {
 	root         node
 	db           Database
-	originalRoot hasharry.Hash
+	originalRoot arry.Hash
 	prefix       []byte
 
 	// Cache generation values.
@@ -112,9 +111,9 @@ func (t *Trie) newFlag() nodeFlag {
 // trie is initially empty and does not require a database. Otherwise,
 // New will panic if db is nil and returns a MissingNodeError if root does
 // not exist in the database. Accessing the trie loads nodes from db on demand.
-func New(root hasharry.Hash, db Database) (*Trie, error) {
+func New(root arry.Hash, db Database) (*Trie, error) {
 	trie := &Trie{db: db, originalRoot: root}
-	if (root != hasharry.Hash{}) && root != emptyRoot {
+	if (root != arry.Hash{}) && root != emptyRoot {
 		if db == nil {
 			panic("trie.New: cannot use existing root without a database")
 		}
@@ -127,7 +126,7 @@ func New(root hasharry.Hash, db Database) (*Trie, error) {
 	return trie, nil
 }
 
-func NewTrieWithPrefix(root hasharry.Hash, prefix []byte, db Database) (*Trie, error) {
+func NewTrieWithPrefix(root arry.Hash, prefix []byte, db Database) (*Trie, error) {
 	trie, err := New(root, db)
 	if err != nil {
 		return nil, err
@@ -480,7 +479,7 @@ func (t *Trie) resolveHash(n hashNode, prefix []byte) (node, error) {
 
 	enc, err := t.db.Get(n)
 	if err != nil || enc == nil {
-		return nil, &MissingNodeError{NodeHash: hasharry.BytesToHash(n), Path: prefix}
+		return nil, &MissingNodeError{NodeHash: arry.BytesToHash(n), Path: prefix}
 	}
 	dec := mustDecodeNode(n, enc, t.cachegen)
 	return dec, nil
@@ -492,10 +491,10 @@ func (t *Trie) Root() []byte { return t.Hash().Bytes() }
 
 // Hash returns the root hash of the trie. It does not write to the
 // database and can be used even if the trie doesn't have one.
-func (t *Trie) Hash() hasharry.Hash {
+func (t *Trie) Hash() arry.Hash {
 	hash, cached, _ := t.hashRoot(nil)
 	t.root = cached
-	return hasharry.BytesToHash(hash.(hashNode))
+	return arry.BytesToHash(hash.(hashNode))
 }
 
 // Commit writes all nodes to the trie's database.
@@ -503,7 +502,7 @@ func (t *Trie) Hash() hasharry.Hash {
 //
 // Committing flushes nodes from memory.
 // Subsequent Get calls will load nodes from the database.
-func (t *Trie) Commit() (root hasharry.Hash, err error) {
+func (t *Trie) Commit() (root arry.Hash, err error) {
 	if t.db == nil {
 		panic("Commit called on trie with nil database")
 	}
@@ -517,14 +516,14 @@ func (t *Trie) Commit() (root hasharry.Hash, err error) {
 // load nodes from the trie's database. Calling code must ensure that
 // the changes made to db are written back to the trie's attached
 // database before using the trie.
-func (t *Trie) CommitTo(db DatabaseWriter) (root hasharry.Hash, err error) {
+func (t *Trie) CommitTo(db DatabaseWriter) (root arry.Hash, err error) {
 	hash, cached, err := t.hashRoot(db)
 	if err != nil {
-		return (hasharry.Hash{}), err
+		return (arry.Hash{}), err
 	}
 	t.root = cached
 	t.cachegen++
-	return hasharry.BytesToHash(hash.(hashNode)), nil
+	return arry.BytesToHash(hash.(hashNode)), nil
 }
 
 func (t *Trie) hashRoot(db DatabaseWriter) (node, node, error) {

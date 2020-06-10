@@ -16,9 +16,11 @@ require (
 	github.com/mattn/go-colorable v0.1.6
 	github.com/multiformats/go-multiaddr v0.2.2
 	github.com/onsi/ginkgo v1.12.2
+	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/whyrusleeping/go-smux-multiplex v3.0.16+incompatible // indirect
 	github.com/whyrusleeping/go-smux-multistream v2.0.2+incompatible // indirect
 	github.com/whyrusleeping/go-smux-yamux v2.0.9+incompatible // indirect
 	github.com/whyrusleeping/yamux v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	gopkg.in/karalabe/cookiejar.v2 v2.0.0-20150724131613-8dcd6a7f4951
 )

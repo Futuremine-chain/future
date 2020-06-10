@@ -19,9 +19,9 @@ package trie
 import (
 	"bytes"
 	"encoding/binary"
+	"github.com/Futuremine-chain/futuremine/common/db/base"
+	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/jhdriver/UBaseCoin/common/hasharry"
-	"github.com/jhdriver/UBaseCoin/database/triedb"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -34,8 +34,7 @@ func init() {
 
 // Used for testing
 func newEmpty() *Trie {
-	db := triedb.NewTrieDB("triedb")
-	err := db.Open()
+	db, err := base.Open("triedb")
 	if err != nil {
 		return nil
 	}
@@ -44,8 +43,7 @@ func newEmpty() *Trie {
 }
 
 func newEmptyByHash(hash hasharry.Hash) *Trie {
-	db := triedb.NewTrieDB("triedb")
-	err := db.Open()
+	db, err := base.Open("triedb")
 	if err != nil {
 		return nil
 	}
@@ -203,7 +201,7 @@ func TestDelete(t *testing.T) {
 	}
 
 	hash := trie.Hash()
-	exp := hash.HexToHash("5991bb8c6514148a29db676a14ac506cd2cd5775ace63c30a4fe457715e9ac84")
+	exp := hasharry.HexToHash("5991bb8c6514148a29db676a14ac506cd2cd5775ace63c30a4fe457715e9ac84")
 	if hash != exp {
 		t.Errorf("expected %x got %x", exp, hash)
 	}
@@ -227,7 +225,7 @@ func TestEmptyValues(t *testing.T) {
 	}
 
 	hash := trie.Hash()
-	exp := hash.HexToHash("5991bb8c6514148a29db676a14ac506cd2cd5775ace63c30a4fe457715e9ac84")
+	exp := hasharry.HexToHash("5991bb8c6514148a29db676a14ac506cd2cd5775ace63c30a4fe457715e9ac84")
 	if hash != exp {
 		t.Errorf("expected %x got %x", exp, hash)
 	}

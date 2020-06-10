@@ -18,7 +18,7 @@ package trie
 
 import (
 	"fmt"
-	"github.com/jhdriver/UBaseCoin/common/hasharry"
+	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
 )
 
 // MissingNodeError is returned by the trie functions (TryGet, TryUpdate, TryDelete)

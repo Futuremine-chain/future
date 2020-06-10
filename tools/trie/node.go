@@ -18,11 +18,11 @@ package trie
 
 import (
 	"fmt"
-	"github.com/jhdriver/UBaseCoin/common/hasharry"
 	"io"
 	"strings"
 
-	"github.com/jhdriver/UBaseCoin/common/encode/rlp"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
 var indices = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "[17]"}
@@ -174,7 +174,7 @@ func decodeFull(hash, buf, elems []byte, cachegen uint16) (*fullNode, error) {
 	return n, nil
 }
 
-const hashLen = len(hasharry.Hash{})
+const hashLen = len(arry.Hash{})
 
 func decodeRef(buf []byte, cachegen uint16) (node, []byte, error) {
 	kind, val, rest, err := rlp.Split(buf)

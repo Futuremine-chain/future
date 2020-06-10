@@ -19,10 +19,10 @@ package trie
 import (
 	"bytes"
 	"fmt"
-	"github.com/jhdriver/UBaseCoin/common/encode/rlp"
-	"github.com/jhdriver/UBaseCoin/common/hasharry"
-	cryptohash "github.com/jhdriver/UBaseCoin/crypto/hash"
-	log "github.com/jhdriver/UBaseCoin/log/log15"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	cypHash "github.com/Futuremine-chain/futuremine/tools/crypto/hash"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
 // Prove constructs a merkle proof for key. The result contains all
@@ -79,7 +79,7 @@ func (t *Trie) Prove(key []byte, fromLevel uint, proofDb DatabaseWriter) error {
 			} else {
 				enc, _ := rlp.EncodeToBytes(n)
 				if !ok {
-					hash = cryptohash.Hash(enc).Bytes()
+					hash = cypHash.Hash(enc).Bytes()
 				}
 				proofDb.Put(hash, enc)
 			}
@@ -92,7 +92,7 @@ func (t *Trie) Prove(key []byte, fromLevel uint, proofDb DatabaseWriter) error {
 // value for key in a trie with the given root hash. VerifyProof
 // returns an error if the proof contains invalid trie nodes or the
 // wrong value.
-func VerifyProof(rootHash hasharry.Hash, key []byte, proofDb DatabaseReader) (value []byte, err error, nodes int) {
+func VerifyProof(rootHash arry.Hash, key []byte, proofDb DatabaseReader) (value []byte, err error, nodes int) {
 	key = keybytesToHex(key)
 	wantHash := rootHash[:]
 	for i := 0; ; i++ {
