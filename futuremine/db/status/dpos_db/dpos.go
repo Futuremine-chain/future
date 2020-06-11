@@ -28,3 +28,7 @@ func (d *DPosDB) SetRoot(hash arry.Hash) error {
 	d.trie = t
 	return nil
 }
+
+func (d *DPosDB) CandidatesCount() int {
+	return 0
+}

@@ -9,37 +9,43 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
+const CoinBase = "CoinBase"
+
 type Message struct {
 	Header *MsgHeader
 	Body   types.IMessageBody
 }
 
+func (m *Message) Type() int {
+	return int(m.Header.Type)
+}
+
 func (m *Message) Hash() arry.Hash {
-	panic("implement me")
+	return m.Header.Hash
 }
 
 func (m *Message) From() arry.Address {
-	panic("implement me")
+	return m.Header.From
 }
 
 func (m *Message) Nonce() uint64 {
-	panic("implement me")
+	return m.Header.Nonce
 }
 
 func (m *Message) Fee() uint64 {
-	panic("implement me")
+	return m.Header.Fee
 }
 
 func (m *Message) Time() int64 {
-	panic("implement me")
+	return m.Header.Time
 }
 
 func (m *Message) IsCoinBase() bool {
-	panic("implement me")
+	return m.Header.From.IsEqual(arry.StringToAddress(CoinBase))
 }
 
 func (m *Message) To() arry.Address {
-	panic("implement me")
+	return m.Body.To()
 }
 
 func (m *Message) ToRlp() types.IRlpMessage {
@@ -115,151 +121,3 @@ func (m *Message) copy() *Message {
 		Body: m.Body,
 	}
 }
-
-/*
-func (t *Message) verifyHead() error {
-
-
-	if err := t.verifyTxType(); err != nil {
-		return err
-	}
-
-	if err := t.verifyTxHash(); err != nil {
-		return err
-	}
-
-	if err := t.verifyTxFrom(); err != nil {
-		return err
-	}
-
-	if err := t.verifyTxFees(); err != nil {
-		return err
-	}
-
-	if err := t.verifyTxSinger(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Message) verifyBody() error {
-	if t.TxBody == nil {
-		return ErrTxBody
-	}
-
-	if err := t.verifyAmount(); err != nil {
-		return err
-	}
-
-	if err := t.TxBody.VerifyBody(t.TxHead.From); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Message) VerifyCoinBaseTx(sumFees uint64) error {
-	if err := t.verifyTxSize(); err != nil {
-		return err
-	}
-
-	if err := t.verifyCoinBaseAmount(sumFees); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Message) verifyTxFees() error {
-	minFees, maxFees := t.FeesLimit()
-	if t.TxHead.Fees < minFees {
-		return fmt.Errorf("fee %d is less than the minimum poundage allowed %d", t.TxHead.Fees, minFees)
-	}
-	if t.TxHead.Fees > maxFees {
-		return fmt.Errorf("fee %d greater is greater than the maximum poundage allowed %d", t.TxHead.Fees, maxFees)
-	}
-	return nil
-}
-
-func (m *Message) verifyTxSinger() error {
-	if !Verify(t.TxHead.TxHash, t.TxHead.SignScript) {
-		return ErrSignature
-	}
-
-	if !VerifySigner(param.Net, t.TxHead.From, t.TxHead.SignScript.PubKey) {
-		return ErrSigner
-	}
-	return nil
-}
-
-func (m *Message) verifyTxSize() error {
-	// TODO change maxsize
-	switch t.TxHead.TxType {
-	case NormalMessage:
-		fallthrough
-	case ContractMessage:
-		fallthrough
-	case LogoutCandidate:
-		fallthrough
-	case LoginCandidate:
-		fallthrough
-	case VoteToCandidate:
-		if t.Size() > MaxNoDataTxSize {
-			return ErrTxSize
-		}
-	}
-	return nil
-}
-
-func (m *Message) verifyCoinBaseAmount(amounm uint64) error {
-	nTx := t.TxBody.(*NormalMessageBody)
-	sumAmounm := CoinBaseCoins + amount
-	if sumAmounm != nTx.Amounm {
-		return ErrCoinBase
-	}
-	return nil
-}
-
-func (m *Message) verifyAmount() error {
-	nTx, ok := t.TxBody.(*NormalMessageBody)
-	if ok && nTx.Amounm < minAllowedAmounm {
-		return fmt.Errorf("the minimum amounm of the message musm nom be less than %d", minAllowedAmount)
-	}
-	return nil
-}
-
-func (m *Message) verifyTxFrom() error {
-	if !CheckUBAddress(param.Net, t.From().String()) {
-		return ErrAddress
-	}
-	return nil
-}func (m *Message) verifyTxFrom() error {
-	if !CheckUBAddress(param.Net, t.From().String()) {
-		return ErrAddress
-	}
-	return nil
-}
-
-func (m *Message) verifyTxType() error {
-	switch t.TxHead.TxType {
-	case NormalMessage:
-		return nil
-	case ContractMessage:
-		return nil
-	case VoteToCandidate:
-		return nil
-	case LoginCandidate:
-		return nil
-	case LogoutCandidate:
-		return nil
-	}
-	return ErrTxType
-}
-
-func (m *Message) verifyTxHash() error {
-	newTx := t.copy()
-	newTx.SetHash()
-	if newTx.Hash().IsEqual(t.Hash()) {
-		return nil
-	}
-	return ErrTxHash
-}
-*/
