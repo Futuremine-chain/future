@@ -32,6 +32,10 @@ func (a *ActStatus) SetTrieRoot(stateRoot arry.Hash) error {
 	return a.db.SetRoot(stateRoot)
 }
 
+func (a *ActStatus) CheckTransaction(tx types.ITransaction) error {
+	return nil
+}
+
 // Get account status, if the account status needs to be updated
 // according to the effective block height, it will be updated,
 // but not stored.

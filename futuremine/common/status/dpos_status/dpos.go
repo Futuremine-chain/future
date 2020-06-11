@@ -4,6 +4,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/status/dpos_db"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 const dPosDB = "dpos_db"
@@ -22,4 +23,8 @@ func NewDPosStatus() (*DPosStatus, error) {
 
 func (d *DPosStatus) SetTrieRoot(hash arry.Hash) error {
 	return d.db.SetRoot(hash)
+}
+
+func (d *DPosStatus) CheckTransaction(tx types.ITransaction) error {
+	return nil
 }

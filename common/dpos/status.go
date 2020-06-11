@@ -1,7 +1,11 @@
 package dpos
 
-import "github.com/Futuremine-chain/futuremine/tools/arry"
+import (
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/types"
+)
 
 type IDPosStatus interface {
 	SetTrieRoot(hash arry.Hash) error
+	CheckTransaction(tx types.ITransaction) error
 }

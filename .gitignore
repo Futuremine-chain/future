@@ -1,5 +1,6 @@
 
-cmd/futuremine/config1.toml
-cmd/futuremine/config2.toml
-cmd/futuremine/config.toml
+command/futuremine/config1.toml
+command/futuremine/config2.toml
+command/futuremine/config.toml
 config.toml
+command/futuremine/data

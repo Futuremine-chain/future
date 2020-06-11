@@ -4,6 +4,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/status/token_db"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 const tokenDB = "token_db"
@@ -22,4 +23,8 @@ func NewTokenStatus() (*TokenStatus, error) {
 
 func (t *TokenStatus) SetTrieRoot(hash arry.Hash) error {
 	return t.db.SetRoot(hash)
+}
+
+func (t *TokenStatus) CheckTransaction(tx types.ITransaction) error {
+	return nil
 }

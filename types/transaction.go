@@ -5,4 +5,5 @@ type ITransaction interface {
 	ITransactionBody
 
 	ToRlp() IRlpTransaction
+	Check() error
 }

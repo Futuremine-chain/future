@@ -7,6 +7,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
@@ -18,6 +19,7 @@ type FMCChain struct {
 	mutex      sync.RWMutex
 	status     status.IStatus
 	db         IChainDB
+	txPool     *pool.Pool
 	dPos       dpos.IDPos
 	actRoot    arry.Hash
 	dPosRoot   arry.Hash
@@ -26,9 +28,9 @@ type FMCChain struct {
 	confirmed  uint64
 }
 
-func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
+func NewFMCChain(status status.IStatus, dPos dpos.IDPos, txPool *pool.Pool) (*FMCChain, error) {
 	var err error
-	fmc := &FMCChain{status: status, dPos: dPos}
+	fmc := &FMCChain{status: status, dPos: dPos, txPool: txPool}
 	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
@@ -57,6 +59,7 @@ func (b *FMCChain) LastHeight() uint64 {
 }
 
 func (b *FMCChain) NextBlock(txs types.ITransactions) types.IBlock {
+
 	return nil
 }
 

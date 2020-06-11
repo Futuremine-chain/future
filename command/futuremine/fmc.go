@@ -5,9 +5,9 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
-	dpos2 "github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
+	fmcdpos "github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/private"
-	status2 "github.com/Futuremine-chain/futuremine/futuremine/common/status"
+	fmcstatus "github.com/Futuremine-chain/futuremine/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/act_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/dpos_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/token_status"
@@ -93,26 +93,27 @@ func createFMCNode() (*node.FMCNode, error) {
 		return nil, err
 	}
 
-	dpos := dpos2.NewDPos()
-	status := status2.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
-	chain, err := blockchain.NewFMCChain(status, dpos)
+	dpos := fmcdpos.NewDPos()
+	status := fmcstatus.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
+	peersSv := peers.NewPeers()
+	gPool := gorutinue.NewPool()
+	horn := horn.NewHorn(peersSv, gPool)
+	txmanage, err := txlist.NewTxManagement(status, actStatus)
 	if err != nil {
 		return nil, err
 	}
-	peersSv := peers.NewPeers()
+	poolSv := pool.NewPool(horn, txmanage)
+	chain, err := blockchain.NewFMCChain(status, dpos, poolSv)
+	if err != nil {
+		return nil, err
+	}
+
 	reqHandler := request.NewRequestHandler(chain)
 	p2pSv, err := p2p.NewP2p(cfg, peersSv, reqHandler)
 	if err != nil {
 		return nil, err
 	}
-	txmanage, err := txlist.NewTxManagement(nil, nil)
-	if err != nil {
-		return nil, err
-	}
 	rpcSv := rpc.NewRpc()
-	gPool := gorutinue.NewPool()
-	horn := horn.NewHorn(peersSv, gPool)
-	poolSv := pool.NewPool(horn, txmanage)
 	syncSv := sync_service.NewSync(peersSv, dpos, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain)
 	node := node.NewFMCNode()

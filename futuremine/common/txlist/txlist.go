@@ -11,6 +11,7 @@ import (
 )
 
 const txList_db = "tx_List_db"
+const maxPoolTx = 100000
 
 type TxManagement struct {
 	cache     *Cache
@@ -58,6 +59,20 @@ func (t *TxManagement) Count() int {
 }
 
 func (t *TxManagement) Put(tx types.ITransaction) error {
+	if t.Exist(tx) {
+		return fmt.Errorf("the transaction %s already exists", tx.Hash().String())
+	}
+	if err := t.validator.Check(tx); err != nil {
+		return err
+	}
+
+	if t.cache.Len() >= maxPoolTx {
+		t.DeleteEnd(tx)
+	}
+	return t.put(tx)
+}
+
+func (t *TxManagement) put(tx types.ITransaction) error {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
