@@ -33,7 +33,12 @@ func (a *ActStatus) SetTrieRoot(stateRoot arry.Hash) error {
 }
 
 func (a *ActStatus) CheckMessage(msg types.IMessage) error {
-	return nil
+	if msg.Time() > utils.NowUnix() {
+		return errors.New("incorrect transaction time")
+	}
+
+	account := a.Account(msg.From())
+	return account.Check(msg)
 }
 
 // Get account status, if the account status needs to be updated
@@ -88,7 +93,7 @@ func (a *ActStatus) ToMessage(msg types.IMessage, height uint64) error {
 
 	var toAct account.IAccount
 
-	toAct = a.db.Account(msg.To())
+	toAct = a.db.Account(msg.MsgBody().MsgTo())
 	err := toAct.UpdateLocked(a.confirmed)
 	if err != nil {
 		return err

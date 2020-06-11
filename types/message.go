@@ -2,8 +2,7 @@ package types
 
 type IMessage interface {
 	IMessageHeader
-	IMessageBody
-
+	MsgBody() IMessageBody
 	ToRlp() IRlpMessage
 	Check() error
 }

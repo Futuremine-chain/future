@@ -44,8 +44,16 @@ func (m *Message) IsCoinBase() bool {
 	return m.Header.From.IsEqual(arry.StringToAddress(CoinBase))
 }
 
-func (m *Message) To() arry.Address {
-	return m.Body.To()
+func (m *Message) MsgTo() arry.Address {
+	return m.Body.MsgTo()
+}
+
+func (m *Message) MsgBody() types.IMessageBody {
+	return m.Body
+}
+
+func (m *Message) MsgAmount() uint64 {
+	return m.Body.MsgAmount()
 }
 
 func (m *Message) ToRlp() types.IRlpMessage {

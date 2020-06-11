@@ -142,41 +142,6 @@ func LoadConfig(app IApp, pri private.IPrivate) (*Config, error) {
 		}
 	}
 
-	/*if cfg.KeyFile == "" {
-		cfg.KeyFile = defaultPrivateFile
-		cfg.NodePrivate, err = LoadNodePrivate(cfg.DataDir+"/"+cfg.KeyFile, defaultKey)
-		if err != nil {
-			cfg.NodePrivate, err = CreateNewNodePrivate(app.NetWork())
-			if err != nil {
-				return nil, fmt.Errorf("create new node priavte failed! %s", err.Error())
-			}
-		}
-		j, err := keystore.PrivateToJson(App.NetWork(), cfg.NodePrivate.PrivateKey, cfg.NodePrivate.Mnemonic, []byte(defaultKey))
-		if err != nil {
-			return nil, fmt.Errorf("key json creation failed! %s", err.Error())
-		}
-		bytes, _ := json.Marshal(j)
-		err = ioutil.WriteFile(cfg.DataDir+"/"+cfg.KeyFile, bytes, 0644)
-		if err != nil {
-			return nil, fmt.Errorf("write jsonfile failed! %s", err.Error())
-		}
-	} else {
-		// The private key of the node is encrypted in the key file,
-		// and a password is required to unlock the key file
-		if cfg.KeyPass == "" {
-			fmt.Println("Please enter the password for the keyfile:")
-			passWd, err := readPassWd()
-			if err != nil {
-				return nil, fmt.Errorf("read password failed! %s", err.Error())
-			}
-			cfg.KeyPass = string(passWd)
-		}
-		cfg.NodePrivate, err = LoadNodePrivate(cfg.KeyFile, cfg.KeyPass)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load keyfile %s! %s", cfg.KeyFile, err.Error())
-		}
-	}*/
-
 	// If this parameter is true, the log is also written to the file
 	if cfg.Logging {
 		logDir := cfg.Data + "/log"

@@ -32,8 +32,8 @@ func (t *MsgListDB) Save(msg types.IMessage) {
 	t.base.Put(key, msg.ToRlp().Bytes())
 }
 
-func (t *MsgListDB) Delete(msg types.IMessage) {
-	key := base.Key(bucket, msg.Hash().Bytes())
+func (t *MsgListDB) Delete(tx types.IMessage) {
+	key := base.Key(bucket, tx.Hash().Bytes())
 	t.base.Delete(key)
 }
 

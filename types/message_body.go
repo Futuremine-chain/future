@@ -3,6 +3,7 @@ package types
 import "github.com/Futuremine-chain/futuremine/tools/arry"
 
 type IMessageBody interface {
-	To() arry.Address
+	MsgTo() arry.Address
+	MsgAmount() uint64
 	CheckBody() error
 }
