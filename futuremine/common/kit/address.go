@@ -8,3 +8,7 @@ import (
 func GenerateAddress(net string, key *secp256k1.PublicKey) (arry.Address, error) {
 	return arry.Address{}, nil
 }
+
+func CheckAddress(net string, address arry.Address) bool {
+	return false
+}
