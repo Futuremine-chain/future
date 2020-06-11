@@ -1,5 +1,5 @@
 package types
 
-type IRlpTransaction interface {
+type IRlpMessage interface {
 	Bytes() []byte
 }

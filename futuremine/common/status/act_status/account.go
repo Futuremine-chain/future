@@ -32,7 +32,7 @@ func (a *ActStatus) SetTrieRoot(stateRoot arry.Hash) error {
 	return a.db.SetRoot(stateRoot)
 }
 
-func (a *ActStatus) CheckTransaction(tx types.ITransaction) error {
+func (a *ActStatus) CheckMessage(msg types.IMessage) error {
 	return nil
 }
 
@@ -57,22 +57,22 @@ func (a *ActStatus) Nonce(address arry.Address) uint64 {
 	return a.db.Nonce(address)
 }
 
-// Update sender account status based on transaction information
-func (a *ActStatus) FromTransaction(tx types.ITransaction, height uint64) error {
-	if tx.IsCoinBase() {
+// Update sender account status based on message information
+func (a *ActStatus) FromMessage(msg types.IMessage, height uint64) error {
+	if msg.IsCoinBase() {
 		return nil
 	}
 
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	fromAct := a.db.Account(tx.From())
+	fromAct := a.db.Account(msg.From())
 	err := fromAct.UpdateLocked(a.confirmed)
 	if err != nil {
 		return err
 	}
 
-	err = fromAct.FromTransaction(tx, height)
+	err = fromAct.FromMessage(msg, height)
 	if err != nil {
 		return err
 	}
@@ -81,19 +81,19 @@ func (a *ActStatus) FromTransaction(tx types.ITransaction, height uint64) error 
 	return nil
 }
 
-// Update the receiver's account status based on transaction information
-func (a *ActStatus) ToTransaction(tx types.ITransaction, height uint64) error {
+// Update the receiver's account status based on message information
+func (a *ActStatus) ToMessage(msg types.IMessage, height uint64) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
 	var toAct account.IAccount
 
-	toAct = a.db.Account(tx.To())
+	toAct = a.db.Account(msg.To())
 	err := toAct.UpdateLocked(a.confirmed)
 	if err != nil {
 		return err
 	}
-	err = toAct.ToTransaction(tx, height)
+	err = toAct.ToMessage(msg, height)
 	if err != nil {
 		return err
 	}
@@ -107,13 +107,13 @@ func (a *ActStatus) SetConfirmed(height uint64) {
 }
 
 // Verify the status of the trading account
-func (a *ActStatus) Check(tx types.ITransaction) error {
-	if tx.Time() > utils.NowUnix() {
-		return errors.New("incorrect transaction time")
+func (a *ActStatus) Check(msg types.IMessage) error {
+	if msg.Time() > utils.NowUnix() {
+		return errors.New("incorrect message time")
 	}
 
-	account := a.Account(tx.From())
-	return account.Check(tx)
+	account := a.Account(msg.From())
+	return account.Check(msg)
 }
 
 func (a *ActStatus) Commit() (arry.Hash, error) {

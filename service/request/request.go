@@ -22,7 +22,7 @@ type IRequestHandler interface {
 
 type ISend interface {
 	LastHeight(conn *peers.Conn) (uint64, error)
-	SendTx(conn *peers.Conn, tx types.ITransaction) error
+	SendMsg(conn *peers.Conn, msg types.IMessage) error
 	SendBlock(conn *peers.Conn, block types.IBlock) error
 	GetBlocks(conn *peers.Conn, height uint64) ([]types.IBlock, error)
 	GetBlock(conn *peers.Conn, height uint64) (types.IBlock, error)
@@ -31,7 +31,7 @@ type ISend interface {
 
 type IRegister interface {
 	RegisterReceiveBlock(func(types.IBlock) error)
-	RegisterReceiveTransaction(func(types.ITransaction) error)
+	RegisterReceiveMessage(func(types.IMessage) error)
 }
 
 type IResponse interface {

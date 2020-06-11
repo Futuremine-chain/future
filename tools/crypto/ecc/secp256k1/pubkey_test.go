@@ -101,7 +101,7 @@ var pubKeyTests = []pubKeyTest{
 		},
 		isValid: false,
 	},
-	// from tx 0b09c51c51ff762f00fb26217269d2a18e77a4fa87d69b3c363ab4df16543f20
+	// from msg 0b09c51c51ff762f00fb26217269d2a18e77a4fa87d69b3c363ab4df16543f20
 	{
 		name: "compressed ok (ybit = 0)",
 		key: []byte{0x02, 0xce, 0x0b, 0x14, 0xfb, 0x84, 0x2b, 0x1b,
@@ -112,7 +112,7 @@ var pubKeyTests = []pubKeyTest{
 		isValid: true,
 		format:  pubkeyCompressed,
 	},
-	// from tx fdeb8e72524e8dab0da507ddbaf5f88fe4a933eb10a66bc4745bb0aa11ea393c
+	// from msg fdeb8e72524e8dab0da507ddbaf5f88fe4a933eb10a66bc4745bb0aa11ea393c
 	{
 		name: "compressed ok (ybit = 1)",
 		key: []byte{0x03, 0x26, 0x89, 0xc7, 0xc2, 0xda, 0xb1, 0x33,

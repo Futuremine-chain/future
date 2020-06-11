@@ -6,12 +6,12 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	fmcdpos "github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/msglist"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/private"
 	fmcstatus "github.com/Futuremine-chain/futuremine/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/act_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/dpos_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/token_status"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/txlist"
 	"github.com/Futuremine-chain/futuremine/futuremine/node"
 	"github.com/Futuremine-chain/futuremine/futuremine/request"
 	"github.com/Futuremine-chain/futuremine/service/generate"
@@ -98,7 +98,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
 	horn := horn.NewHorn(peersSv, gPool)
-	txmanage, err := txlist.NewTxManagement(status, actStatus)
+	txmanage, err := msglist.NewMsgManagement(status, actStatus)
 	if err != nil {
 		return nil, err
 	}

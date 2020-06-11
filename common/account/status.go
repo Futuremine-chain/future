@@ -9,5 +9,5 @@ type IActStatus interface {
 	Nonce(arry.Address) uint64
 	SetTrieRoot(hash arry.Hash) error
 	SetConfirmed(confirmed uint64)
-	CheckTransaction(tx types.ITransaction) error
+	CheckMessage(msg types.IMessage) error
 }

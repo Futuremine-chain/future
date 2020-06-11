@@ -49,7 +49,7 @@ func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
 	return height, nil
 }
 
-func (r *RequestHandler) SendTx(conn *peers.Conn, tx types.ITransaction) error {
+func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
 	s, err := conn.Stream.Conn().NewStream()
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (r *RequestHandler) SendTx(conn *peers.Conn, tx types.ITransaction) error {
 	}()
 
 	s.SetDeadline(time.Unix(utils.NowUnix()+timeOut, 0))
-	req := NewRequest(sendTx, tx.ToRlp().Bytes())
+	req := NewRequest(sendTx, msg.ToRlp().Bytes())
 	err = requestStream(req, s)
 	if err != nil {
 		return err

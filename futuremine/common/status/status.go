@@ -39,20 +39,20 @@ func (f *FMCStatus) SetConfirmed(confirmed uint64) {
 	f.actStatus.SetConfirmed(confirmed)
 }
 
-func (f *FMCStatus) Check(tx types.ITransaction) error {
-	if err := tx.Check(); err != nil {
+func (f *FMCStatus) Check(msg types.IMessage) error {
+	if err := msg.Check(); err != nil {
 		return err
 	}
 
-	if err := f.dPosStatus.CheckTransaction(tx); err != nil {
+	if err := f.dPosStatus.CheckMessage(msg); err != nil {
 		return err
 	}
 
-	if err := f.actStatus.CheckTransaction(tx); err != nil {
+	if err := f.actStatus.CheckMessage(msg); err != nil {
 		return err
 	}
 
-	if err := f.tokenStatus.CheckTransaction(tx); err != nil {
+	if err := f.tokenStatus.CheckMessage(msg); err != nil {
 		return err
 	}
 	return nil

@@ -26,16 +26,16 @@ func NewHorn(peers *peers.Peers, gPool *gorutinue.Pool) *Horn {
 	}
 }
 
-func (h *Horn) BroadcastTx(transaction types.ITransaction) {
+func (h *Horn) BroadcastMsg(message types.IMessage) {
 	peers := h.peers.PeersMap()
 	for id, peer := range peers {
 		if id != h.local.Address.ID.String() {
 			if err := h.gPool.AddTask(gorutinue.NewTask(
 				func() error {
-					return h.request.SendTx(peer.Conn, transaction)
+					return h.request.SendMsg(peer.Conn, message)
 				})); err != nil {
-				log.Warn("Adding the task to send the transaction failed", "module", module,
-					"hash", transaction.Hash().String(), "target", peer.Address.String())
+				log.Warn("Adding the task to send the message failed", "module", module,
+					"hash", message.Hash().String(), "target", peer.Address.String())
 			}
 		}
 	}

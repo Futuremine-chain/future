@@ -301,7 +301,7 @@ var signatureTests = []signatureTest{
 	// as negative. The Go ASN.1 parser marks numbers as negative when
 	// openssl does not (it doesn't handle negative numbers that I can tell
 	// at all. When not parsing DER signatures, which is done by by bitcoind
-	// when accepting transactions into its mempool, we otherwise only check
+	// when accepting messages into its mempool, we otherwise only check
 	// for the coordinates being zero.
 	{
 		name: "X == 0",

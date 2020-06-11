@@ -19,15 +19,15 @@ func (a *Account) UpdateLocked(confirmed uint64) error {
 	panic("implement me")
 }
 
-func (a *Account) FromTransaction(tx types.ITransaction, height uint64) error {
+func (a *Account) FromMessage(msg types.IMessage, height uint64) error {
 	panic("implement me")
 }
 
-func (a *Account) ToTransaction(tx types.ITransaction, height uint64) error {
+func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 	panic("implement me")
 }
 
-func (a *Account) Check(tx types.ITransaction) error {
+func (a *Account) Check(msg types.IMessage) error {
 	panic("implement me")
 }
 

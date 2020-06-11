@@ -2,15 +2,15 @@ package types
 
 import "github.com/Futuremine-chain/futuremine/tools/arry"
 
-type TxIndex struct {
-	TxRoot  arry.Hash
-	TxIndex uint32
+type MsgIndex struct {
+	MsgRoot arry.Hash
+	Index   uint32
 }
 
-func DecodeTxIndex([]byte) (*TxIndex, error) {
+func DecodeTxIndex([]byte) (*MsgIndex, error) {
 	return nil, nil
 }
 
-func (t *TxIndex) Bytes() []byte {
+func (t *MsgIndex) Bytes() []byte {
 	return nil
 }

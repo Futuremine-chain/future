@@ -7,5 +7,5 @@ import (
 
 type IDPosStatus interface {
 	SetTrieRoot(hash arry.Hash) error
-	CheckTransaction(tx types.ITransaction) error
+	CheckMessage(msg types.IMessage) error
 }

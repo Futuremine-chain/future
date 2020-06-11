@@ -25,6 +25,6 @@ func (t *TokenStatus) SetTrieRoot(hash arry.Hash) error {
 	return t.db.SetRoot(hash)
 }
 
-func (t *TokenStatus) CheckTransaction(tx types.ITransaction) error {
+func (t *TokenStatus) CheckMessage(msg types.IMessage) error {
 	return nil
 }

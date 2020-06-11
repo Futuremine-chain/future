@@ -32,12 +32,12 @@ func (r *RequestHandler) respSendTx(req *ReqStream) (*Response, error) {
 	var message string
 	var body []byte
 	code := Success
-	tx, err := types.DecodeTransaction(req.request.Body)
+	msg, err := types.DecodeMessage(req.request.Body)
 	if err != nil {
 		code = Failed
 		message = err.Error()
 	}
-	r.receiveTransaction(tx.ToTransaction())
+	r.receiveMessage(msg.ToMessage())
 	response := NewResponse(code, message, body)
 	return response, nil
 }

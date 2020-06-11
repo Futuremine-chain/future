@@ -6,7 +6,7 @@ import (
 
 type IHeader interface {
 	Hash() arry.Hash
-	TxRoot() arry.Hash
+	MsgRoot() arry.Hash
 	Signer() arry.Address
 	Height() uint64
 	Time() int64

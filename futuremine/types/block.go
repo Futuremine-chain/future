@@ -14,8 +14,8 @@ func (b *Block) Hash() arry.Hash {
 	return b.Header.Hash()
 }
 
-func (b *Block) TxRoot() arry.Hash {
-	return b.Header.TxRoot()
+func (b *Block) MsgRoot() arry.Hash {
+	return b.Header.MsgRoot()
 }
 
 func (b *Block) Signer() arry.Address {
@@ -30,12 +30,12 @@ func (b *Block) Time() int64 {
 	return b.Header.time
 }
 
-func (b *Block) Add(transaction types.ITransaction) {
-	b.Body.Add(transaction)
+func (b *Block) Add(message types.IMessage) {
+	b.Body.Add(message)
 }
 
-func (b *Block) Txs() []types.ITransaction {
-	return b.Body.Txs()
+func (b *Block) Msgs() []types.IMessage {
+	return b.Body.Msgs()
 }
 
 func (b *Block) ToRlpHeader() types.IRlpHeader {

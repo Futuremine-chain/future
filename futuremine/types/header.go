@@ -32,7 +32,7 @@ func (h *Header) Height() uint64 {
 	return h.height
 }
 
-func (h *Header) TxRoot() arry.Hash {
+func (h *Header) MsgRoot() arry.Hash {
 	return h.txHash
 }
 

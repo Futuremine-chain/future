@@ -11,7 +11,7 @@ import (
 const (
 	_lastHeight   = "lastHeight"
 	_header       = "header"
-	_transaction  = "transaction"
+	_message      = "message"
 	_heightHash   = "heightHash"
 	_txIndex      = "txIndex"
 	_actRoot      = "actRoot"
@@ -87,36 +87,36 @@ func (b *ChainDB) GetHeaderHash(hash arry.Hash) (*types.Header, error) {
 	return types.DecodeHeader(bytes)
 }
 
-func (b *ChainDB) GetTxIndex(hash arry.Hash) (*types.TxIndex, error) {
+func (b *ChainDB) GetTxIndex(hash arry.Hash) (*types.MsgIndex, error) {
 	bytes, err := b.db.GetFromBucket(_txIndex, hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
 	if bytes == nil || len(bytes) == 0 {
-		return nil, fmt.Errorf("transaction %s is not exist", hash.String())
+		return nil, fmt.Errorf("message %s is not exist", hash.String())
 	}
 	txIndex, err := types.DecodeTxIndex(bytes)
 	return txIndex, err
 }
 
-func (b *ChainDB) GetTransactions(txRoot arry.Hash) ([]*types.RlpTransaction, error) {
-	bytes, err := b.db.GetFromBucket(_transaction, txRoot.Bytes())
+func (b *ChainDB) GetMessages(txRoot arry.Hash) ([]*types.RlpMessage, error) {
+	bytes, err := b.db.GetFromBucket(_message, txRoot.Bytes())
 	if err != nil {
 		return nil, err
 	}
-	return types.DecodeRlpTransactions(bytes)
+	return types.DecodeRlpMessages(bytes)
 }
 
-func (b *ChainDB) GetTransaction(hash arry.Hash) (*types.RlpTransaction, error) {
+func (b *ChainDB) GetMessage(hash arry.Hash) (*types.RlpMessage, error) {
 	txIndex, err := b.GetTxIndex(hash)
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.GetTransactions(txIndex.TxRoot)
+	txs, err := b.GetMessages(txIndex.MsgRoot)
 	if err != nil {
 		return nil, err
 	}
-	return txs[txIndex.TxIndex], nil
+	return txs[txIndex.Index], nil
 }
 
 func (b *ChainDB) GetHashByHeight(height uint64) (arry.Hash, error) {
@@ -154,12 +154,12 @@ func (b *ChainDB) UpdateHeader(header *types.Header) {
 	b.UpdateHeightHash(header.Height(), header.Hash())
 }
 
-func (b *ChainDB) UpdateTransactions(txRoot arry.Hash, iTxs []*types.RlpTransaction) {
-	bytes := types.EncodeRlpTransactions(iTxs)
-	b.db.PutInBucket(_transaction, txRoot.Bytes(), bytes)
+func (b *ChainDB) UpdateMessages(txRoot arry.Hash, iTxs []*types.RlpMessage) {
+	bytes := types.EncodeRlpMessages(iTxs)
+	b.db.PutInBucket(_message, txRoot.Bytes(), bytes)
 }
 
-func (b *ChainDB) UpdateTxIndex(txIndexs map[arry.Hash]*types.TxIndex) {
+func (b *ChainDB) UpdateTxIndex(txIndexs map[arry.Hash]*types.MsgIndex) {
 	for hash, loc := range txIndexs {
 		b.db.PutInBucket(_txIndex, hash.Bytes(), loc.Bytes())
 	}

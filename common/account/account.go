@@ -8,9 +8,9 @@ import (
 type IAccount interface {
 	NeedUpdate() bool
 	UpdateLocked(confirmed uint64) error
-	FromTransaction(tx types.ITransaction, height uint64) error
-	ToTransaction(tx types.ITransaction, height uint64) error
-	Check(tx types.ITransaction) error
+	FromMessage(msg types.IMessage, height uint64) error
+	ToMessage(msg types.IMessage, height uint64) error
+	Check(msg types.IMessage) error
 	Bytes() []byte
 	Address() arry.Address
 }

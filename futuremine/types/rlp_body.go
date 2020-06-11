@@ -1,7 +1,7 @@
 package types
 
 type RlpBody struct {
-	Txs []*RlpTransaction
+	Txs []*RlpMessage
 }
 
 func (r *RlpBody) ToBody() *Body {

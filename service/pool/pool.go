@@ -3,7 +3,7 @@ package pool
 import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/horn"
-	"github.com/Futuremine-chain/futuremine/common/txlist"
+	"github.com/Futuremine-chain/futuremine/common/msglist"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -12,23 +12,23 @@ import (
 
 const module = "pool"
 
-// Clear the expired transaction interval
+// Clear the expired message interval
 const (
-	txExpiredTime     = 60 * 60 * 3
-	monitorTxInterval = 2
-	maxPoolTx         = 5000
+	msgExpiredTime     = 60 * 60 * 3
+	monitorMsgInterval = 2
+	maxPoolMsg         = 5000
 )
 
 type Pool struct {
-	txMgt       txlist.ITxList
+	msgMgt      msglist.IMsgList
 	horn        *horn.Horn
-	broadcastCh chan types.ITransaction
+	broadcastCh chan types.IMessage
 }
 
-func NewPool(horn *horn.Horn, txMgt txlist.ITxList) *Pool {
+func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
 	return &Pool{
 		horn:        horn,
-		broadcastCh: make(chan types.ITransaction, 100),
+		broadcastCh: make(chan types.IMessage, 100),
 	}
 }
 
@@ -37,8 +37,8 @@ func (p *Pool) Name() string {
 }
 
 func (p *Pool) Start() error {
-	if err := p.txMgt.Read(); err != nil {
-		log.Error("The transaction pool failed to read the transaction", "module", module, "error", err)
+	if err := p.msgMgt.Read(); err != nil {
+		log.Error("The message pool failed to read the message", "module", module, "error", err)
 		return err
 	}
 	go p.monitorExpired()
@@ -48,41 +48,41 @@ func (p *Pool) Start() error {
 }
 
 func (p *Pool) Stop() error {
-	if err := p.txMgt.Close(); err != nil {
+	if err := p.msgMgt.Close(); err != nil {
 		return err
 	}
-	log.Info("Transaction pool stopped", "module", module)
+	log.Info("Message pool stopped", "module", module)
 	return nil
 }
 
-// Verify adding transactions to the transaction pool
-func (p *Pool) Put(tx types.ITransaction, isPeer bool) error {
-	if err := p.txMgt.Put(tx); err != nil {
-		return utils.Error(fmt.Sprintf("add transaction failed, %s", err.Error()), module)
+// Verify adding messages to the message pool
+func (p *Pool) Put(msg types.IMessage, isPeer bool) error {
+	if err := p.msgMgt.Put(msg); err != nil {
+		return utils.Error(fmt.Sprintf("add message failed, %s", err.Error()), module)
 	}
-	log.Info("Received the transaction", "module", module, "hash", tx.Hash().String())
+	log.Info("Received the message", "module", module, "hash", msg.Hash().String())
 	if !isPeer {
-		p.broadcastCh <- tx
+		p.broadcastCh <- msg
 	}
 	return nil
 }
 
-func (p *Pool) NeedPackaged(count int) types.ITransactions {
-	txs := p.txMgt.NeedPackaged(count)
-	return txs
+func (p *Pool) NeedPackaged(count int) types.IMessages {
+	msgs := p.msgMgt.NeedPackaged(count)
+	return msgs
 }
 
 func (p *Pool) startChan() {
 	for {
 		select {
-		case tx := <-p.broadcastCh:
-			p.horn.BroadcastTx(tx)
+		case msg := <-p.broadcastCh:
+			p.horn.BroadcastMsg(msg)
 		}
 	}
 }
 
 func (p *Pool) monitorExpired() {
-	t := time.NewTicker(time.Second * monitorTxInterval)
+	t := time.NewTicker(time.Second * monitorMsgInterval)
 	defer t.Stop()
 
 	for range t.C {
@@ -91,10 +91,10 @@ func (p *Pool) monitorExpired() {
 }
 
 func (p *Pool) removeExpired() {
-	threshold := utils.NowUnix() - txExpiredTime
-	p.txMgt.DeleteExpired(threshold)
+	threshold := utils.NowUnix() - msgExpiredTime
+	p.msgMgt.DeleteExpired(threshold)
 }
 
-func (p *Pool) DeleteAndUpdate(txs types.ITransactions) {
-	p.txMgt.DeleteAndUpdate(txs)
+func (p *Pool) DeleteAndUpdate(msgs types.IMessages) {
+	p.msgMgt.DeleteAndUpdate(msgs)
 }

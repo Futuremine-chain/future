@@ -28,11 +28,11 @@ func (r *ReqStream) Close() {
 }
 
 type RequestHandler struct {
-	chain              blockchain.IBlockChain
-	readyCh            chan *ReqStream
-	bytesPool          sync.Pool
-	receiveBlock       func(block types.IBlock) error
-	receiveTransaction func(block types.ITransaction) error
+	chain          blockchain.IBlockChain
+	readyCh        chan *ReqStream
+	bytesPool      sync.Pool
+	receiveBlock   func(block types.IBlock) error
+	receiveMessage func(block types.IMessage) error
 }
 
 func NewRequestHandler(chain blockchain.IBlockChain) *RequestHandler {
@@ -74,8 +74,8 @@ func (r *RequestHandler) RegisterReceiveBlock(f func(types.IBlock) error) {
 	r.receiveBlock = f
 }
 
-func (r *RequestHandler) RegisterReceiveTransaction(f func(types.ITransaction) error) {
-	r.receiveTransaction = f
+func (r *RequestHandler) RegisterReceiveMessage(f func(types.IMessage) error) {
+	r.receiveMessage = f
 }
 
 // Handling message requests

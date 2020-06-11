@@ -19,7 +19,7 @@ type FMCChain struct {
 	mutex      sync.RWMutex
 	status     status.IStatus
 	db         IChainDB
-	txPool     *pool.Pool
+	msgPool    *pool.Pool
 	dPos       dpos.IDPos
 	actRoot    arry.Hash
 	dPosRoot   arry.Hash
@@ -28,9 +28,9 @@ type FMCChain struct {
 	confirmed  uint64
 }
 
-func NewFMCChain(status status.IStatus, dPos dpos.IDPos, txPool *pool.Pool) (*FMCChain, error) {
+func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool) (*FMCChain, error) {
 	var err error
-	fmc := &FMCChain{status: status, dPos: dPos, txPool: txPool}
+	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool}
 	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
@@ -58,7 +58,7 @@ func (b *FMCChain) LastHeight() uint64 {
 	return b.lastHeight
 }
 
-func (b *FMCChain) NextBlock(txs types.ITransactions) types.IBlock {
+func (b *FMCChain) NextBlock(txs types.IMessages) types.IBlock {
 
 	return nil
 }
@@ -75,7 +75,7 @@ func (b *FMCChain) GetBlockHeight(height uint64) (types.IBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetTransactions(header.TxRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot())
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (b *FMCChain) GetBlockHash(hash arry.Hash) (types.IBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetTransactions(header.TxRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot())
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (b *FMCChain) GetRlpBlockHeight(height uint64) (types.IRlpBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetTransactions(header.TxRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot())
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetTransactions(header.TxRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot())
 	if err != nil {
 		return nil, err
 	}

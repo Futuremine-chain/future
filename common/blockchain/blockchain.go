@@ -16,7 +16,7 @@ type IBlockChain interface {
 	GetRlpBlockHeight(uint64) (types.IRlpBlock, error)
 	GetRlpBlockHash(arry.Hash) (types.IRlpBlock, error)
 
-	NextBlock(types.ITransactions) types.IBlock
+	NextBlock(types.IMessages) types.IBlock
 	Insert(block types.IBlock) error
 	Roll() error
 }

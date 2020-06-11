@@ -2,7 +2,7 @@ package types
 
 import "github.com/Futuremine-chain/futuremine/tools/arry"
 
-type ITransactionHeader interface {
+type IMessageHeader interface {
 	Hash() arry.Hash
 	From() arry.Address
 	Nonce() uint64

@@ -25,6 +25,6 @@ func (d *DPosStatus) SetTrieRoot(hash arry.Hash) error {
 	return d.db.SetRoot(hash)
 }
 
-func (d *DPosStatus) CheckTransaction(tx types.ITransaction) error {
+func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
 	return nil
 }
