@@ -2,6 +2,7 @@ package token_db
 
 import (
 	"github.com/Futuremine-chain/futuremine/common/db/base"
+	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/trie"
 )
@@ -27,4 +28,29 @@ func (t *TokenDB) SetRoot(hash arry.Hash) error {
 	}
 	t.trie = tri
 	return nil
+}
+
+func (t *TokenDB) Commit() (arry.Hash, error) {
+	return t.trie.Commit()
+}
+
+func (t *TokenDB) RootHash() arry.Hash {
+	return t.trie.Hash()
+}
+
+func (t *TokenDB) Close() error {
+	return t.base.Close()
+}
+
+func (t *TokenDB) Token(address arry.Address) *types.TokenRecord {
+	bytes := t.trie.Get(address.Bytes())
+	token, err := types.DecodeToken(bytes)
+	if err != nil {
+		return nil
+	}
+	return token
+}
+
+func (t *TokenDB) SetContractState(token *types.TokenRecord) {
+	t.trie.Update(token.Address.Bytes(), token.Bytes())
 }
