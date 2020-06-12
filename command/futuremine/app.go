@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
 )
 
 const (
@@ -23,8 +22,6 @@ var (
 	Version = "0.0.0"
 
 	Setting *config.Config
-
-	FMCAddress = arry.StringToAddress("FMC")
 )
 
 const (
@@ -79,8 +76,4 @@ func (F *FMC) InitP2pNet() {
 
 func (F *FMC) InitSetting(cfg *config.Config) {
 	Setting = cfg
-}
-
-func (F *FMC) MainToken() arry.Address {
-	return FMCAddress
 }

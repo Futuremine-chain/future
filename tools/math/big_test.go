@@ -19,7 +19,6 @@ package math
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/jhdriver/UBaseCoin/common/util"
 	"math/big"
 	"testing"
 )

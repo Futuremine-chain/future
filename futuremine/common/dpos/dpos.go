@@ -16,6 +16,10 @@ func NewDPos() *DPos {
 	return &DPos{}
 }
 
+func (dpos *DPos) CheckTime(time int64) error {
+	return nil
+}
+
 func (dpos *DPos) CheckSigner(chain blockchain.IBlockChain, header types.IHeader) error {
 	return nil
 }

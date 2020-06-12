@@ -53,17 +53,20 @@ func (g *Generate) Generate() {
 			g.stopped <- true
 			log.Info("Stop generate block")
 			return
-		case _ = <-ticker:
-			g.generateBlock()
+		case t := <-ticker:
+			g.generateBlock(t)
 		}
 	}
 }
 
-func (g *Generate) generateBlock() {
+func (g *Generate) generateBlock(now time.Time) {
 	txs := g.pool.NeedPackaged(maxPackedTxCount)
-	nextBlock := g.chain.NextBlock(txs)
+	nextBlock, err := g.chain.NextBlock(txs, now.Unix())
+	if err != nil {
+		log.Error("Failed to generate block", "module", module, "error", err)
+	}
 	// Check if it is your turn to make blocks
-	err := g.dPos.CheckSigner(g.chain, nextBlock)
+	err = g.dPos.CheckSigner(g.chain, nextBlock)
 	if err != nil {
 		//.Warn("check winner failed!", "height", header.Height, "error", err)
 		return

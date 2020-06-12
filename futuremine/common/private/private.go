@@ -93,3 +93,7 @@ func (p *Private) Create(net, file, key string) error {
 func (p *Private) Serialize() []byte {
 	return p.priKey.Serialize()
 }
+
+func (p *Private) Address() arry.Address {
+	return p.address
+}

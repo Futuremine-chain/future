@@ -9,7 +9,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const MaxContractCoin = math.MaxInt64
+const MaxTokenCount = math.MaxInt64
 
 // Contract structure, issuing a contract with the same
 // name is equivalent to reissuing the pass
@@ -55,10 +55,10 @@ func (t *TokenRecord) Check(msg types.IMessage) error {
 		return errors.New("token address is not consistent")
 	}
 	if t.IsExist(msg.Hash()) {
-		return errors.New("duplicate transaction hash")
+		return errors.New("duplicate message hash")
 	}
-	if t.amount()+body.Amount > MaxContractCoin {
-		return fmt.Errorf("the total number of coins must not exceed %d", MaxContractCoin)
+	if t.amount()+body.Amount > MaxTokenCount {
+		return fmt.Errorf("the total number of coins must not exceed %d", MaxTokenCount)
 	}
 	return nil
 }

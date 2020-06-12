@@ -3,8 +3,8 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -57,7 +57,7 @@ func (a *Account) Check(msg types.IMessage) error {
 		if !ok {
 			return errors.New("incorrect message type and message body")
 		}
-		if body.TokenAddress.IsEqual(config.App.MainToken()) {
+		if body.TokenAddress.IsEqual(param.MainToken) {
 			return a.checkMainBalance(msg)
 		} else {
 			return a.checkTokenBalance(msg, body)
@@ -82,7 +82,7 @@ func (a *Account) checkTokenAmount(msg types.IMessage) error {
 	}
 	amount := body.Amount
 	consumption := kit.CalConsumption(amount)
-	mainAddress := config.App.MainToken().String()
+	mainAddress := param.MainToken.String()
 	main, ok := a.Tokens.Get(mainAddress)
 	if !ok {
 		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
@@ -105,7 +105,7 @@ func (a *Account) checkTokenAmount(msg types.IMessage) error {
 // Verify the account balance of the primary transaction, the transaction
 // value and transaction fee cannot be greater than the balance.
 func (a *Account) checkMainBalance(msg types.IMessage) error {
-	main := config.App.MainToken().String()
+	main := param.MainToken.String()
 	token, ok := a.Tokens.Get(main)
 	if !ok {
 		return fmt.Errorf("%s does not have enough balance", main)
@@ -133,7 +133,7 @@ func (a *Account) checkTokenBalance(msg types.IMessage, body *TransactionBody) e
 
 // Verification fee
 func (a *Account) checkFees(msg types.IMessage) error {
-	main := config.App.MainToken().String()
+	main := param.MainToken.String()
 	token, ok := a.Tokens.Get(main)
 	if !ok {
 		return fmt.Errorf("%s does not have enough balance to pay the handling fee", main)

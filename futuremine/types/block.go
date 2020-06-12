@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
@@ -48,6 +49,14 @@ func (b *Block) BlockHeader() types.IHeader {
 
 func (b *Block) ToRlpBlock() types.IRlpBlock {
 	panic("implement me")
+}
+
+func (b *Block) SetHash() {
+	b.Header.SetHash()
+}
+
+func (b *Block) Sign(key *secp256k1.PrivateKey) error {
+	return b.Header.Sign(key)
 }
 
 type Blocks []*Block

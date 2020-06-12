@@ -6,6 +6,7 @@ import (
 )
 
 type IDPos interface {
+	CheckTime(time int64) error
 	CheckSigner(chain blockchain.IBlockChain, header types.IHeader) error
 	SuperIds() []string
 	Confirmed() uint64

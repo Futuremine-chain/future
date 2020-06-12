@@ -9,7 +9,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const CoinBase = "CoinBase"
+var CoinBase = arry.StringToAddress("coinbase")
 
 type Message struct {
 	Header *MsgHeader
@@ -41,7 +41,7 @@ func (m *Message) Time() int64 {
 }
 
 func (m *Message) IsCoinBase() bool {
-	return m.Header.From.IsEqual(arry.StringToAddress(CoinBase))
+	return m.Header.From.IsEqual(CoinBase)
 }
 
 func (m *Message) MsgTo() arry.Address {

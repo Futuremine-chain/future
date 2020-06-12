@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
+	"github.com/Futuremine-chain/futuremine/common/private"
 	"github.com/Futuremine-chain/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/pool"
@@ -16,6 +18,7 @@ import (
 const chainDB = "chain_db"
 
 type FMCChain struct {
+	private    private.IPrivate
 	mutex      sync.RWMutex
 	status     status.IStatus
 	db         IChainDB
@@ -28,9 +31,9 @@ type FMCChain struct {
 	confirmed  uint64
 }
 
-func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool) (*FMCChain, error) {
+func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool, private private.IPrivate) (*FMCChain, error) {
 	var err error
-	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool}
+	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool, private: private}
 	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
@@ -58,9 +61,45 @@ func (b *FMCChain) LastHeight() uint64 {
 	return b.lastHeight
 }
 
-func (b *FMCChain) NextBlock(txs types.IMessages) types.IBlock {
+func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, error) {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
 
-	return nil
+	coinBase := &fmctypes.Message{
+		Header: &fmctypes.MsgHeader{
+			Type: fmctypes.Transaction,
+			From: fmctypes.CoinBase,
+			Time: time,
+		},
+		Body: &fmctypes.TransactionBody{
+			TokenAddress: param.MainToken,
+			Receiver:     b.private.Address(),
+			Amount:       param.Proportion + msgs.CalculateFee(),
+		},
+	}
+	coinBase.SetHash()
+	fmcMsgs := msgs.(fmctypes.Messages)
+	fmcMsgs = append(fmcMsgs, coinBase)
+	// Build block header
+	header := fmctypes.NewHeader(
+		fmcMsgs.MsgRoot(),
+		b.actRoot,
+		b.dPosRoot,
+		b.tokenRoot,
+		b.lastHeight+1,
+		time,
+		b.private.Address(),
+	)
+	body := &fmctypes.Body{fmcMsgs}
+	newBlock := &fmctypes.Block{
+		Header: header,
+		Body:   body,
+	}
+	newBlock.SetHash()
+	if err := newBlock.Sign(b.private.PrivateKey()); err != nil {
+		return nil, err
+	}
+	return newBlock, nil
 }
 
 func (b *FMCChain) LastConfirmed() uint64 {

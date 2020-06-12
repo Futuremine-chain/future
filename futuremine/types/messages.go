@@ -1,19 +1,41 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/types"
+import (
+	"bytes"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
+	"github.com/Futuremine-chain/futuremine/types"
+)
 
 type Messages []*Message
 
-func (t Messages) Msgs() []types.IMessage {
-	iTxs := make([]types.IMessage, len(t))
-	for i, msg := range t.Msgs() {
+func (m Messages) Msgs() []types.IMessage {
+	iTxs := make([]types.IMessage, len(m))
+	for i, msg := range m.Msgs() {
 		iTxs[i] = msg
 	}
 	return iTxs
 }
 
-func (t Messages) Add(iMsg types.IMessage) {
+func (m Messages) Add(iMsg types.IMessage) {
 	iMsg = new(Message)
 	msg := iMsg.(*Message)
-	t = append(t, msg)
+	m = append(m, msg)
+}
+
+func (m Messages) MsgRoot() arry.Hash {
+	var hashes [][]byte
+	for _, msg := range m {
+		hashes = append(hashes, msg.Hash().Bytes())
+	}
+	hashBytes := bytes.Join(hashes, []byte{})
+	return hash.Hash(hashBytes)
+}
+
+func (m Messages) CalculateFee() uint64 {
+	var sum uint64
+	for _, msg := range m {
+		sum += msg.Fee()
+	}
+	return sum
 }

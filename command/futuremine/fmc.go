@@ -98,12 +98,12 @@ func createFMCNode() (*node.FMCNode, error) {
 	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
 	horn := horn.NewHorn(peersSv, gPool)
-	txmanage, err := msglist.NewMsgManagement(status, actStatus)
+	msgManage, err := msglist.NewMsgManagement(status, actStatus)
 	if err != nil {
 		return nil, err
 	}
-	poolSv := pool.NewPool(horn, txmanage)
-	chain, err := blockchain.NewFMCChain(status, dpos, poolSv)
+	poolSv := pool.NewPool(horn, msgManage)
+	chain, err := blockchain.NewFMCChain(status, dpos, poolSv, cfg.Private)
 	if err != nil {
 		return nil, err
 	}
