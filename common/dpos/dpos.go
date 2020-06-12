@@ -6,8 +6,8 @@ import (
 )
 
 type IDPos interface {
-	CheckTime(header types.IHeader, chain blockchain.IBlockChain) error
-	CheckSigner(chain blockchain.IBlockChain, header types.IHeader) error
+	CheckTime(header types.IHeader, chain blockchain.IChain) error
+	CheckSigner(chain blockchain.IChain, header types.IHeader) error
 	SuperIds() []string
 	Confirmed() uint64
 }

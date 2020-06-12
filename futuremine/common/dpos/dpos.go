@@ -21,7 +21,7 @@ func NewDPos(dPosStatus dpos.IDPosStatus) *DPos {
 	return &DPos{cycle: &Cycle{DPosStatus: dPosStatus}}
 }
 
-func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IBlockChain) error {
+func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IChain) error {
 	preHeader, err := chain.GetBlockHash(header.PreHash())
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IBlockChain) err
 	return nil
 }
 
-func (d *DPos) CheckSigner(chain blockchain.IBlockChain, header types.IHeader) error {
+func (d *DPos) CheckSigner(chain blockchain.IChain, header types.IHeader) error {
 	return nil
 }
 

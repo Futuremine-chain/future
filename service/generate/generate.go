@@ -11,20 +11,20 @@ import (
 
 const (
 	module           = "generate"
-	maxPackedTxCount = 999
+	maxPackedTxCount = 1999
 )
 
 type Generate struct {
 	horn        *horn.Horn
 	dPos        dpos.IDPos
-	chain       blockchain.IBlockChain
+	chain       blockchain.IChain
 	pool        pool.Pool
 	minerWorkCh chan bool
 	stop        chan bool
 	stopped     chan bool
 }
 
-func NewGenerate(chain blockchain.IBlockChain) *Generate {
+func NewGenerate(chain blockchain.IChain) *Generate {
 	return &Generate{
 		chain:   chain,
 		stop:    make(chan bool),

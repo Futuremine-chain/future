@@ -5,7 +5,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-type IBlockChain interface {
+type IChain interface {
 	LastHeight() uint64
 	LastConfirmed() uint64
 	GetBlockHeight(uint64) (types.IBlock, error)

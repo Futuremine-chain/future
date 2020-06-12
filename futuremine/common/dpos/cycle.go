@@ -19,7 +19,7 @@ type Cycle struct {
 	DPosStatus dpos.IDPosStatus
 }
 
-func (c *Cycle) CheckCycle(chain blockchain.IBlockChain, preTime, time int64) error {
+func (c *Cycle) CheckCycle(chain blockchain.IChain, preTime, time int64) error {
 	currentTerm := time / param.BlockInterval
 
 	supers, _ := c.DPosStatus.CycleSupers(currentTerm)
@@ -29,7 +29,7 @@ func (c *Cycle) CheckCycle(chain blockchain.IBlockChain, preTime, time int64) er
 	return nil
 }
 
-func (c *Cycle) Elect(time int64, preHash arry.Hash, chain blockchain.IBlockChain) error {
+func (c *Cycle) Elect(time int64, preHash arry.Hash, chain blockchain.IChain) error {
 	curCycle := time / param.BlockInterval
 	voters, err := c.calVotes(chain)
 	if err != nil {
@@ -63,7 +63,7 @@ func (c *Cycle) Elect(time int64, preHash arry.Hash, chain blockchain.IBlockChai
 	return nil
 }
 
-func (c *Cycle) calVotes(chain blockchain.IBlockChain) ([]*types.Member, error) {
+func (c *Cycle) calVotes(chain blockchain.IChain) ([]*types.Member, error) {
 	candidates, err := c.DPosStatus.Candidates()
 	if err != nil {
 		return nil, errors.New("no candidate")

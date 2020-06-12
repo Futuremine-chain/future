@@ -28,14 +28,14 @@ func (r *ReqStream) Close() {
 }
 
 type RequestHandler struct {
-	chain          blockchain.IBlockChain
+	chain          blockchain.IChain
 	readyCh        chan *ReqStream
 	bytesPool      sync.Pool
 	receiveBlock   func(block types.IBlock) error
 	receiveMessage func(block types.IMessage) error
 }
 
-func NewRequestHandler(chain blockchain.IBlockChain) *RequestHandler {
+func NewRequestHandler(chain blockchain.IChain) *RequestHandler {
 	return &RequestHandler{
 		chain: chain,
 		bytesPool: sync.Pool{

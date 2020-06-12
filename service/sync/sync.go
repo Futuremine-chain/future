@@ -14,7 +14,7 @@ import (
 const module = "sync"
 
 type Sync struct {
-	chain   blockchain.IBlockChain
+	chain   blockchain.IChain
 	request request.IRequestHandler
 	peers   *peers.Peers
 	curPeer *peers.Peer
@@ -23,7 +23,7 @@ type Sync struct {
 	stopped chan bool
 }
 
-func NewSync(peers *peers.Peers, dpos dpos.IDPos, request request.IRequestHandler, chain blockchain.IBlockChain) *Sync {
+func NewSync(peers *peers.Peers, dpos dpos.IDPos, request request.IRequestHandler, chain blockchain.IChain) *Sync {
 	s := &Sync{
 		chain:   chain,
 		peers:   peers,
