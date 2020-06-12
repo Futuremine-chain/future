@@ -1,8 +1,15 @@
 package dpos_status
 
-import "github.com/Futuremine-chain/futuremine/tools/arry"
+import (
+	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+)
 
 type IDPosDB interface {
 	SetRoot(hash arry.Hash) error
 	CandidatesCount() int
+	Candidates() (*types.Candidates, error)
+	CycleSupers(cycle int64) (*types.Supers, error)
+	SaveCycle(cycle int64, supers *types.Supers)
+	Voters(addr arry.Address) []arry.Address
 }

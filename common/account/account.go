@@ -13,4 +13,5 @@ type IAccount interface {
 	Check(msg types.IMessage) error
 	Bytes() []byte
 	Address() arry.Address
+	Balance(tokenAddr arry.Address) uint64
 }

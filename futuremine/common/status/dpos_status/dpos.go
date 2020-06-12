@@ -38,5 +38,19 @@ func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
 		}
 	}
 	return nil
+}
 
+func (d *DPosStatus) CycleSupers(cycle int64) (*fmctypes.Supers, error) {
+	return d.db.CycleSupers(cycle)
+}
+
+func (d *DPosStatus) SaveCycle(cycle int64, supers *fmctypes.Supers) {
+	d.db.SaveCycle(cycle, supers)
+}
+
+func (d *DPosStatus) Candidates() (*fmctypes.Candidates, error) {
+	return d.db.Candidates()
+}
+func (d *DPosStatus) Voters(addr arry.Address) []arry.Address {
+	return d.db.Voters(addr)
 }

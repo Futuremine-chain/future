@@ -34,6 +34,14 @@ func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 	panic("implement me")
 }
 
+func (a *Account) Balance(tokenAddr arry.Address) uint64 {
+	token, ok := a.Tokens.Get(tokenAddr.String())
+	if !ok {
+		return 0
+	}
+	return token.Balance
+}
+
 func (a *Account) Check(msg types.IMessage) error {
 	if !a.Exist() {
 		a.address = msg.MsgBody().MsgTo()
@@ -70,8 +78,6 @@ func (a *Account) Check(msg types.IMessage) error {
 		}
 		return a.checkFees(msg)
 	}
-
-	return nil
 }
 
 // Verification contract amount

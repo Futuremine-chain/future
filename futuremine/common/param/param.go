@@ -17,7 +17,7 @@ var MainToken = arry.StringToAddress("FMC")
 
 const (
 	// Block interval period
-	BlockInterval = uint64(5)
+	BlockInterval = int64(5)
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes

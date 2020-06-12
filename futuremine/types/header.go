@@ -12,6 +12,7 @@ import (
 type Header struct {
 	version   int32
 	hash      arry.Hash
+	preHash   arry.Hash
 	msgRoot   arry.Hash
 	actRoot   arry.Hash
 	dPosRoot  arry.Hash
@@ -23,9 +24,10 @@ type Header struct {
 	signature *Signature
 }
 
-func NewHeader(msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height uint64,
+func NewHeader(preHash, msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height uint64,
 	time int64, signer arry.Address) *Header {
 	return &Header{
+		preHash:   preHash,
 		msgRoot:   msgRoot,
 		actRoot:   actRoot,
 		dPosRoot:  dPosRoot,
@@ -51,6 +53,10 @@ func (h *Header) Signer() arry.Address {
 
 func (h *Header) Hash() arry.Hash {
 	return h.hash
+}
+
+func (h *Header) PreHash() arry.Hash {
+	return h.preHash
 }
 
 func (h *Header) Bytes() []byte {

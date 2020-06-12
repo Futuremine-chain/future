@@ -61,6 +61,29 @@ func (b *FMCChain) LastHeight() uint64 {
 	return b.lastHeight
 }
 
+func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	preHeader, err := b.GetHeaderHeight(b.lastHeight)
+	if err != nil {
+		return nil, err
+	}
+	// Build block header
+	header := fmctypes.NewHeader(
+		preHeader.Hash(),
+		arry.Hash{},
+		b.actRoot,
+		b.dPosRoot,
+		b.tokenRoot,
+		b.lastHeight+1,
+		time,
+		b.private.Address(),
+	)
+
+	return header, nil
+}
+
 func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
@@ -80,8 +103,13 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 	coinBase.SetHash()
 	fmcMsgs := msgs.(fmctypes.Messages)
 	fmcMsgs = append(fmcMsgs, coinBase)
+	lastHeader, err := b.GetHeaderHeight(b.lastHeight)
+	if err != nil {
+		return nil, err
+	}
 	// Build block header
 	header := fmctypes.NewHeader(
+		lastHeader.Hash(),
 		fmcMsgs.MsgRoot(),
 		b.actRoot,
 		b.dPosRoot,
@@ -195,4 +223,11 @@ func (b *FMCChain) UpdateConfirmed(height uint64) {
 
 	b.confirmed = height
 	b.status.SetConfirmed(height)
+}
+
+func (b *FMCChain) Vote(address arry.Address) uint64 {
+	var vote uint64
+	act := b.status.Account(address)
+	vote += act.Balance(param.MainToken)
+	return vote
 }

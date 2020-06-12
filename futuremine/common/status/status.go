@@ -39,6 +39,10 @@ func (f *FMCStatus) SetConfirmed(confirmed uint64) {
 	f.actStatus.SetConfirmed(confirmed)
 }
 
+func (f *FMCStatus) Account(address arry.Address) account.IAccount {
+	return f.actStatus.Account(address)
+}
+
 func (f *FMCStatus) Check(msg types.IMessage) error {
 	if err := msg.Check(); err != nil {
 		return err

@@ -9,5 +9,6 @@ type IActStatus interface {
 	Nonce(arry.Address) uint64
 	SetTrieRoot(hash arry.Hash) error
 	SetConfirmed(confirmed uint64)
+	Account(address arry.Address) IAccount
 	CheckMessage(msg types.IMessage) error
 }

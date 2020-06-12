@@ -60,6 +60,15 @@ func (g *Generate) Generate() {
 }
 
 func (g *Generate) generateBlock(now time.Time) {
+	header, err := g.chain.NextHeader(now.Unix())
+	if err != nil {
+		log.Error("Failed to generate next header", "module", module, "error", err)
+		return
+	}
+	if err := g.dPos.CheckTime(header, g.chain); err != nil {
+		return
+	}
+
 	txs := g.pool.NeedPackaged(maxPackedTxCount)
 	nextBlock, err := g.chain.NextBlock(txs, now.Unix())
 	if err != nil {

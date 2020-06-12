@@ -93,7 +93,7 @@ func createFMCNode() (*node.FMCNode, error) {
 		return nil, err
 	}
 
-	dpos := fmcdpos.NewDPos()
+	dpos := fmcdpos.NewDPos(dPosStatus)
 	status := fmcstatus.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
 	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
