@@ -11,5 +11,5 @@ type IDPosDB interface {
 	Candidates() (*types.Candidates, error)
 	CycleSupers(cycle int64) (*types.Supers, error)
 	SaveCycle(cycle int64, supers *types.Supers)
-	Voters(addr arry.Address) []arry.Address
+	Voters() map[arry.Address][]arry.Address
 }

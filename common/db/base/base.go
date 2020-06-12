@@ -89,3 +89,11 @@ func Key(bucket string, key []byte) []byte {
 	return bytes.Join([][]byte{
 		[]byte(bucket + "-"), key}, []byte{})
 }
+
+func Prefix(bucket string) []byte {
+	return []byte(bucket + "-")
+}
+
+func LeafKeyToKey(bucket string, key []byte) []byte {
+	return key[len(Prefix(bucket)):]
+}

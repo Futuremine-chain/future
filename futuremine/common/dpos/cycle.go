@@ -71,10 +71,13 @@ func (c *Cycle) calVotes(chain blockchain.IChain) ([]*types.Member, error) {
 	if len(candidates.Members) < SuperCount {
 		return nil, errors.New("not enough candidates")
 	}
+	voterMap := c.DPosStatus.Voters()
 	for index, candidate := range candidates.Members {
-		voters := c.DPosStatus.Voters(candidate.Signer)
-		for _, voter := range voters {
-			candidates.Members[index].Weight += chain.Vote(voter)
+		voters, ok := voterMap[candidate.Signer]
+		if ok {
+			for _, voter := range voters {
+				candidates.Members[index].Weight += chain.Vote(voter)
+			}
 		}
 	}
 	return candidates.Members, nil

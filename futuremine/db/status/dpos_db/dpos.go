@@ -69,20 +69,26 @@ func (d *DPosDB) Candidates() (*types.Candidates, error) {
 	return candidates, nil
 }
 
-func (d *DPosDB) Voters(addr arry.Address) []arry.Address {
-	rs := make([]arry.Address, 0)
-	iter := d.trie.PrefixIterator([]byte(_voters))
-	if iter.Leaf() {
-		key := iter.LeafKey()
-		from := arry.BytesToAddress(key)
-		value := iter.LeafKey()
-		to := arry.BytesToAddress(value)
-		if to.IsEqual(addr) {
-			rs = append(rs, from)
-		}
-		if !iter.Next(true) {
-			return rs
+func (d *DPosDB) Voters() map[arry.Address][]arry.Address {
+	rs := make(map[arry.Address][]arry.Address)
+	iter := d.trie.PrefixIterator(base.Prefix(_voters))
+	for iter.Next(true) {
+		if iter.Leaf() {
+			key := iter.LeafKey()
+			from := arry.BytesToAddress(base.LeafKeyToKey(_voters, key))
+			value := iter.LeafBlob()
+			to := arry.BytesToAddress(value)
+			addrs, ok := rs[to]
+			if !ok {
+				rs[to] = []arry.Address{from}
+			} else {
+				rs[to] = append(addrs, from)
+			}
 		}
 	}
 	return rs
+}
+
+func (d *DPosDB) SaveVoter(from, to arry.Address) {
+	d.trie.Update(base.Key(_voters, from.Bytes()), to.Bytes())
 }
