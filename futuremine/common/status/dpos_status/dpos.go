@@ -55,6 +55,15 @@ func (d *DPosStatus) SaveCycle(cycle int64, supers *fmctypes.Supers) {
 func (d *DPosStatus) Candidates() (*fmctypes.Candidates, error) {
 	return d.db.Candidates()
 }
+
 func (d *DPosStatus) Voters() map[arry.Address][]arry.Address {
 	return d.db.Voters()
+}
+
+func (d *DPosStatus) Confirmed() (uint64, error) {
+	return d.db.Confirmed()
+}
+
+func (d *DPosStatus) SetConfirmed(height uint64) {
+	d.db.SetConfirmed(height)
 }

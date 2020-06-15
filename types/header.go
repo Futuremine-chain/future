@@ -12,7 +12,9 @@ type IHeader interface {
 	DPosRoot() arry.Hash
 	TokenRoot() arry.Hash
 	Signer() arry.Address
+	Signature() ISignature
 	Height() uint64
 	Time() int64
+	Cycle() int64
 	ToRlpHeader() IRlpHeader
 }

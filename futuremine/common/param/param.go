@@ -25,5 +25,5 @@ const (
 	// The minimum number of nodes required to confirm the transaction
 	SafeSize = SuperSize*2/3 + 1
 	// The minimum threshold at which a block is valid
-	dPosSize = SuperSize*2/3 + 1
+	DPosSize = SuperSize*2/3 + 1
 )

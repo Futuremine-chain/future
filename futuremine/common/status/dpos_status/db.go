@@ -13,4 +13,6 @@ type IDPosDB interface {
 	CycleSupers(cycle int64) (*types.Supers, error)
 	SaveCycle(cycle int64, supers *types.Supers)
 	Voters() map[arry.Address][]arry.Address
+	Confirmed() (uint64, error)
+	SetConfirmed(uint64)
 }

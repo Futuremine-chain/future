@@ -12,6 +12,7 @@ const (
 	_cycleSupers = "cycleSupers"
 	_candidates  = "candidates"
 	_voters      = "voters"
+	_confirmed   = "confirmed"
 )
 
 type DPosDB struct {
@@ -39,6 +40,18 @@ func (d *DPosDB) SetRoot(hash arry.Hash) error {
 
 func (d *DPosDB) Root() arry.Hash {
 	return d.trie.Hash()
+}
+
+func (d *DPosDB) Confirmed() (uint64, error) {
+	bytes := d.trie.Get(base.Key(_confirmed, []byte(_confirmed)))
+	var height uint64
+	rlp.DecodeBytes(bytes, &height)
+	return height, nil
+}
+
+func (d *DPosDB) SetConfirmed(height uint64) {
+	bytes, _ := rlp.EncodeToBytes(height)
+	d.trie.Update(base.Key(_confirmed, []byte(_confirmed)), bytes)
 }
 
 func (d *DPosDB) CandidatesCount() int {

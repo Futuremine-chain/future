@@ -140,6 +140,20 @@ func (b *FMCChain) LastConfirmed() uint64 {
 	return b.confirmed
 }
 
+func (b *FMCChain) SetConfirmed(confirmed uint64) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	b.confirmed = confirmed
+}
+
+func (b *FMCChain) LastHeader() (types.IHeader, error) {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	return b.db.GetHeaderHeight(b.lastHeight)
+}
+
 func (b *FMCChain) GetBlockHeight(height uint64) (types.IBlock, error) {
 	header, err := b.getHeaderHeight(height)
 	if err != nil {
@@ -185,6 +199,10 @@ func (b *FMCChain) GetHeaderHash(hash arry.Hash) (types.IHeader, error) {
 
 func (b *FMCChain) getHeaderHash(hash arry.Hash) (*fmctypes.Header, error) {
 	return b.db.GetHeaderHash(hash)
+}
+
+func (b *FMCChain) CycleLastHash(cycle int64) (arry.Hash, error) {
+	return b.db.CycleLastHash(cycle)
 }
 
 func (b *FMCChain) GetRlpBlockHeight(height uint64) (types.IRlpBlock, error) {
@@ -251,15 +269,15 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 			"height", block.Height(), "tokenroot", block.TokenRoot().String())
 		return errors.New("wrong consensus root")
 	}
-	_, err := b.GetHeaderHash(block.PreHash())
+	preHeader, err := b.GetHeaderHash(block.PreHash())
 	if err != nil {
 		return fmt.Errorf("no previous block %s found", block.PreHash().String())
 	}
 
-	if err := b.dPos.CheckHeader(block.BlockHeader(), b); err != nil {
+	if err := b.dPos.CheckHeader(block.BlockHeader(), preHeader, b); err != nil {
 		return err
 	}
-	if err := b.dPos.CheckSeal(block.BlockHeader(), b); err != nil {
+	if err := b.dPos.CheckSeal(block.BlockHeader(), preHeader, b); err != nil {
 		return err
 	}
 	if err := b.checkMsgs(block.BlockBody().Msgs(), block.Height()); err != nil {

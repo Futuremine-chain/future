@@ -4,6 +4,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 // Signature information, including the result of the
@@ -11,6 +12,14 @@ import (
 type Signature struct {
 	Bytes  []byte `json:"bytes"`
 	PubKey []byte `json:"pubkey"`
+}
+
+func (s *Signature) PubicKey() []byte {
+	return s.PubKey
+}
+
+func (s *Signature) SignatureBytes() []byte {
+	return s.Bytes
 }
 
 // Sign the hash with the private key
@@ -23,15 +32,15 @@ func Sign(key *secp256k1.PrivateKey, hash arry.Hash) (*Signature, error) {
 }
 
 // Verify signature by hash and signature result
-func Verify(hash arry.Hash, signScript *Signature) bool {
-	if signScript == nil || signScript.PubKey == nil || signScript.Bytes == nil {
+func Verify(hash arry.Hash, signScript types.ISignature) bool {
+	if signScript == nil || signScript.PubicKey() == nil || signScript.SignatureBytes() == nil {
 		return false
 	}
-	pubkey, err := secp256k1.ParsePubKey(signScript.PubKey)
+	pubkey, err := secp256k1.ParsePubKey(signScript.PubicKey())
 	if err != nil {
 		return false
 	}
-	signature, err := secp256k1.ParseSignature(signScript.Bytes, secp256k1.S256())
+	signature, err := secp256k1.ParseSignature(signScript.SignatureBytes(), secp256k1.S256())
 	return signature.Verify(hash.Bytes(), pubkey)
 }
 

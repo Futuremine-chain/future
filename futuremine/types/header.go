@@ -84,8 +84,16 @@ func (h *Header) TokenRoot() arry.Hash {
 	return h.tokenRoot
 }
 
+func (h *Header) Signature() types.ISignature {
+	return h.signature
+}
+
 func (h *Header) Time() int64 {
 	return h.time
+}
+
+func (h *Header) Cycle() int64 {
+	return h.cycle
 }
 
 func (h *Header) SetHash() {

@@ -9,6 +9,8 @@ import (
 type IDPosStatus interface {
 	SetTrieRoot(hash arry.Hash) error
 	TrieRoot() arry.Hash
+	Confirmed() (uint64, error)
+	SetConfirmed(height uint64)
 	Candidates() (*fmctypes.Candidates, error)
 	Voters() map[arry.Address][]arry.Address
 	CycleSupers(cycle int64) (*fmctypes.Supers, error)
