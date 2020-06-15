@@ -2,6 +2,8 @@ package types
 
 import (
 	"errors"
+	"fmt"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
@@ -85,6 +87,16 @@ func (m *Message) CheckBody() error {
 	}
 
 	return m.CheckBody()
+}
+
+func (m *Message) CheckCoinBase(fee uint64) error {
+	nTx := m.Body.(*TransactionBody)
+	sumAmount := param.CoinBase + fee
+	if sumAmount != nTx.Amount {
+		return fmt.Errorf("the fee of %d and the reward of %d are not consistent "+
+			"with Coinbase %d", fee, param.CoinBase, nTx.Amount)
+	}
+	return nil
 }
 
 func (m *Message) checkHash() error {

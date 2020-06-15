@@ -1,6 +1,7 @@
 package blockchain
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
@@ -11,11 +12,13 @@ import (
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
 )
 
 const chainDB = "chain_db"
+const module = "module"
 
 type FMCChain struct {
 	private    private.IPrivate
@@ -214,8 +217,109 @@ func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
 	return block, nil
 }
 
-func (b *FMCChain) Insert(block types.IBlock) error { return nil }
-func (b *FMCChain) Roll() error                     { return nil }
+func (b *FMCChain) Insert(block types.IBlock) error {
+	if err := b.checkBlock(block); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *FMCChain) checkBlock(block types.IBlock) error {
+	lastHeight := b.LastHeight()
+
+	if lastHeight != block.Height()-1 {
+		return fmt.Errorf("last height is %d, the current block height is %d", lastHeight, block.Height())
+	}
+
+	if !block.CheckMsgRoot() {
+		log.Warn("the message root hash verification failed", "module", module,
+			"height", block.Height(), "msgroot", block.MsgRoot().String())
+		return errors.New("the message root hash verification failed")
+	}
+	if !block.ActRoot().IsEqual(b.actRoot) {
+		log.Warn("the account status root hash verification failed", "module", module,
+			"height", block.Height(), "actroot", block.ActRoot().String())
+		return errors.New("the account status root hash verification failed")
+	}
+	if !block.DPosRoot().IsEqual(b.dPosRoot) {
+		log.Warn("the dpos status root hash verification failed", "module", module,
+			"height", block.Height(), "dposroot", block.DPosRoot().String())
+		return errors.New("wrong contract root")
+	}
+	if !block.TokenRoot().IsEqual(b.tokenRoot) {
+		log.Warn("the token status root hash verification failed", "module", module,
+			"height", block.Height(), "tokenroot", block.TokenRoot().String())
+		return errors.New("wrong consensus root")
+	}
+	_, err := b.GetHeaderHash(block.PreHash())
+	if err != nil {
+		return fmt.Errorf("no previous block %s found", block.PreHash().String())
+	}
+
+	if err := b.dPos.CheckHeader(block.BlockHeader(), b); err != nil {
+		return err
+	}
+	if err := b.dPos.CheckSeal(block.BlockHeader(), b); err != nil {
+		return err
+	}
+	if err := b.checkMsgs(block.BlockBody().Msgs(), block.Height()); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *FMCChain) checkMsgs(msgs types.IMessages, blockHeight uint64) error {
+	address := make(map[string]bool)
+	msgList := msgs.MsgList()
+	for _, msg := range msgList {
+		if msg.IsCoinBase() {
+			if err := b.checkCoinBase(msg, msgs.CalculateFee()); err != nil {
+				return err
+			}
+		} else {
+			if err := b.checkMsg(msg); err != nil {
+				return err
+			}
+		}
+		from := msg.From().String()
+		if _, ok := address[from]; !ok {
+			address[from] = true
+		} else {
+			return errors.New("one address in a block can only send one transaction")
+		}
+	}
+	return nil
+}
+
+func (b *FMCChain) checkCoinBase(coinBase types.IMessage, fee uint64) error {
+	msg, ok := coinBase.(*fmctypes.Message)
+	if !ok {
+		return errors.New("wrong message type")
+	}
+
+	if err := msg.CheckCoinBase(fee); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *FMCChain) checkMsg(msg types.IMessage) error {
+	msg, ok := msg.(*fmctypes.Message)
+	if !ok {
+		return errors.New("wrong message type")
+	}
+
+	if err := msg.Check(); err != nil {
+		return err
+	}
+
+	if err := b.status.CheckMsg(msg, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *FMCChain) Roll() error { return nil }
 
 func (b *FMCChain) UpdateConfirmed(height uint64) {
 	b.mutex.Lock()

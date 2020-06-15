@@ -18,16 +18,16 @@ type Sync struct {
 	request request.IRequestHandler
 	peers   *peers.Peers
 	curPeer *peers.Peer
-	dpos    dpos.IDPos
+	dPos    dpos.IDPos
 	stop    chan bool
 	stopped chan bool
 }
 
-func NewSync(peers *peers.Peers, dpos dpos.IDPos, request request.IRequestHandler, chain blockchain.IChain) *Sync {
+func NewSync(peers *peers.Peers, dPos dpos.IDPos, request request.IRequestHandler, chain blockchain.IChain) *Sync {
 	s := &Sync{
 		chain:   chain,
 		peers:   peers,
-		dpos:    dpos,
+		dPos:    dPos,
 		request: request,
 		stop:    make(chan bool),
 		stopped: make(chan bool),
@@ -175,7 +175,7 @@ func (s *Sync) headerValidation(header types.IHeader) bool {
 
 func (s *Sync) validation(header types.IHeader, localEqual bool) bool {
 	count := 0
-	ids := s.dpos.SuperIds()
+	ids := s.dPos.SuperIds()
 	for _, id := range ids {
 		if id != s.peers.Local().Address.ID.String() {
 			peer := s.peers.Peer(id)

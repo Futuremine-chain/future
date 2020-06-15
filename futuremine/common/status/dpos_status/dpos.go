@@ -28,6 +28,10 @@ func (d *DPosStatus) SetTrieRoot(hash arry.Hash) error {
 	return d.db.SetRoot(hash)
 }
 
+func (d *DPosStatus) TrieRoot() arry.Hash {
+	return d.db.Root()
+}
+
 // If the current number of candidates is less than or equal to the
 // number of super nodes, it is not allowed to withdraw candidates.
 func (d *DPosStatus) CheckMessage(msg types.IMessage) error {

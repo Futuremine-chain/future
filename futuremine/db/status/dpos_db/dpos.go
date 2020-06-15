@@ -37,6 +37,10 @@ func (d *DPosDB) SetRoot(hash arry.Hash) error {
 	return nil
 }
 
+func (d *DPosDB) Root() arry.Hash {
+	return d.trie.Hash()
+}
+
 func (d *DPosDB) CandidatesCount() int {
 	return 0
 }

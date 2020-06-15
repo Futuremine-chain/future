@@ -7,6 +7,7 @@ import (
 
 type IDPosDB interface {
 	SetRoot(hash arry.Hash) error
+	Root() arry.Hash
 	CandidatesCount() int
 	Candidates() (*types.Candidates, error)
 	CycleSupers(cycle int64) (*types.Supers, error)

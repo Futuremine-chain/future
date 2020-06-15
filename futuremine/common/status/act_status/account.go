@@ -32,13 +32,13 @@ func (a *ActStatus) SetTrieRoot(stateRoot arry.Hash) error {
 	return a.db.SetRoot(stateRoot)
 }
 
-func (a *ActStatus) CheckMessage(msg types.IMessage) error {
+func (a *ActStatus) CheckMessage(msg types.IMessage, strict bool) error {
 	if msg.Time() > utils.NowUnix() {
 		return errors.New("incorrect transaction time")
 	}
 
 	account := a.Account(msg.From())
-	return account.Check(msg)
+	return account.Check(msg, strict)
 }
 
 // Get account status, if the account status needs to be updated
@@ -112,20 +112,20 @@ func (a *ActStatus) SetConfirmed(height uint64) {
 }
 
 // Verify the status of the trading account
-func (a *ActStatus) Check(msg types.IMessage) error {
+func (a *ActStatus) Check(msg types.IMessage, strict bool) error {
 	if msg.Time() > utils.NowUnix() {
 		return errors.New("incorrect message time")
 	}
 
 	account := a.Account(msg.From())
-	return account.Check(msg)
+	return account.Check(msg, strict)
 }
 
 func (a *ActStatus) Commit() (arry.Hash, error) {
 	return a.db.Commit()
 }
 
-func (a *ActStatus) Root() arry.Hash {
+func (a *ActStatus) TrieRoot() arry.Hash {
 	return a.db.Root()
 }
 

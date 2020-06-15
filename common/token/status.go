@@ -7,5 +7,6 @@ import (
 
 type ITokenStatus interface {
 	SetTrieRoot(hash arry.Hash) error
+	TrieRoot() arry.Hash
 	CheckMessage(msg types.IMessage) error
 }

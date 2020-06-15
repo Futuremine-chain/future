@@ -29,6 +29,10 @@ func (t *TokenStatus) SetTrieRoot(hash arry.Hash) error {
 	return t.db.SetRoot(hash)
 }
 
+func (t *TokenStatus) TrieRoot() arry.Hash {
+	return t.db.Root()
+}
+
 func (t *TokenStatus) CheckMessage(msg types.IMessage) error {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()

@@ -9,9 +9,9 @@ import (
 
 type Messages []*Message
 
-func (m Messages) Msgs() []types.IMessage {
+func (m Messages) MsgList() []types.IMessage {
 	iTxs := make([]types.IMessage, len(m))
-	for i, msg := range m.Msgs() {
+	for i, msg := range m {
 		iTxs[i] = msg
 	}
 	return iTxs

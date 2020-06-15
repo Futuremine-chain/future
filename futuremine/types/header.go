@@ -72,6 +72,18 @@ func (h *Header) MsgRoot() arry.Hash {
 	return h.msgRoot
 }
 
+func (h *Header) ActRoot() arry.Hash {
+	return h.actRoot
+}
+
+func (h *Header) DPosRoot() arry.Hash {
+	return h.dPosRoot
+}
+
+func (h *Header) TokenRoot() arry.Hash {
+	return h.tokenRoot
+}
+
 func (h *Header) Time() int64 {
 	return h.time
 }

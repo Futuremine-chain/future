@@ -35,7 +35,7 @@ func (b *Block) Add(message types.IMessage) {
 	b.Body.Add(message)
 }
 
-func (b *Block) Msgs() []types.IMessage {
+func (b *Block) Msgs() types.IMessages {
 	return b.Body.Msgs()
 }
 
@@ -45,6 +45,10 @@ func (b *Block) ToRlpHeader() types.IRlpHeader {
 
 func (b *Block) BlockHeader() types.IHeader {
 	return b.Header
+}
+
+func (b *Block) BlockBody() types.IBody {
+	return b.Body
 }
 
 func (b *Block) ToRlpBlock() types.IRlpBlock {
@@ -57,6 +61,10 @@ func (b *Block) SetHash() {
 
 func (b *Block) Sign(key *secp256k1.PrivateKey) error {
 	return b.Header.Sign(key)
+}
+
+func (b *Block) CheckMsgRoot() bool {
+	return b.Header.MsgRoot().IsEqual(b.Body.MsgRoot())
 }
 
 type Blocks []*Block

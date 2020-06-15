@@ -34,7 +34,7 @@ func (t *TokenDB) Commit() (arry.Hash, error) {
 	return t.trie.Commit()
 }
 
-func (t *TokenDB) RootHash() arry.Hash {
+func (t *TokenDB) Root() arry.Hash {
 	return t.trie.Hash()
 }
 

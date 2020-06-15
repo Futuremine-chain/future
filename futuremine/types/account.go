@@ -42,12 +42,16 @@ func (a *Account) Balance(tokenAddr arry.Address) uint64 {
 	return token.Balance
 }
 
-func (a *Account) Check(msg types.IMessage) error {
+func (a *Account) Check(msg types.IMessage, strict bool) error {
 	if !a.Exist() {
 		a.address = msg.MsgBody().MsgTo()
 	}
 
-	if msg.Nonce() <= a.nonce {
+	if strict {
+		if msg.Nonce() != a.nonce+1 {
+			return fmt.Errorf("nonce value must be %d", a.nonce+1)
+		}
+	} else if msg.Nonce() <= a.nonce {
 		return fmt.Errorf("the nonce value of the message must be greater than %d", a.nonce)
 	}
 

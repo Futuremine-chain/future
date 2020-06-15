@@ -7,5 +7,6 @@ import (
 
 type ITokenDB interface {
 	SetRoot(hash arry.Hash) error
+	Root() arry.Hash
 	Token(addr arry.Address) *types.TokenRecord
 }

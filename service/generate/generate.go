@@ -75,7 +75,7 @@ func (g *Generate) generateBlock(now time.Time) {
 		log.Error("Failed to generate block", "module", module, "error", err)
 	}
 	// Check if it is your turn to make blocks
-	err = g.dPos.CheckSigner(g.chain, nextBlock)
+	err = g.dPos.CheckSigner(nextBlock, g.chain)
 	if err != nil {
 		//.Warn("check winner failed!", "height", header.Height, "error", err)
 		return

@@ -40,7 +40,15 @@ func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IChain) error {
 	return nil
 }
 
-func (d *DPos) CheckSigner(chain blockchain.IChain, header types.IHeader) error {
+func (d *DPos) CheckSigner(header types.IHeader, chain blockchain.IChain) error {
+	return nil
+}
+
+func (d *DPos) CheckHeader(header types.IHeader, chain blockchain.IChain) error {
+	return nil
+}
+
+func (d *DPos) CheckSeal(header types.IHeader, chain blockchain.IChain) error {
 	return nil
 }
 

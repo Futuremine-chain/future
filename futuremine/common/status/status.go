@@ -2,11 +2,14 @@ package status
 
 import (
 	"github.com/Futuremine-chain/futuremine/common/account"
+	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/token"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 )
+
+const module = "chain"
 
 type FMCStatus struct {
 	actStatus   account.IActStatus
@@ -43,7 +46,7 @@ func (f *FMCStatus) Account(address arry.Address) account.IAccount {
 	return f.actStatus.Account(address)
 }
 
-func (f *FMCStatus) Check(msg types.IMessage) error {
+func (f *FMCStatus) CheckMsg(msg types.IMessage, strict bool) error {
 	if err := msg.Check(); err != nil {
 		return err
 	}
@@ -52,12 +55,17 @@ func (f *FMCStatus) Check(msg types.IMessage) error {
 		return err
 	}
 
-	if err := f.actStatus.CheckMessage(msg); err != nil {
+	if err := f.actStatus.CheckMessage(msg, strict); err != nil {
 		return err
 	}
 
 	if err := f.tokenStatus.CheckMessage(msg); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (f *FMCStatus) CheckBlock(block types.IBlock, chain blockchain.IChain) error {
+
 	return nil
 }

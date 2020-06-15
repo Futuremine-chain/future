@@ -10,7 +10,7 @@ type IAccount interface {
 	UpdateLocked(confirmed uint64) error
 	FromMessage(msg types.IMessage, height uint64) error
 	ToMessage(msg types.IMessage, height uint64) error
-	Check(msg types.IMessage) error
+	Check(msg types.IMessage, strict bool) error
 	Bytes() []byte
 	Address() arry.Address
 	Balance(tokenAddr arry.Address) uint64

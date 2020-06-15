@@ -100,7 +100,7 @@ func (t *Sorted) Remove(msg types.IMessage) {
 // Delete already packed messages
 func (t *Sorted) RemoveExecuted(v validator.IValidator) {
 	for _, msg := range t.cache {
-		if err := v.Check(msg); err != nil {
+		if err := v.CheckMsg(msg, false); err != nil {
 			t.Remove(msg)
 		}
 	}

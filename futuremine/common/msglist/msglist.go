@@ -62,7 +62,7 @@ func (t *MsgManagement) Put(msg types.IMessage) error {
 	if t.Exist(msg) {
 		return fmt.Errorf("the message %s already exists", msg.Hash().String())
 	}
-	if err := t.validator.Check(msg); err != nil {
+	if err := t.validator.CheckMsg(msg, false); err != nil {
 		return err
 	}
 
@@ -104,7 +104,7 @@ func (t *MsgManagement) DeleteAndUpdate(messages types.IMessages) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-	for _, msg := range messages.Msgs() {
+	for _, msg := range messages.MsgList() {
 		t.Remove(msg)
 	}
 	t.update()
