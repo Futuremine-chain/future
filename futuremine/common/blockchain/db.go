@@ -14,4 +14,15 @@ type IChainDB interface {
 	GetHeaderHeight(height uint64) (*types.Header, error)
 	GetHeaderHash(hash arry.Hash) (*types.Header, error)
 	CycleLastHash(cycle int64) (arry.Hash, error)
+
+	SaveHeader(header *types.Header)
+	SaveLastHeight(height uint64)
+	SaveMessages(msgRoot arry.Hash, iTxs []*types.RlpMessage)
+	SaveMsgIndex(msgIndexs map[arry.Hash]*types.MsgIndex)
+	SaveHeightHash(height uint64, hash arry.Hash)
+	SaveActRoot(hash arry.Hash)
+	SaveTokenRoot(hash arry.Hash)
+	SaveDPosRoot(hash arry.Hash)
+	SaveConfirmedHeight(height uint64, confirmed uint64)
+	SaveCycleLastHash(cycle int64, hash arry.Hash)
 }

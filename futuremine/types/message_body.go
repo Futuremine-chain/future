@@ -29,21 +29,29 @@ type TokenBody struct {
 func (t *TokenBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
+
 func (t *TokenBody) CheckBody() error {
 	return nil
 }
+
 func (t *TokenBody) MsgAmount() uint64 {
 	return t.Amount
 }
 
 type CandidateBody struct {
+	PeerID string
 }
 
-func (c *CandidateBody) To() arry.Address {
+func (c *CandidateBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
+
 func (c *CandidateBody) CheckBody() error {
 	return nil
+}
+
+func (c *CandidateBody) MsgAmount() uint64 {
+	return 0
 }
 
 type CancelBody struct {

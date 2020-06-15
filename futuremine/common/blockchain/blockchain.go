@@ -239,7 +239,43 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.checkBlock(block); err != nil {
 		return err
 	}
+	if err := b.status.Change(block.BlockBody().Msgs().MsgList(), block); err != nil {
+		return err
+	}
+	b.saveBlock(block)
 	return nil
+}
+
+func (b *FMCChain) saveBlock(block types.IBlock) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	bk := block.(*fmctypes.Block)
+	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
+	b.db.SaveHeader(bk.Header)
+	b.db.SaveMessages(block.MsgRoot(), rlpBlock.MsgList())
+	b.db.SaveMsgIndex(bk.GetMsgIndexs())
+	b.db.SaveHeightHash(block.Height(), block.Hash())
+	b.db.SaveConfirmedHeight(block.Height(), b.confirmed)
+	b.db.SaveCycleLastHash(block.Cycle(), block.Hash())
+	b.actRoot, b.tokenRoot, b.dPosRoot, _ = b.status.Commit()
+	b.db.SaveActRoot(b.actRoot)
+	b.db.SaveDPosRoot(b.dPosRoot)
+	b.db.SaveTokenRoot(b.tokenRoot)
+
+	b.lastHeight = block.Height()
+	b.db.SaveLastHeight(b.lastHeight)
+
+	log.Info("Save block", "module", "module",
+		"height", block.Height(),
+		"hash", block.Hash().String(),
+		"actroot", block.ActRoot().String(),
+		"tokenroot", block.TokenRoot().String(),
+		"dposroot", block.DPosRoot().String(),
+		"signer", block.Signer().String(),
+		"msgcount", block.BlockBody().Msgs().Count(),
+		"time", block.Time(),
+		"cycle", block.Cycle())
 }
 
 func (b *FMCChain) checkBlock(block types.IBlock) error {

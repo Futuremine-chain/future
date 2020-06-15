@@ -23,6 +23,10 @@ func (m Messages) Add(iMsg types.IMessage) {
 	m = append(m, msg)
 }
 
+func (m Messages) Count() int {
+	return len(m)
+}
+
 func (m Messages) MsgRoot() arry.Hash {
 	var hashes [][]byte
 	for _, msg := range m {

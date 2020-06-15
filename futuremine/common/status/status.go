@@ -1,10 +1,11 @@
 package status
 
 import (
+	"errors"
 	"github.com/Futuremine-chain/futuremine/common/account"
-	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/token"
+	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 )
@@ -65,7 +66,56 @@ func (f *FMCStatus) CheckMsg(msg types.IMessage, strict bool) error {
 	return nil
 }
 
-func (f *FMCStatus) CheckBlock(block types.IBlock, chain blockchain.IChain) error {
+func (f *FMCStatus) Change(msgs []types.IMessage, block types.IBlock) error {
+	for _, msg := range msgs {
+		switch fmctypes.MessageType(msg.Type()) {
+		case fmctypes.Transaction:
+			if err := f.actStatus.ToMessage(msg, block.Height()); err != nil {
+				return err
+			}
+		case fmctypes.Token:
+			if err := f.actStatus.ToMessage(msg, block.Height()); err != nil {
+				return err
+			}
+			if err := f.tokenStatus.UpdateToken(msg, block.Height()); err != nil {
+				return err
+			}
+		case fmctypes.Vote:
+			if err := f.dPosStatus.Voter(msg); err != nil {
+				return nil
+			}
+		case fmctypes.Candidate:
+			if err := f.dPosStatus.AddCandidate(msg); err != nil {
+				return nil
+			}
+		case fmctypes.Cancel:
+			if err := f.dPosStatus.CancelCandidate(msg); err != nil {
+				return nil
+			}
+		default:
+			return errors.New("wrong message type")
+		}
+		if err := f.actStatus.FromMessage(msg, block.Height()); err != nil {
+			return err
+		}
 
+	}
+	f.dPosStatus.AddSuperBlockCount(block.Cycle(), block.Signer())
 	return nil
+}
+
+func (f *FMCStatus) Commit() (arry.Hash, arry.Hash, arry.Hash, error) {
+	actRoot, err := f.actStatus.Commit()
+	if err != nil {
+		return arry.Hash{}, arry.Hash{}, arry.Hash{}, err
+	}
+	tokenRoot, err := f.tokenStatus.Commit()
+	if err != nil {
+		return arry.Hash{}, arry.Hash{}, arry.Hash{}, err
+	}
+	dPosRoot, err := f.dPosStatus.Commit()
+	if err != nil {
+		return arry.Hash{}, arry.Hash{}, arry.Hash{}, err
+	}
+	return actRoot, tokenRoot, dPosRoot, nil
 }

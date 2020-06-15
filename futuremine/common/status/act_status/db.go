@@ -10,7 +10,6 @@ type IActDB interface {
 	Root() arry.Hash
 	Commit() (arry.Hash, error)
 	Close() error
-
 	Account(address arry.Address) account.IAccount
 	SetAccount(account account.IAccount)
 	Nonce(address arry.Address) uint64

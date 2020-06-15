@@ -37,9 +37,9 @@ func (t *TokenRecord) Bytes() []byte {
 	return bytes
 }
 
-func (t *TokenRecord) IsExist(txHash arry.Hash) bool {
+func (t *TokenRecord) IsExist(msgHash arry.Hash) bool {
 	for _, r := range *t.Records {
-		if txHash.IsEqual(r.TxHash) {
+		if msgHash.IsEqual(r.MsgHash) {
 			return true
 		}
 	}
@@ -85,10 +85,10 @@ func (t *TokenRecord) amount() uint64 {
 }
 
 type Record struct {
-	Height uint64
-	TxHash arry.Hash
-	Time   uint64
-	Amount uint64
+	Height  uint64
+	MsgHash arry.Hash
+	Time    int64
+	Amount  uint64
 }
 
 type RecordList []*Record

@@ -32,11 +32,11 @@ func (a *ActDB) SetRoot(hash arry.Hash) error {
 }
 
 func (a *ActDB) Root() arry.Hash {
-	panic("implement me")
+	return a.trie.Hash()
 }
 
 func (a *ActDB) Commit() (arry.Hash, error) {
-	panic("implement me")
+	return a.trie.Commit()
 }
 
 func (a *ActDB) Account(address arry.Address) account.IAccount {

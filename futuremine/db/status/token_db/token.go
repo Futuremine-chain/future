@@ -51,6 +51,6 @@ func (t *TokenDB) Token(address arry.Address) *types.TokenRecord {
 	return token
 }
 
-func (t *TokenDB) SetContractState(token *types.TokenRecord) {
+func (t *TokenDB) SetToken(token *types.TokenRecord) {
 	t.trie.Update(token.Address.Bytes(), token.Bytes())
 }

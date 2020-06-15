@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
 // Super nodes
@@ -16,6 +17,20 @@ type Member struct {
 	Weight uint64
 }
 
+func (m *Member) Bytes() []byte {
+	bytes, _ := rlp.EncodeToBytes(m)
+	return bytes
+}
+
+func DecodeMember(bytes []byte) (*Member, error) {
+	var mem *Member
+	err := rlp.DecodeBytes(bytes, mem)
+	if err != nil {
+		return nil, err
+	}
+	return mem, nil
+}
+
 type Candidates struct {
 	Members []*Member
 }
@@ -25,11 +40,6 @@ func NewCandidates() *Candidates {
 }
 
 func (c *Candidates) Set(newMem *Member) {
-	for _, mem := range c.Members {
-		if mem.Signer.IsEqual(newMem.Signer) {
-			return
-		}
-	}
 	c.Members = append(c.Members, newMem)
 }
 

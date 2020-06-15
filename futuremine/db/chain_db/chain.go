@@ -144,51 +144,51 @@ func (b *ChainDB) CycleLastHash(cycle int64) (arry.Hash, error) {
 	return arry.BytesToHash(bytes), nil
 }
 
-func (b *ChainDB) UpdateLastHeight(height uint64) {
+func (b *ChainDB) SaveLastHeight(height uint64) {
 	bytes := []byte(strconv.FormatUint(height, 10))
 	b.db.PutInBucket(_lastHeight, []byte(_lastHeight), bytes)
 }
 
-func (b *ChainDB) UpdateHeader(header *types.Header) {
+func (b *ChainDB) SaveHeader(header *types.Header) {
 	b.db.PutInBucket(_header, header.Hash().Bytes(), header.Bytes())
-	b.UpdateHeightHash(header.Height(), header.Hash())
+	b.SaveHeightHash(header.Height(), header.Hash())
 }
 
-func (b *ChainDB) UpdateMessages(txRoot arry.Hash, iTxs []*types.RlpMessage) {
+func (b *ChainDB) SaveMessages(msgRoot arry.Hash, iTxs []*types.RlpMessage) {
 	bytes := types.EncodeRlpMessages(iTxs)
-	b.db.PutInBucket(_message, txRoot.Bytes(), bytes)
+	b.db.PutInBucket(_message, msgRoot.Bytes(), bytes)
 }
 
-func (b *ChainDB) UpdateTxIndex(txIndexs map[arry.Hash]*types.MsgIndex) {
-	for hash, loc := range txIndexs {
+func (b *ChainDB) SaveMsgIndex(msgIndexs map[arry.Hash]*types.MsgIndex) {
+	for hash, loc := range msgIndexs {
 		b.db.PutInBucket(_txIndex, hash.Bytes(), loc.Bytes())
 	}
 }
 
-func (b *ChainDB) UpdateHeightHash(height uint64, hash arry.Hash) {
+func (b *ChainDB) SaveHeightHash(height uint64, hash arry.Hash) {
 	key := []byte(strconv.FormatUint(height, 10))
 	b.db.PutInBucket(_heightHash, key, hash.Bytes())
 }
 
-func (b *ChainDB) UpdateActRoot(hash arry.Hash) {
+func (b *ChainDB) SaveActRoot(hash arry.Hash) {
 	b.db.PutInBucket(_actRoot, []byte(_actRoot), hash.Bytes())
 }
 
-func (b *ChainDB) UpdateTokenRoot(hash arry.Hash) {
+func (b *ChainDB) SaveTokenRoot(hash arry.Hash) {
 	b.db.PutInBucket(_tokenRoot, []byte(_tokenRoot), hash.Bytes())
 }
 
-func (b *ChainDB) UpdateDPosRoot(hash arry.Hash) {
+func (b *ChainDB) SaveDPosRoot(hash arry.Hash) {
 	b.db.PutInBucket(_dPosRoot, []byte(_dPosRoot), hash.Bytes())
 }
 
-func (b *ChainDB) UpdateHistoryConfirmedHeight(height uint64, confirmed uint64) {
+func (b *ChainDB) SaveConfirmedHeight(height uint64, confirmed uint64) {
 	heightBytes := []byte(strconv.FormatUint(height, 10))
 	confirmedBytes := []byte(strconv.FormatUint(confirmed, 10))
 	b.db.PutInBucket(_hisConfirmed, heightBytes, confirmedBytes)
 }
 
-func (b *ChainDB) UpdateCycleLastHash(term uint64, hash arry.Hash) {
-	bytes := []byte(strconv.FormatUint(term, 10))
+func (b *ChainDB) SaveCycleLastHash(cycle int64, hash arry.Hash) {
+	bytes := []byte(strconv.FormatInt(cycle, 10))
 	b.db.PutInBucket(_cycleHash, bytes, hash.Bytes())
 }

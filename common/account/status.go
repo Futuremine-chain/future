@@ -12,4 +12,7 @@ type IActStatus interface {
 	SetConfirmed(confirmed uint64)
 	Account(address arry.Address) IAccount
 	CheckMessage(msg types.IMessage, strict bool) error
+	FromMessage(msg types.IMessage, height uint64) error
+	ToMessage(msg types.IMessage, height uint64) error
+	Commit() (arry.Hash, error)
 }

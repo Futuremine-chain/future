@@ -1,11 +1,14 @@
 package dpos_db
 
 import (
+	"bytes"
 	"github.com/Futuremine-chain/futuremine/common/db/base"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/tools/trie"
+	"strconv"
 )
 
 const (
@@ -13,6 +16,7 @@ const (
 	_candidates  = "candidates"
 	_voters      = "voters"
 	_confirmed   = "confirmed"
+	_blockCount  = "blockCount"
 )
 
 type DPosDB struct {
@@ -42,6 +46,10 @@ func (d *DPosDB) Root() arry.Hash {
 	return d.trie.Hash()
 }
 
+func (d *DPosDB) Commit() (arry.Hash, error) {
+	return d.trie.Commit()
+}
+
 func (d *DPosDB) Confirmed() (uint64, error) {
 	bytes := d.trie.Get(base.Key(_confirmed, []byte(_confirmed)))
 	var height uint64
@@ -55,7 +63,24 @@ func (d *DPosDB) SetConfirmed(height uint64) {
 }
 
 func (d *DPosDB) CandidatesCount() int {
-	return 0
+	cans := types.NewCandidates()
+	iter := d.trie.PrefixIterator(base.Prefix(_voters))
+	for iter.Next(true) {
+		if iter.Leaf() {
+			value := iter.LeafBlob()
+			mem, _ := types.DecodeMember(value)
+			cans.Set(mem)
+		}
+	}
+	return cans.Len()
+}
+
+func (d *DPosDB) AddCandidate(member *types.Member) {
+	d.trie.Update(base.Key(_candidates, member.Signer.Bytes()), member.Bytes())
+}
+
+func (d *DPosDB) CancelCandidate(signer arry.Address) {
+	d.trie.Delete(base.Key(_candidates, signer.Bytes()))
 }
 
 func (d *DPosDB) CycleSupers(cycle int64) (*types.Supers, error) {
@@ -78,12 +103,16 @@ func (d *DPosDB) SaveCycle(cycle int64, supers *types.Supers) {
 }
 
 func (d *DPosDB) Candidates() (*types.Candidates, error) {
-	var candidates *types.Candidates
-	bytes := d.trie.Get(base.Key(_candidates, []byte(_candidates)))
-	if err := rlp.DecodeBytes(bytes, &candidates); err != nil {
-		return nil, err
+	cans := types.NewCandidates()
+	iter := d.trie.PrefixIterator(base.Prefix(_voters))
+	for iter.Next(true) {
+		if iter.Leaf() {
+			value := iter.LeafBlob()
+			mem, _ := types.DecodeMember(value)
+			cans.Set(mem)
+		}
 	}
-	return candidates, nil
+	return cans, nil
 }
 
 func (d *DPosDB) Voters() map[arry.Address][]arry.Address {
@@ -106,6 +135,27 @@ func (d *DPosDB) Voters() map[arry.Address][]arry.Address {
 	return rs
 }
 
-func (d *DPosDB) SaveVoter(from, to arry.Address) {
+func (d *DPosDB) Voter(from, to arry.Address) {
 	d.trie.Update(base.Key(_voters, from.Bytes()), to.Bytes())
+}
+
+func (d *DPosDB) AddSuperBlockCount(cycle int64, signer arry.Address) {
+	hash := cycleSuperCountKey(cycle, signer)
+	cnt := d.SuperBlockCount(cycle, signer)
+	cnt++
+	bytes, _ := rlp.EncodeToBytes(cnt)
+	d.trie.Update(base.Key(_blockCount, hash.Bytes()), bytes)
+}
+
+func (d *DPosDB) SuperBlockCount(cycle int64, signer arry.Address) int {
+	hash := cycleSuperCountKey(cycle, signer)
+	bytes := d.trie.Get(base.Key(_blockCount, hash.Bytes()))
+	var count int
+	rlp.DecodeBytes(bytes, &count)
+	return count
+}
+
+func cycleSuperCountKey(cycle int64, signer arry.Address) arry.Hash {
+	bytes := bytes.Join([][]byte{[]byte(strconv.FormatInt(cycle, 10)), signer.Bytes()}, []byte{})
+	return hash.Hash(bytes)
 }

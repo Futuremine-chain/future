@@ -32,6 +32,10 @@ func (d *DPosStatus) TrieRoot() arry.Hash {
 	return d.db.Root()
 }
 
+func (d *DPosStatus) Commit() (arry.Hash, error) {
+	return d.db.Commit()
+}
+
 // If the current number of candidates is less than or equal to the
 // number of super nodes, it is not allowed to withdraw candidates.
 func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
@@ -66,4 +70,35 @@ func (d *DPosStatus) Confirmed() (uint64, error) {
 
 func (d *DPosStatus) SetConfirmed(height uint64) {
 	d.db.SetConfirmed(height)
+}
+
+func (d *DPosStatus) AddCandidate(msg types.IMessage) error {
+	body := msg.MsgBody().(*fmctypes.CandidateBody)
+	candidate := &fmctypes.Member{
+		Signer: msg.From(),
+		PeerId: body.PeerID,
+		Weight: 0,
+	}
+	d.db.AddCandidate(candidate)
+	d.db.Voter(msg.From(), msg.From())
+	return nil
+}
+
+func (d *DPosStatus) CancelCandidate(msg types.IMessage) error {
+	candidate := &fmctypes.Member{
+		Signer: msg.From(),
+		PeerId: "",
+		Weight: 0,
+	}
+	d.db.AddCandidate(candidate)
+	return nil
+}
+
+func (d *DPosStatus) Voter(msg types.IMessage) error {
+	d.db.Voter(msg.From(), msg.MsgBody().MsgTo())
+	return nil
+}
+
+func (d *DPosStatus) AddSuperBlockCount(cycle int64, signer arry.Address) {
+	d.db.AddSuperBlockCount(cycle, signer)
 }

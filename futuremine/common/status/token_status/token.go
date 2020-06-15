@@ -33,6 +33,10 @@ func (t *TokenStatus) TrieRoot() arry.Hash {
 	return t.db.Root()
 }
 
+func (t *TokenStatus) Commit() (arry.Hash, error) {
+	return t.db.Commit()
+}
+
 func (t *TokenStatus) CheckMessage(msg types.IMessage) error {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
@@ -48,5 +52,38 @@ func (t *TokenStatus) CheckMessage(msg types.IMessage) error {
 	if token != nil {
 		return token.Check(msg)
 	}
+	return nil
+}
+
+// Update contract status
+func (t *TokenStatus) UpdateToken(msg types.IMessage, height uint64) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
+	msgBody, ok := msg.MsgBody().(*fmctypes.TokenBody)
+	if !ok {
+		return errors.New("wrong message type")
+	}
+	record := &fmctypes.Record{
+		Height:  height,
+		MsgHash: msg.Hash(),
+		Time:    msg.Time(),
+		Amount:  msgBody.MsgAmount(),
+	}
+	tokenAddr := msgBody.TokenAddress
+	token := t.db.Token(tokenAddr)
+	if token != nil {
+		token.AddContract(record)
+	} else {
+		token = &fmctypes.TokenRecord{
+			Address:   tokenAddr,
+			Name:      msgBody.Name,
+			Shorthand: msgBody.Shorthand,
+			Records: &fmctypes.RecordList{
+				record,
+			},
+		}
+	}
+	t.db.SetToken(token)
 	return nil
 }

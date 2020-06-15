@@ -6,5 +6,6 @@ type IMessages interface {
 	Add(msg IMessage)
 	MsgList() []IMessage
 	MsgRoot() arry.Hash
+	Count() int
 	CalculateFee() uint64
 }

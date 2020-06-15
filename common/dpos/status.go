@@ -16,4 +16,9 @@ type IDPosStatus interface {
 	CycleSupers(cycle int64) (*fmctypes.Supers, error)
 	SaveCycle(cycle int64, supers *fmctypes.Supers)
 	CheckMessage(msg types.IMessage) error
+	AddCandidate(msg types.IMessage) error
+	CancelCandidate(msg types.IMessage) error
+	Voter(msg types.IMessage) error
+	AddSuperBlockCount(cycle int64, signer arry.Address)
+	Commit() (arry.Hash, error)
 }
