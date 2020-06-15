@@ -32,7 +32,7 @@ type RequestHandler struct {
 	readyCh        chan *ReqStream
 	bytesPool      sync.Pool
 	receiveBlock   func(block types.IBlock) error
-	receiveMessage func(block types.IMessage) error
+	receiveMessage func(msg types.IMessage) error
 }
 
 func NewRequestHandler(chain blockchain.IChain) *RequestHandler {

@@ -26,10 +26,11 @@ type Pool struct {
 }
 
 func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
-	return &Pool{
+	pool := &Pool{
 		horn:        horn,
 		broadcastCh: make(chan types.IMessage, 100),
 	}
+	return pool
 }
 
 func (p *Pool) Name() string {
@@ -79,6 +80,10 @@ func (p *Pool) startChan() {
 			p.horn.BroadcastMsg(msg)
 		}
 	}
+}
+
+func (p *Pool) ReceiveMsgFromPeer(msg types.IMessage) error {
+	return p.Put(msg, true)
 }
 
 func (p *Pool) monitorExpired() {

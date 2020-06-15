@@ -32,7 +32,6 @@ func NewSync(peers *peers.Peers, dpos dpos.IDPos, request request.IRequestHandle
 		stop:    make(chan bool),
 		stopped: make(chan bool),
 	}
-	request.RegisterReceiveBlock(s.receivedBlock)
 	return s
 }
 
@@ -206,7 +205,7 @@ func (s *Sync) fallBack() {
 // directly verified. If the height is less than the local height,
 // the remote verification is performed, and the verification is
 // passed back to the local block.
-func (s *Sync) receivedBlock(block types.IBlock) error {
+func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 	localHeight := s.chain.LastHeight()
 	if localHeight == block.Height()-1 {
 		if err := s.chain.Insert(block); err != nil {

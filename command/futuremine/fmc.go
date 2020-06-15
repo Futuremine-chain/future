@@ -118,6 +118,10 @@ func createFMCNode() (*node.FMCNode, error) {
 	generateSv := generate.NewGenerate(chain)
 	node := node.NewFMCNode()
 
+	// Register peer nodes to send blocks and message processing
+	reqHandler.RegisterReceiveMessage(poolSv.ReceiveMsgFromPeer)
+	reqHandler.RegisterReceiveBlock(syncSv.ReceivedBlockFromPeer)
+
 	node.Register(peersSv)
 	node.Register(p2pSv)
 	node.Register(rpcSv)
