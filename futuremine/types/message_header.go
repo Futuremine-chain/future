@@ -6,6 +6,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"time"
 )
 
 type MessageType uint8
@@ -28,8 +29,8 @@ type MsgHeader struct {
 	Hash      arry.Hash
 	From      arry.Address
 	Nonce     uint64
-	Time      int64
 	Fee       uint64
+	Time      time.Time
 	Signature *Signature
 }
 

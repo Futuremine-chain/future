@@ -21,7 +21,7 @@ type IChain interface {
 	GetRlpBlockHash(arry.Hash) (types.IRlpBlock, error)
 
 	NextHeader(int64) (types.IHeader, error)
-	NextBlock(types.IMessages, int64) (types.IBlock, error)
+	NextBlock([]types.IMessage, int64) (types.IBlock, error)
 	Insert(types.IBlock) error
 	Roll() error
 	Vote(arry.Address) uint64

@@ -39,7 +39,7 @@ func (m *Message) Fee() uint64 {
 }
 
 func (m *Message) Time() int64 {
-	return m.Header.Time
+	return m.Header.Time.Unix()
 }
 
 func (m *Message) IsCoinBase() bool {

@@ -1,16 +1,18 @@
 package types
 
 import (
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	hash2 "github.com/Futuremine-chain/futuremine/tools/crypto/hash"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
+	"time"
 )
 
 type Header struct {
-	version   int32
+	version   uint32
 	hash      arry.Hash
 	preHash   arry.Hash
 	msgRoot   arry.Hash
@@ -18,14 +20,14 @@ type Header struct {
 	dPosRoot  arry.Hash
 	tokenRoot arry.Hash
 	height    uint64
-	time      int64
-	cycle     int64
+	time      time.Time
+	cycle     uint64
 	signer    arry.Address
 	signature *Signature
 }
 
 func NewHeader(preHash, msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height uint64,
-	time int64, signer arry.Address) *Header {
+	blockTime int64, signer arry.Address) *Header {
 	return &Header{
 		preHash:   preHash,
 		msgRoot:   msgRoot,
@@ -33,8 +35,8 @@ func NewHeader(preHash, msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height 
 		dPosRoot:  dPosRoot,
 		tokenRoot: tokenRoot,
 		height:    height,
-		time:      time,
-		cycle:     time / int64(param.CycleInterval),
+		time:      time.Unix(blockTime, 0),
+		cycle:     uint64(blockTime) / uint64(param.CycleInterval),
 		signer:    signer,
 	}
 }
@@ -60,7 +62,8 @@ func (h *Header) PreHash() arry.Hash {
 }
 
 func (h *Header) Bytes() []byte {
-	bytes, _ := rlp.EncodeToBytes(h)
+	bytes, err := rlp.EncodeToBytes(h)
+	fmt.Println(err)
 	return bytes
 }
 
@@ -89,11 +92,11 @@ func (h *Header) Signature() types.ISignature {
 }
 
 func (h *Header) Time() int64 {
-	return h.time
+	return h.time.Unix()
 }
 
 func (h *Header) Cycle() int64 {
-	return h.cycle
+	return int64(h.cycle)
 }
 
 func (h *Header) SetHash() {

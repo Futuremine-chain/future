@@ -11,6 +11,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
+	"time"
 )
 
 const (
@@ -37,7 +38,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 			config.Param.GenesisTime,
 			arry.Address{},
 		),
-		Body: &fmctypes.Body{Messages: make([]*fmctypes.Message, 0)},
+		Body: &fmctypes.Body{Messages: make([]types.IMessage, 0)},
 	}
 	for _, super := range genesisSuperList.Members {
 		var peerId fmctypes.Peer
@@ -46,13 +47,13 @@ func (d *DPos) GenesisBlock() types.IBlock {
 			Header: &fmctypes.MsgHeader{
 				Type:      fmctypes.Candidate,
 				From:      super.Signer,
-				Time:      config.Param.GenesisTime,
+				Time:      time.Unix(config.Param.GenesisTime, 0),
 				Signature: &fmctypes.Signature{},
 			},
 			Body: &fmctypes.CandidateBody{Peer: peerId},
 		}
 		msg.SetHash()
-		block.Body.Add(msg)
+		block.Body.Messages = append(block.Body.Messages, msg)
 	}
 	block.SetHash()
 	return block

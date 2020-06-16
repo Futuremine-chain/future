@@ -6,7 +6,7 @@ type Body struct {
 	Messages
 }
 
-func (b *Body) Msgs() types.IMessages {
+func (b *Body) Msgs() []types.IMessage {
 	return b.Messages
 }
 

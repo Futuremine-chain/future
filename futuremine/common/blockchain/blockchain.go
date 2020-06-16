@@ -13,6 +13,7 @@ import (
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
+	"time"
 )
 
 const chainDB = "chain_db"
@@ -86,7 +87,7 @@ func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
 	return header, nil
 }
 
-func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, error) {
+func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlock, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
 
@@ -94,16 +95,16 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 		Header: &fmctypes.MsgHeader{
 			Type: fmctypes.Transaction,
 			From: fmctypes.CoinBase,
-			Time: time,
+			Time: time.Unix(blockTime, 0),
 		},
 		Body: &fmctypes.TransactionBody{
 			TokenAddress: config.Param.TokenParam.MainTokenAddress,
 			Receiver:     config.Param.IPrivate.Address(),
-			Amount:       config.Param.TokenParam.Proportion + msgs.CalculateFee(),
+			Amount:       config.Param.TokenParam.Proportion + fmctypes.CalculateFee(msgs),
 		},
 	}
 	coinBase.SetHash()
-	fmcMsgs := msgs.(fmctypes.Messages)
+	fmcMsgs := msgs
 	fmcMsgs = append(fmcMsgs, coinBase)
 	lastHeader, err := b.GetHeaderHeight(b.lastHeight)
 	if err != nil {
@@ -112,12 +113,12 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 	// Build block header
 	header := fmctypes.NewHeader(
 		lastHeader.Hash(),
-		fmcMsgs.MsgRoot(),
+		fmctypes.MsgRoot(msgs),
 		b.actRoot,
 		b.dPosRoot,
 		b.tokenRoot,
 		b.lastHeight+1,
-		time,
+		blockTime,
 		config.Param.IPrivate.Address(),
 	)
 	body := &fmctypes.Body{fmcMsgs}
@@ -238,7 +239,7 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.checkBlock(block); err != nil {
 		return err
 	}
-	if err := b.status.Change(block.BlockBody().Msgs().MsgList(), block); err != nil {
+	if err := b.status.Change(block.BlockBody().MsgList(), block); err != nil {
 		return err
 	}
 	b.saveBlock(block)
@@ -272,7 +273,7 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 		"tokenroot", block.TokenRoot().String(),
 		"dposroot", block.DPosRoot().String(),
 		"signer", block.Signer().String(),
-		"msgcount", block.BlockBody().Msgs().Count(),
+		"msgcount", len(block.BlockBody().MsgList()),
 		"time", block.Time(),
 		"cycle", block.Cycle())
 }
@@ -281,7 +282,7 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	b.status.Change(block.BlockBody().Msgs().MsgList(), block)
+	b.status.Change(block.BlockBody().MsgList(), block)
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
@@ -304,7 +305,7 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 		"tokenroot", block.TokenRoot().String(),
 		"dposroot", block.DPosRoot().String(),
 		"signer", block.Signer().String(),
-		"msgcount", block.BlockBody().Msgs().Count(),
+		"msgcount", len(block.BlockBody().MsgList()),
 		"time", block.Time(),
 		"cycle", block.Cycle())
 }
@@ -347,18 +348,17 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 	if err := b.dPos.CheckSeal(block.BlockHeader(), preHeader, b); err != nil {
 		return err
 	}
-	if err := b.checkMsgs(block.BlockBody().Msgs(), block.Height()); err != nil {
+	if err := b.checkMsgs(block.BlockBody().MsgList(), block.Height()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (b *FMCChain) checkMsgs(msgs types.IMessages, blockHeight uint64) error {
+func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 	address := make(map[string]bool)
-	msgList := msgs.MsgList()
-	for _, msg := range msgList {
+	for _, msg := range msgs {
 		if msg.IsCoinBase() {
-			if err := b.checkCoinBase(msg, msgs.CalculateFee()); err != nil {
+			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs)); err != nil {
 				return err
 			}
 		} else {

@@ -1,5 +1,6 @@
 package types
 
 type IBody interface {
-	Msgs() IMessages
+	MsgList() []IMessage
+	Count() int
 }

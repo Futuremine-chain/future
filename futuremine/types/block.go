@@ -28,14 +28,14 @@ func (b *Block) Height() uint64 {
 }
 
 func (b *Block) Time() int64 {
-	return b.Header.time
+	return b.Header.time.Unix()
 }
 
 func (b *Block) Add(message types.IMessage) {
-	b.Body.Add(message)
+	b.Body.Messages = append(b.Body.Messages, message)
 }
 
-func (b *Block) Msgs() types.IMessages {
+func (b *Block) Msgs() []types.IMessage {
 	return b.Body.Msgs()
 }
 
@@ -69,7 +69,8 @@ func (b *Block) Sign(key *secp256k1.PrivateKey) error {
 }
 
 func (b *Block) CheckMsgRoot() bool {
-	return b.Header.MsgRoot().IsEqual(b.Body.MsgRoot())
+	msgRoot := MsgRoot(b.Body.Messages)
+	return b.Header.MsgRoot().IsEqual(msgRoot)
 }
 
 func (b *Block) GetMsgIndexs() map[arry.Hash]*MsgIndex {

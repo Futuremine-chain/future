@@ -62,7 +62,7 @@ func (p *Pool) Put(msg types.IMessage, isPeer bool) error {
 	return nil
 }
 
-func (p *Pool) NeedPackaged(count int) types.IMessages {
+func (p *Pool) NeedPackaged(count int) []types.IMessage {
 	msgs := p.msgMgt.NeedPackaged(count)
 	return msgs
 }
@@ -94,6 +94,6 @@ func (p *Pool) removeExpired() {
 	p.msgMgt.DeleteExpired(threshold)
 }
 
-func (p *Pool) DeleteAndUpdate(msgs types.IMessages) {
+func (p *Pool) DeleteAndUpdate(msgs []types.IMessage) {
 	p.msgMgt.DeleteAndUpdate(msgs)
 }

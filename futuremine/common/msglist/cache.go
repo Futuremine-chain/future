@@ -53,10 +53,10 @@ func (c *Cache) Len() int {
 	return len(c.msgs)
 }
 
-func (c *Cache) All() types.IMessages {
-	var all types.IMessages
+func (c *Cache) All() []types.IMessage {
+	var all = make([]types.IMessage, 0)
 	for _, msg := range c.msgs {
-		all.Add(msg)
+		all = append(all, msg)
 	}
 	return all
 }

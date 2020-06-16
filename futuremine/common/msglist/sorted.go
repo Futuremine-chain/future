@@ -35,22 +35,22 @@ func (t *Sorted) Put(msg types.IMessage) {
 	t.db.Save(msg)
 }
 
-func (t *Sorted) All() types.IMessages {
-	var all types.IMessages
+func (t *Sorted) All() []types.IMessage {
+	var all []types.IMessage
 	for _, msg := range t.cache {
-		all.Add(msg)
+		all = append(all, msg)
 	}
 	return all
 }
 
-func (t *Sorted) NeedPackaged(count int) types.IMessages {
-	var msgs types.IMessages
+func (t *Sorted) NeedPackaged(count int) []types.IMessage {
+	msgs := make([]types.IMessage, count)
 	rIndex := t.index.CopySelf()
 
 	for rIndex.Len() > 0 && count > 0 {
 		ti := heap.Pop(rIndex).(*msgInfo)
 		msg := t.msgs[ti.address]
-		msgs.Add(msg)
+		msgs = append(msgs, msg)
 		count--
 	}
 	return msgs

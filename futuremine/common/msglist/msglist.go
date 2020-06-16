@@ -100,11 +100,11 @@ func (t *MsgManagement) put(msg types.IMessage) error {
 	return nil
 }
 
-func (t *MsgManagement) DeleteAndUpdate(messages types.IMessages) {
+func (t *MsgManagement) DeleteAndUpdate(messages []types.IMessage) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-	for _, msg := range messages.MsgList() {
+	for _, msg := range messages {
 		t.Remove(msg)
 	}
 	t.update()
@@ -117,14 +117,14 @@ func (t *MsgManagement) DeleteEnd(newTx types.IMessage) {
 	t.ready.PopMin(newTx.Fee())
 }
 
-func (t *MsgManagement) NeedPackaged(count int) types.IMessages {
+func (t *MsgManagement) NeedPackaged(count int) []types.IMessage {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
 
 	return t.ready.NeedPackaged(count)
 }
 
-func (t *MsgManagement) GetAll() (types.IMessages, types.IMessages) {
+func (t *MsgManagement) GetAll() ([]types.IMessage, []types.IMessage) {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
 

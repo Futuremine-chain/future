@@ -7,39 +7,30 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-type Messages []*Message
+type Messages []types.IMessage
 
 func (m Messages) MsgList() []types.IMessage {
-	iTxs := make([]types.IMessage, len(m))
-	for i, msg := range m {
-		iTxs[i] = msg
-	}
-	return iTxs
-}
-
-func (m Messages) Add(iMsg types.IMessage) {
-	iMsg = new(Message)
-	msg := iMsg.(*Message)
-	m = append(m, msg)
+	return m
 }
 
 func (m Messages) Count() int {
 	return len(m)
 }
 
-func (m Messages) MsgRoot() arry.Hash {
+func MsgRoot(msgs []types.IMessage) arry.Hash {
 	var hashes [][]byte
-	for _, msg := range m {
+	for _, msg := range msgs {
 		hashes = append(hashes, msg.Hash().Bytes())
 	}
 	hashBytes := bytes.Join(hashes, []byte{})
 	return hash.Hash(hashBytes)
 }
 
-func (m Messages) CalculateFee() uint64 {
+func CalculateFee(msgs []types.IMessage) uint64 {
 	var sum uint64
-	for _, msg := range m {
+	for _, msg := range msgs {
 		sum += msg.Fee()
 	}
 	return sum
 }
+
