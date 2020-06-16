@@ -58,13 +58,13 @@ func (c *ChainDB) TokenRoot() (arry.Hash, error) {
 	return arry.BytesToHash(rootBytes), nil
 }
 
-func (c *ChainDB) LastHeight() uint64 {
+func (c *ChainDB) LastHeight() (uint64, error) {
 	bytes, err := c.db.GetFromBucket(_lastHeight, []byte(_lastHeight))
 	if err != nil {
-		return 0
+		return 0, err
 	}
 	height, _ := strconv.ParseUint(string(bytes), 10, 64)
-	return height
+	return height, nil
 }
 
 func (b *ChainDB) Close() error {

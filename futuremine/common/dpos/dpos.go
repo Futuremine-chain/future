@@ -26,6 +26,38 @@ func NewDPos(dPosStatus dpos.IDPosStatus) *DPos {
 	return &DPos{cycle: &Cycle{DPosStatus: dPosStatus}}
 }
 
+func (d *DPos) GenesisBlock() types.IBlock {
+	block := &fmctypes.Block{
+		Header: fmctypes.NewHeader(arry.Hash{},
+			arry.Hash{},
+			arry.Hash{},
+			arry.Hash{},
+			arry.Hash{},
+			0,
+			param.GenesisTime,
+			arry.Address{},
+		),
+		Body: &fmctypes.Body{Messages: make([]*fmctypes.Message, 0)},
+	}
+	for _, super := range genesisSuperList.Members {
+		var peerId fmctypes.Peer
+		copy(peerId[:], super.PeerId)
+		msg := &fmctypes.Message{
+			Header: &fmctypes.MsgHeader{
+				Type:      fmctypes.Candidate,
+				From:      super.Signer,
+				Time:      param.GenesisTime,
+				Signature: &fmctypes.Signature{},
+			},
+			Body: &fmctypes.CandidateBody{Peer: peerId},
+		}
+		msg.SetHash()
+		block.Body.Add(msg)
+	}
+	block.SetHash()
+	return block
+}
+
 func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IChain) error {
 	preHeader, err := chain.GetBlockHash(header.PreHash())
 	if err != nil {

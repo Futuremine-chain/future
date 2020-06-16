@@ -4,18 +4,18 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/hexutil"
+	"github.com/Futuremine-chain/futuremine/tools/hexutil"
 	"math/big"
 	"math/rand"
 	"reflect"
 )
 
 const (
-	HashLength    = 32
+	HashLength = 32
 )
 
 var (
-	hashT    = reflect.TypeOf(Hash{})
+	hashT = reflect.TypeOf(Hash{})
 )
 
 // Hash represents the 32 byte sha256 hash of arbitrary data.
@@ -129,4 +129,3 @@ func (h *UnprefixedHash) UnmarshalText(input []byte) error {
 func (h UnprefixedHash) MarshalText() ([]byte, error) {
 	return []byte(hex.EncodeToString(h[:])), nil
 }
-

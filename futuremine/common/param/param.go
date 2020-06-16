@@ -26,4 +26,8 @@ const (
 	SafeSize = SuperSize*2/3 + 1
 	// The minimum threshold at which a block is valid
 	DPosSize = SuperSize*2/3 + 1
+
+	GenesisTime = 1592268410
+
+	GenesisCycle = 1592268410 / CycleInterval
 )

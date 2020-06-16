@@ -2,6 +2,18 @@ package types
 
 import "github.com/Futuremine-chain/futuremine/tools/arry"
 
+const PeerLength = 53
+
+type Peer [PeerLength]byte
+
+func (p Peer) String() string {
+	return string(p[:])
+}
+
+func (p Peer) Bytes() []byte {
+	return p[:]
+}
+
 type TransactionBody struct {
 	TokenAddress arry.Address
 	Receiver     arry.Address
@@ -39,7 +51,7 @@ func (t *TokenBody) MsgAmount() uint64 {
 }
 
 type CandidateBody struct {
-	PeerID string
+	Peer Peer
 }
 
 func (c *CandidateBody) MsgTo() arry.Address {

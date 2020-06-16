@@ -52,7 +52,9 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool, pri
 	}
 
 	// Initialize chain height
-	fmc.lastHeight = fmc.db.LastHeight()
+	if fmc.lastHeight, err = fmc.db.LastHeight(); err != nil {
+		fmc.saveGenesisBlock(fmc.dPos.GenesisBlock())
+	}
 	fmc.UpdateConfirmed(fmc.dPos.Confirmed())
 	return fmc, nil
 }
@@ -264,6 +266,38 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	b.db.SaveTokenRoot(b.tokenRoot)
 
 	b.lastHeight = block.Height()
+	b.db.SaveLastHeight(b.lastHeight)
+
+	log.Info("Save block", "module", "module",
+		"height", block.Height(),
+		"hash", block.Hash().String(),
+		"actroot", block.ActRoot().String(),
+		"tokenroot", block.TokenRoot().String(),
+		"dposroot", block.DPosRoot().String(),
+		"signer", block.Signer().String(),
+		"msgcount", block.BlockBody().Msgs().Count(),
+		"time", block.Time(),
+		"cycle", block.Cycle())
+}
+
+func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	b.status.Change(block.BlockBody().Msgs().MsgList(), block)
+	bk := block.(*fmctypes.Block)
+	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
+	b.db.SaveHeader(bk.Header)
+	b.db.SaveMessages(block.MsgRoot(), rlpBlock.MsgList())
+	b.db.SaveMsgIndex(bk.GetMsgIndexs())
+	b.db.SaveHeightHash(block.Height(), block.Hash())
+	b.lastHeight = block.Height()
+	b.db.SaveConfirmedHeight(block.Height(), b.confirmed)
+	b.status.SetConfirmed(0)
+	b.actRoot, b.tokenRoot, b.dPosRoot, _ = b.status.Commit()
+	b.db.SaveActRoot(b.actRoot)
+	b.db.SaveDPosRoot(b.dPosRoot)
+	b.db.SaveTokenRoot(b.tokenRoot)
 	b.db.SaveLastHeight(b.lastHeight)
 
 	log.Info("Save block", "module", "module",

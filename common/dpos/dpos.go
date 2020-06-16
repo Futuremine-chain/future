@@ -6,6 +6,7 @@ import (
 )
 
 type IDPos interface {
+	GenesisBlock() types.IBlock
 	CheckTime(header types.IHeader, chain blockchain.IChain) error
 	CheckSigner(header types.IHeader, chain blockchain.IChain) error
 	CheckHeader(header types.IHeader, parent types.IHeader, chain blockchain.IChain) error

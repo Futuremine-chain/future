@@ -20,15 +20,14 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/hexutil"
+	"github.com/Futuremine-chain/futuremine/tools/hexutil"
 	"math/big"
 	"reflect"
 )
 
-const  	AddressLength = 36
+const AddressLength = 36
 
 var addressT = reflect.TypeOf(Address{})
-
 
 type Address [AddressLength]byte
 
@@ -123,4 +122,3 @@ func (a *UnprefixedAddress) UnmarshalText(input []byte) error {
 func (a UnprefixedAddress) MarshalText() ([]byte, error) {
 	return []byte(hex.EncodeToString(a[:])), nil
 }
-
