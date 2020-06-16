@@ -147,10 +147,10 @@ func (d *DPosDB) AddSuperBlockCount(cycle int64, signer arry.Address) {
 	d.trie.Update(base.Key(_blockCount, hash.Bytes()), bytes)
 }
 
-func (d *DPosDB) SuperBlockCount(cycle int64, signer arry.Address) int {
+func (d *DPosDB) SuperBlockCount(cycle int64, signer arry.Address) uint32 {
 	hash := cycleSuperCountKey(cycle, signer)
 	bytes := d.trie.Get(base.Key(_blockCount, hash.Bytes()))
-	var count int
+	var count uint32
 	rlp.DecodeBytes(bytes, &count)
 	return count
 }

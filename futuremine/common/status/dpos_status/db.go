@@ -20,5 +20,5 @@ type IDPosDB interface {
 	SetConfirmed(uint64)
 	Voter(from, to arry.Address)
 	AddSuperBlockCount(cycle int64, signer arry.Address)
-	SuperBlockCount(cycle int64, signer arry.Address) int
+	SuperBlockCount(cycle int64, signer arry.Address) uint32
 }

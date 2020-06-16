@@ -46,6 +46,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 		msg := &fmctypes.Message{
 			Header: &fmctypes.MsgHeader{
 				Type:      fmctypes.Candidate,
+				Nonce:1,
 				From:      super.Signer,
 				Time:      time.Unix(config.Param.GenesisTime, 0),
 				Signature: &fmctypes.Signature{},
@@ -144,7 +145,7 @@ func (d *DPos) SuperIds() []string {
 }
 
 func (d *DPos) Confirmed() uint64 {
-	return 0
+	return d.confirmed
 }
 
 func (d *DPos) checkTime(lastHeader types.IHeader, header types.IHeader) error {

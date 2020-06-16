@@ -1,9 +1,17 @@
 package types
 
-func DecodeRlpMessages([]byte) ([]*RlpMessage, error) {
-	return nil, nil
+import "github.com/Futuremine-chain/futuremine/tools/rlp"
+
+func DecodeRlpMessages(bytes []byte) ([]*RlpMessage, error) {
+	var msgs []*RlpMessage
+	err := rlp.DecodeBytes(bytes, msgs)
+	if err != nil{
+		return nil, err
+	}
+	return msgs, nil
 }
 
-func EncodeRlpMessages([]*RlpMessage) []byte {
-	return nil
+func EncodeRlpMessages(msgs []*RlpMessage) []byte {
+	bytes, _ := rlp.EncodeToBytes(msgs)
+	return bytes
 }

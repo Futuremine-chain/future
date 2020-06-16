@@ -98,7 +98,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlo
 			Time: time.Unix(blockTime, 0),
 		},
 		Body: &fmctypes.TransactionBody{
-			TokenAddress: config.Param.TokenParam.MainTokenAddress,
+			TokenAddress: config.Param.TokenParam.MainToken,
 			Receiver:     config.Param.IPrivate.Address(),
 			Amount:       config.Param.TokenParam.Proportion + fmctypes.CalculateFee(msgs),
 		},
@@ -417,6 +417,6 @@ func (b *FMCChain) UpdateConfirmed(height uint64) {
 func (b *FMCChain) Vote(address arry.Address) uint64 {
 	var vote uint64
 	act := b.status.Account(address)
-	vote += act.Balance(config.Param.MainTokenAddress)
+	vote += act.Balance(config.Param.MainToken)
 	return vote
 }
