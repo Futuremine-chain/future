@@ -76,7 +76,7 @@ func FMCMain() error {
 }
 
 func createFMCNode() (*node.FMCNode, error) {
-	cfg, err := config.LoadConfig(NewFmcApp(), private.NewPrivate())
+	err := config.LoadParam(private.NewPrivate())
 	if err != nil {
 		return nil, err
 	}
@@ -103,13 +103,13 @@ func createFMCNode() (*node.FMCNode, error) {
 		return nil, err
 	}
 	poolSv := pool.NewPool(horn, msgManage)
-	chain, err := blockchain.NewFMCChain(status, dpos, poolSv, cfg.Private)
+	chain, err := blockchain.NewFMCChain(status, dpos, poolSv)
 	if err != nil {
 		return nil, err
 	}
 
 	reqHandler := request.NewRequestHandler(chain)
-	p2pSv, err := p2p.NewP2p(cfg, peersSv, reqHandler)
+	p2pSv, err := p2p.NewP2p(peersSv, reqHandler)
 	if err != nil {
 		return nil, err
 	}

@@ -36,7 +36,7 @@ type P2p struct {
 	closed     chan bool
 }
 
-func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
+func NewP2p(ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 	var err error
 	ser := &P2p{
 		peers:      ps,
@@ -44,20 +44,21 @@ func NewP2p(cfg *config.Config, ps *peers.Peers, reqHandler request.IRequestHand
 		close:      make(chan bool),
 		closed:     make(chan bool),
 	}
-	if cfg.Boot != "" {
-		ma, err := multiaddr.NewMultiaddr(cfg.Boot)
+	if config.Param.CustomBoot != "" {
+		ma, err := multiaddr.NewMultiaddr(config.Param.CustomBoot)
 		if err != nil {
 			return nil, fmt.Errorf("incorrect bootstrap node address， %s", err)
 		}
 		CustomBootPeers = append(CustomBootPeers, ma)
 	}
 
-	host, err := newP2PHost(cfg.Private.PrivateKey(), cfg.ExternalIp, cfg.P2PPort, cfg.ExternalIp)
+	host, err := newP2PHost(config.Param.IPrivate.PrivateKey(), config.Param.ExternalIp,
+		config.Param.P2pPort, config.Param.ExternalIp)
 	if err != nil {
 		return nil, err
 	}
 	ser.host = host
-	ser.local = peers.NewPeer(cfg.Private.PrivateKey(),
+	ser.local = peers.NewPeer(config.Param.IPrivate.PrivateKey(),
 		&peer.AddrInfo{
 			ID:    host.ID(),
 			Addrs: host.Addrs()}, nil)
@@ -137,11 +138,11 @@ func (p *P2p) ID() string {
 }
 
 func (p *P2p) newStream(id peer.ID) (network.Stream, error) {
-	return p.host.NewStream(context.Background(), id, protocol.ID(config.App.P2pNetWork()))
+	return p.host.NewStream(context.Background(), id, protocol.ID(config.Param.P2pParam.NetWork))
 }
 
 func (p *P2p) initP2pHandle() {
-	p.host.SetStreamHandler(protocol.ID(config.App.P2pNetWork()), p.reqHandler.SendToReady)
+	p.host.SetStreamHandler(protocol.ID(config.Param.P2pParam.NetWork), p.reqHandler.SendToReady)
 }
 
 func (p *P2p) connectBootNode() error {
@@ -180,7 +181,7 @@ func (p *P2p) connectBootNode() error {
 // peerDiscovery new nodes every 8s
 func (p *P2p) peerDiscovery() {
 	rouDis := discovery.NewRoutingDiscovery(p.dht)
-	discovery.Advertise(context.Background(), rouDis, config.App.P2pNetWork())
+	discovery.Advertise(context.Background(), rouDis, config.Param.P2pParam.NetWork)
 
 	for {
 		select {
@@ -189,7 +190,7 @@ func (p *P2p) peerDiscovery() {
 			return
 		default:
 			log.Info("Look for other peers...", "module", module)
-			ch, err := rouDis.FindPeers(context.Background(), config.App.P2pNetWork())
+			ch, err := rouDis.FindPeers(context.Background(), config.Param.P2pParam.NetWork)
 			if err != nil {
 				log.Error("Peer search failed", "module", module, "error", err)
 				time.Sleep(time.Second * 10)

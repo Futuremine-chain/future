@@ -20,7 +20,7 @@ type ActStatus struct {
 }
 
 func NewActStatus() (*ActStatus, error) {
-	db, err := act_db.Open(config.App.Setting().Data + "/" + account_db)
+	db, err := act_db.Open(config.Param.Data + "/" + account_db)
 	if err != nil {
 		return nil, err
 	}

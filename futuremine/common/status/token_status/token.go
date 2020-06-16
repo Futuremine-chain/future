@@ -18,7 +18,7 @@ type TokenStatus struct {
 }
 
 func NewTokenStatus() (*TokenStatus, error) {
-	db, err := token_db.Open(config.App.Setting().Data + "/" + tokenDB)
+	db, err := token_db.Open(config.Param.Data + "/" + tokenDB)
 	if err != nil {
 		return nil, err
 	}

@@ -25,7 +25,7 @@ import (
 	"reflect"
 )
 
-const AddressLength = 36
+const AddressLength = 35
 
 var addressT = reflect.TypeOf(Address{})
 

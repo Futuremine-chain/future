@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/common/private"
 	"github.com/Futuremine-chain/futuremine/common/status"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/pool"
@@ -21,7 +19,6 @@ const chainDB = "chain_db"
 const module = "module"
 
 type FMCChain struct {
-	private    private.IPrivate
 	mutex      sync.RWMutex
 	status     status.IStatus
 	db         IChainDB
@@ -34,10 +31,10 @@ type FMCChain struct {
 	confirmed  uint64
 }
 
-func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool, private private.IPrivate) (*FMCChain, error) {
+func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool) (*FMCChain, error) {
 	var err error
-	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool, private: private}
-	fmc.db, err = chain_db.Open(config.App.Setting().Data + "/" + chainDB)
+	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool}
+	fmc.db, err = chain_db.Open(config.Param.Data + "/" + chainDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
 	}
@@ -83,7 +80,7 @@ func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
 		b.tokenRoot,
 		b.lastHeight+1,
 		time,
-		b.private.Address(),
+		config.Param.IPrivate.Address(),
 	)
 
 	return header, nil
@@ -100,9 +97,9 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 			Time: time,
 		},
 		Body: &fmctypes.TransactionBody{
-			TokenAddress: param.MainToken,
-			Receiver:     b.private.Address(),
-			Amount:       param.Proportion + msgs.CalculateFee(),
+			TokenAddress: config.Param.TokenParam.MainTokenAddress,
+			Receiver:     config.Param.IPrivate.Address(),
+			Amount:       config.Param.TokenParam.Proportion + msgs.CalculateFee(),
 		},
 	}
 	coinBase.SetHash()
@@ -121,7 +118,7 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 		b.tokenRoot,
 		b.lastHeight+1,
 		time,
-		b.private.Address(),
+		config.Param.IPrivate.Address(),
 	)
 	body := &fmctypes.Body{fmcMsgs}
 	newBlock := &fmctypes.Block{
@@ -129,7 +126,7 @@ func (b *FMCChain) NextBlock(msgs types.IMessages, time int64) (types.IBlock, er
 		Body:   body,
 	}
 	newBlock.SetHash()
-	if err := newBlock.Sign(b.private.PrivateKey()); err != nil {
+	if err := newBlock.Sign(config.Param.IPrivate.PrivateKey()); err != nil {
 		return nil, err
 	}
 	return newBlock, nil
@@ -420,6 +417,6 @@ func (b *FMCChain) UpdateConfirmed(height uint64) {
 func (b *FMCChain) Vote(address arry.Address) uint64 {
 	var vote uint64
 	act := b.status.Account(address)
-	vote += act.Balance(param.MainToken)
+	vote += act.Balance(config.Param.MainTokenAddress)
 	return vote
 }

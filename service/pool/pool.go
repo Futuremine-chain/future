@@ -2,6 +2,7 @@ package pool
 
 import (
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/common/msglist"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
@@ -11,13 +12,6 @@ import (
 )
 
 const module = "pool"
-
-// Clear the expired message interval
-const (
-	msgExpiredTime     = 60 * 60 * 3
-	monitorMsgInterval = 2
-	maxPoolMsg         = 5000
-)
 
 type Pool struct {
 	msgMgt      msglist.IMsgList
@@ -87,7 +81,7 @@ func (p *Pool) ReceiveMsgFromPeer(msg types.IMessage) error {
 }
 
 func (p *Pool) monitorExpired() {
-	t := time.NewTicker(time.Second * monitorMsgInterval)
+	t := time.NewTicker(time.Second * config.Param.MonitorMsgInterval)
 	defer t.Stop()
 
 	for range t.C {
@@ -96,7 +90,7 @@ func (p *Pool) monitorExpired() {
 }
 
 func (p *Pool) removeExpired() {
-	threshold := utils.NowUnix() - msgExpiredTime
+	threshold := utils.NowUnix() - config.Param.MsgExpiredTime
 	p.msgMgt.DeleteExpired(threshold)
 }
 

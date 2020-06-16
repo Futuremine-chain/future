@@ -69,7 +69,7 @@ func (m *MsgHeader) checkType() error {
 }
 
 func (m *MsgHeader) checkFrom() error {
-	if !kit.CheckAddress(config.App.NetWork(), m.From) {
+	if !kit.CheckAddress(config.Param.Name, m.From) {
 		return fmt.Errorf("%s address illegal", m.From.String())
 	}
 	return nil
@@ -90,7 +90,7 @@ func (m *MsgHeader) checkSinger() error {
 		return errors.New("signature verification failed")
 	}
 
-	if !VerifySigner(config.App.NetWork(), m.From, m.Signature.PubKey) {
+	if !VerifySigner(config.Param.Name, m.From, m.Signature.PubKey) {
 		return errors.New("signer and sender do not match")
 	}
 	return nil

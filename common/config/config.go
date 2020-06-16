@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/Futuremine-chain/futuremine/common/private"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	log2 "github.com/Futuremine-chain/futuremine/tools/log"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -13,20 +14,12 @@ import (
 	"strings"
 )
 
-var App IApp
 var DefaultHomeDir string
-var defaultP2pPort = "20000"
-var DefaultRpcPort = "20001"
-var defaultPrivateFile = "key.json"
-var defaultPrivatePass = "fmc"
-var defaultKey = "future_mine_chain"
-var defaultExternalIp = "0.0.0.0"
-var DefaultFallBack = int64(-1)
+var Param *param.Param
 
 // Config is the node startup parameter
 type Config struct {
 	ConfigFile string `long:"config" description:"Start with a configuration file"`
-	Home       string `long:"appdata" description:"Path to application home directory"`
 	Data       string `long:"data" description:"Path to application data directory"`
 	Logging    bool   `long:"logging" description:"Logging switch"`
 	ExternalIp string `long:"externalip" description:"External network IP address"`
@@ -45,74 +38,81 @@ type Config struct {
 }
 
 // LoadConfig load the parse node startup parameter
-func LoadConfig(app IApp, pri private.IPrivate) (*Config, error) {
-	App = app
-	DefaultHomeDir = utils.AppDataDir(App.AppName(), false)
-	cfg := &Config{
-		Home:       DefaultHomeDir,
-		P2PPort:    defaultP2pPort,
-		RpcPort:    DefaultRpcPort,
-		FallBackTo: DefaultFallBack,
-	}
+func LoadParam(pri private.IPrivate) error {
+	cfg := &Config{}
 	appName := filepath.Base(os.Args[0])
 	appName = strings.TrimSuffix(appName, filepath.Ext(appName))
 	preParser := newConfigParser(cfg, flags.HelpFlag)
 	_, err := preParser.Parse()
 	if err != nil {
 		if e, ok := err.(*flags.Error); ok && e.Type != flags.ErrHelp {
-			return nil, err
+			return err
 		} else if ok && e.Type == flags.ErrHelp {
-			return nil, err
+			return err
 		}
 	}
 
 	if cfg.ConfigFile != "" {
 		_, err = toml.DecodeFile(cfg.ConfigFile, cfg)
 		if err != nil {
-			return nil, err
+			return err
 		}
+	}
+
+	if cfg.TestNet {
+		Param = param.TestNetParam
+	} else {
+		Param = param.MainNetParam
+	}
+
+	if cfg.Data != "" {
+		Param.Data = cfg.Data
+	} else {
+		Param.Data = utils.AppDataDir(Param.App, false)
+	}
+	// p2p service listening port, if not, use the default port
+	if cfg.P2PPort != "" {
+		Param.P2pParam.P2pPort = cfg.P2PPort
+	}
+	if cfg.Boot != "" {
+		Param.P2pParam.CustomBoot = cfg.Boot
 	}
 
 	// Set the default external IP. If the external IP is not set,
 	// other nodes can only know you but cannot send messages to you.
-	if cfg.ExternalIp == "" {
-		cfg.ExternalIp = defaultExternalIp
+	if cfg.ExternalIp != "" {
+		Param.P2pParam.ExternalIp = cfg.ExternalIp
 	}
 
-	// Node data and file storage directory, if not set,
-	// use the default directory
-	if cfg.Home == "" {
-		cfg.Home = DefaultHomeDir
+	if cfg.RpcPort != "" {
+		Param.RpcParam.RpcPort = cfg.RpcPort
+	}
+	if cfg.RpcPass != "" {
+		Param.RpcParam.RpcPass = cfg.RpcPass
+	}
+	if cfg.RpcCert != "" {
+		Param.RpcParam.RpcCert = cfg.RpcCert
+	}
+	if cfg.RpcTLS {
+		Param.RpcParam.RpcTLS = cfg.RpcTLS
+	}
+	if cfg.RpcCert != "" {
+		Param.RpcParam.RpcCertKey = cfg.RpcCert
+	}
+	if cfg.KeyFile != "" {
+		Param.PrivateFile = cfg.KeyFile
+	}
+	if cfg.KeyPass != "" {
+		Param.PrivatePass = cfg.KeyPass
+	}
+	if cfg.FallBackTo != -1 {
+		Param.FallBack = cfg.FallBackTo
 	}
 
-	// p2p service listening port, if not, use the default port
-	if cfg.P2PPort == "" {
-		cfg.P2PPort = defaultP2pPort
-	}
-
-	// rpc service listening port, if not, use the default port
-	if cfg.RpcPort == "" {
-		cfg.RpcPort = DefaultRpcPort
-	}
-
-	if cfg.TestNet {
-		App.InitTestNet()
-	}
-
-	// p2p same network label, the label is different and cannot communicate
-	App.InitP2pNet()
-
-	if !utils.Exist(cfg.Home) {
-		if err := os.Mkdir(cfg.Home, os.ModePerm); err != nil {
-			return nil, err
-		}
-	}
-	if cfg.Data == "" {
-		cfg.Data = cfg.Home + "/" + cfg.P2PPort
-	}
-	if !utils.Exist(cfg.Data) {
-		if err := os.Mkdir(cfg.Data, os.ModePerm); err != nil {
-			return nil, err
+	Param.Data = Param.Data + "/" + Param.P2pParam.P2pPort
+	if !utils.Exist(Param.Data) {
+		if err := os.Mkdir(Param.Data, os.ModePerm); err != nil {
+			return err
 		}
 	}
 
@@ -120,43 +120,45 @@ func LoadConfig(app IApp, pri private.IPrivate) (*Config, error) {
 	// generation and signature of the node that generates the block.
 	// If this parameter is not configured in the startup parameter,
 	// the node will be automatically generated and loaded automatically at startup
-	cfg.Private = pri
+	Param.IPrivate = pri
 	if cfg.KeyFile == "" {
-		cfg.KeyFile = cfg.Data + "/" + defaultPrivateFile
-		if err := cfg.Private.Load(cfg.KeyFile, defaultPrivatePass); err != nil {
-			if err = cfg.Private.Create(App.NetWork(), cfg.KeyFile, defaultPrivatePass); err != nil {
-				return nil, fmt.Errorf("create default priavte failed! %s", err.Error())
+		Param.PrivateFile = Param.Data + "/" + Param.PrivateFile
+		if err := Param.IPrivate.Load(Param.PrivateFile, Param.PrivatePass); err != nil {
+			if err = Param.IPrivate.Create(Param.Name, Param.PrivateFile, Param.PrivatePass); err != nil {
+				return fmt.Errorf("create default priavte failed! %s", err.Error())
 			}
 		}
 	} else {
-		if cfg.KeyPass == "" {
+		if Param.PrivatePass == "" {
 			fmt.Println("Please enter the password for the key file:")
 			passWd, err := utils.ReadPassWd()
 			if err != nil {
-				return nil, fmt.Errorf("read password failed! %s", err.Error())
+				return fmt.Errorf("read password failed! %s", err.Error())
 			}
-			cfg.KeyPass = string(passWd)
+			Param.PrivatePass = string(passWd)
 		}
-		if err := cfg.Private.Load(cfg.KeyFile, cfg.KeyPass); err != nil {
-			return nil, fmt.Errorf("load private failed! %s", err.Error())
+		if err := Param.IPrivate.Load(Param.PrivateFile, Param.PrivatePass); err != nil {
+			return fmt.Errorf("load private failed! %s", err.Error())
 		}
 	}
 
 	// If this parameter is true, the log is also written to the file
-	if cfg.Logging {
-		logDir := cfg.Data + "/log"
+	if cfg.Logging != Param.Logging {
+		Param.Logging = cfg.Logging
+	}
+	if Param.Logging {
+		logDir := Param.Data + "/log"
 		if !utils.Exist(logDir) {
 			if err := os.Mkdir(logDir, os.ModePerm); err != nil {
-				return nil, err
+				return err
 			}
 		}
 		utils.CleanAndExpandPath(logDir)
-		logDir = filepath.Join(logDir, App.NetWork())
+		logDir = filepath.Join(logDir, Param.Name)
 		log2.InitLogRotator(filepath.Join(logDir, "future_mine.log"))
 	}
-	log.Info("Data storage directory", "module", "config", "path", cfg.Data)
-	App.InitSetting(cfg)
-	return cfg, nil
+	log.Info("Data storage directory", "module", "config", "path", Param.Data)
+	return nil
 }
 
 func newConfigParser(cfg *Config, options flags.Options) *flags.Parser {

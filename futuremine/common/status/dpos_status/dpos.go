@@ -17,7 +17,7 @@ type DPosStatus struct {
 }
 
 func NewDPosStatus() (*DPosStatus, error) {
-	db, err := dpos_db.Open(config.App.Setting().Data + "/" + dPosDB)
+	db, err := dpos_db.Open(config.Param.Data + "/" + dPosDB)
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,7 @@ type MsgManagement struct {
 }
 
 func NewMsgManagement(validator validator.IValidator, actStatus account.IActStatus) (*MsgManagement, error) {
-	msgDB, err := msglist.Open(config.App.Setting().Data + "/" + msgList_db)
+	msgDB, err := msglist.Open(config.Param.Data + "/" + msgList_db)
 	if err != nil {
 		return nil, err
 	}

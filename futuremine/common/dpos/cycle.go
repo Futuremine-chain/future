@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
@@ -39,7 +40,7 @@ func (c *Cycle) Elect(time int64, preHash arry.Hash, chain blockchain.IChain) er
 	for _, candidate := range voters {
 		candidates = append(candidates, candidate)
 	}
-	if len(candidates) < param.SafeSize {
+	if len(candidates) < config.Param.DPosSize {
 		return errors.New("too few candidate")
 	}
 

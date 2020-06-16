@@ -34,7 +34,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 			arry.Hash{},
 			arry.Hash{},
 			0,
-			param.GenesisTime,
+			config.Param.GenesisTime,
 			arry.Address{},
 		),
 		Body: &fmctypes.Body{Messages: make([]*fmctypes.Message, 0)},
@@ -46,7 +46,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 			Header: &fmctypes.MsgHeader{
 				Type:      fmctypes.Candidate,
 				From:      super.Signer,
-				Time:      param.GenesisTime,
+				Time:      config.Param.GenesisTime,
 				Signature: &fmctypes.Signature{},
 			},
 			Body: &fmctypes.CandidateBody{Peer: peerId},
@@ -254,7 +254,7 @@ func (d *DPos) preCycleLastHash(current types.IHeader, chain blockchain.IChain) 
 }
 
 func (d *DPos) checkSigner(super arry.Address, header types.IHeader) error {
-	if !fmctypes.VerifySigner(config.App.NetWork(), super, header.Signature().PubicKey()) {
+	if !fmctypes.VerifySigner(config.Param.Name, super, header.Signature().PubicKey()) {
 		return errors.New("not the signature of the address")
 	}
 	if !fmctypes.Verify(header.Hash(), header.Signature()) {
