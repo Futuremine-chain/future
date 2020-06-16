@@ -6,8 +6,8 @@ import (
 )
 
 type RlpBlock struct {
-	*RlpHeader
-	*RlpBody
+	RlpHeader *Header
+	RlpBody   *RlpBody
 }
 
 func (r *RlpBlock) Bytes() []byte {

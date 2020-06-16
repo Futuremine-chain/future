@@ -5,6 +5,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/Futuremine-chain/futuremine/common/private"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
+	private2 "github.com/Futuremine-chain/futuremine/futuremine/common/private"
 	log2 "github.com/Futuremine-chain/futuremine/tools/log"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -38,7 +39,7 @@ type Config struct {
 }
 
 // LoadConfig load the parse node startup parameter
-func LoadParam(pri private.IPrivate) error {
+func LoadParam() error {
 	cfg := &Config{}
 	appName := filepath.Base(os.Args[0])
 	appName = strings.TrimSuffix(appName, filepath.Ext(appName))
@@ -109,6 +110,11 @@ func LoadParam(pri private.IPrivate) error {
 		Param.FallBack = cfg.FallBackTo
 	}
 
+	if !utils.Exist(Param.Data) {
+		if err := os.Mkdir(Param.Data, os.ModePerm); err != nil {
+			return err
+		}
+	}
 	Param.Data = Param.Data + "/" + Param.P2pParam.P2pPort
 	if !utils.Exist(Param.Data) {
 		if err := os.Mkdir(Param.Data, os.ModePerm); err != nil {
@@ -120,7 +126,7 @@ func LoadParam(pri private.IPrivate) error {
 	// generation and signature of the node that generates the block.
 	// If this parameter is not configured in the startup parameter,
 	// the node will be automatically generated and loaded automatically at startup
-	Param.IPrivate = pri
+	Param.IPrivate = private2.NewPrivate()
 	if cfg.KeyFile == "" {
 		Param.PrivateFile = Param.Data + "/" + Param.PrivateFile
 		if err := Param.IPrivate.Load(Param.PrivateFile, Param.PrivatePass); err != nil {

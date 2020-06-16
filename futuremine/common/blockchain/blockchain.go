@@ -214,7 +214,7 @@ func (b *FMCChain) GetRlpBlockHeight(height uint64) (types.IRlpBlock, error) {
 		return nil, err
 	}
 	rlpBody := &fmctypes.RlpBody{txs}
-	rlpHeader := header.ToRlpHeader().(*fmctypes.RlpHeader)
+	rlpHeader := header.ToRlpHeader().(*fmctypes.Header)
 	block := &fmctypes.RlpBlock{rlpHeader, rlpBody}
 	return block, nil
 }
@@ -229,7 +229,7 @@ func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
 		return nil, err
 	}
 	rlpBody := &fmctypes.RlpBody{txs}
-	rlpHeader := header.ToRlpHeader().(*fmctypes.RlpHeader)
+	rlpHeader := header.ToRlpHeader().(*fmctypes.Header)
 	block := &fmctypes.RlpBlock{rlpHeader, rlpBody}
 	return block, nil
 }
@@ -252,7 +252,7 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
-	b.db.SaveMessages(block.MsgRoot(), rlpBlock.MsgList())
+	b.db.SaveMessages(block.MsgRoot(), rlpBlock.RlpBody.MsgList())
 	b.db.SaveMsgIndex(bk.GetMsgIndexs())
 	b.db.SaveHeightHash(block.Height(), block.Hash())
 	b.db.SaveConfirmedHeight(block.Height(), b.confirmed)
@@ -285,7 +285,7 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
-	b.db.SaveMessages(block.MsgRoot(), rlpBlock.MsgList())
+	b.db.SaveMessages(block.MsgRoot(), rlpBlock.RlpBody.MsgList())
 	b.db.SaveMsgIndex(bk.GetMsgIndexs())
 	b.db.SaveHeightHash(block.Height(), block.Hash())
 	b.lastHeight = block.Height()

@@ -59,7 +59,10 @@ func (m *Message) MsgAmount() uint64 {
 }
 
 func (m *Message) ToRlp() types.IRlpMessage {
-	panic("implement me")
+	rlpMsg := &RlpMessage{}
+	rlpMsg.MsgHeader = m.Header
+	rlpMsg.MsgBody, _ = rlp.EncodeToBytes(m.Body)
+	return rlpMsg
 }
 
 func (m *Message) Check() error {

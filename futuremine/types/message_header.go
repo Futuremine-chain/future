@@ -8,7 +8,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 )
 
-type MessageType int
+type MessageType uint8
 
 const (
 	Transaction MessageType = iota
