@@ -12,8 +12,9 @@ const (
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
-	SuperSize = 9
-	DPosSize  = SuperSize*2/3 + 1
+	SuperSize = 3
+
+	DPosSize = SuperSize*2/3 + 1
 )
 
 const (
@@ -22,7 +23,7 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.0.0"
+	Version = "0.1.1"
 )
 
 type Param struct {
@@ -42,11 +43,11 @@ type Param struct {
 }
 
 type TokenParam struct {
-	CoinBase         uint64
-	Proportion       uint64
-	MinCoinCount     uint64
-	MaxCoinCount     uint64
-	MainToken arry.Address
+	CoinBase     uint64
+	Proportion   uint64
+	MinCoinCount uint64
+	MaxCoinCount uint64
+	MainToken    arry.Address
 }
 
 type PrivateParam struct {
@@ -97,11 +98,11 @@ var TestNetParam = &Param{
 		PrivatePass: "fmc",
 	},
 	TokenParam: &TokenParam{
-		CoinBase:         10 * 1e8,
-		Proportion:       10000,
-		MinCoinCount:     1 * 1e4,
-		MaxCoinCount:     1 * 1e10 * 1e8,
-		MainToken: arry.StringToAddress("FMC"),
+		CoinBase:     10 * 1e8,
+		Proportion:   10000,
+		MinCoinCount: 1 * 1e4,
+		MaxCoinCount: 1 * 1e10 * 1e8,
+		MainToken:    arry.StringToAddress("FMC"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    TestNet + "_FUTURE_MINE_CHAIN",
@@ -144,11 +145,11 @@ var MainNetParam = &Param{
 		PrivatePass: "fmc",
 	},
 	TokenParam: &TokenParam{
-		CoinBase:         10 * 1e8,
-		Proportion:       10000,
-		MinCoinCount:     1 * 1e4,
-		MaxCoinCount:     1 * 1e10 * 1e8,
-		MainToken: arry.StringToAddress("FMC"),
+		CoinBase:     10 * 1e8,
+		Proportion:   10000,
+		MinCoinCount: 1 * 1e4,
+		MaxCoinCount: 1 * 1e10 * 1e8,
+		MainToken:    arry.StringToAddress("FMC"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    MainNet + "_FUTURE_MINE_CHAIN",

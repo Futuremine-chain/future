@@ -5,7 +5,7 @@ import "github.com/Futuremine-chain/futuremine/types"
 type IMsgList interface {
 	DeleteExpired(int64)
 	DeleteEnd(types.IMessage)
-	DeleteAndUpdate(messages []types.IMessage)
+	Delete([]types.IMessage)
 	Read() error
 	Close() error
 	Update()

@@ -373,6 +373,7 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 			return errors.New("one address in a block can only send one transaction")
 		}
 	}
+	b.msgPool.Delete(msgs)
 	return nil
 }
 

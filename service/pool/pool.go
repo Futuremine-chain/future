@@ -94,6 +94,7 @@ func (p *Pool) removeExpired() {
 	p.msgMgt.DeleteExpired(threshold)
 }
 
-func (p *Pool) DeleteAndUpdate(msgs []types.IMessage) {
-	p.msgMgt.DeleteAndUpdate(msgs)
+func (p *Pool) Delete(msgs []types.IMessage) {
+	p.msgMgt.Delete(msgs)
 }
+

@@ -100,7 +100,7 @@ func (t *MsgManagement) put(msg types.IMessage) error {
 	return nil
 }
 
-func (t *MsgManagement) DeleteAndUpdate(messages []types.IMessage) {
+func (t *MsgManagement) Delete(messages []types.IMessage) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 

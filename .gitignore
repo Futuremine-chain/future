@@ -3,4 +3,5 @@ command/futuremine/config2.toml
 command/futuremine/config.toml
 config.toml
 command/futuremine/data
+command/wallet/keystore
 data
