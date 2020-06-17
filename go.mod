@@ -17,6 +17,8 @@ require (
 	github.com/multiformats/go-multiaddr v0.2.2
 	github.com/onsi/ginkgo v1.12.2
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
+	github.com/sirupsen/logrus v1.2.0
+	github.com/spf13/cobra v0.0.5
 	github.com/whyrusleeping/go-smux-multiplex v3.0.16+incompatible // indirect
 	github.com/whyrusleeping/go-smux-multistream v2.0.2+incompatible // indirect
 	github.com/whyrusleeping/go-smux-yamux v2.0.9+incompatible // indirect
