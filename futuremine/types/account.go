@@ -10,23 +10,20 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const MaxAddressTxs = 1000
-
 type Account struct {
-	address arry.Address
-	nonce   uint64
-	tokens  Tokens
-	confirmed uint64
-	journalIn       *journalIn
-	journalOut      *journalOut
+	Address    arry.Address
+	Nonce      uint64
+	Tokens     Tokens
+	Confirmed  uint64
+	JournalIn  *journalIn
+	JournalOut *journalOut
 }
-
 
 func NewAccount() *Account {
 	return &Account{
-		tokens:make(Tokens, 0),
-		journalOut:newJournalOut(),
-		journalIn:newJournalIn(),
+		Tokens:     make(Tokens, 0),
+		JournalOut: newJournalOut(),
+		JournalIn:  newJournalIn(),
 	}
 }
 
@@ -36,9 +33,8 @@ func DecodeAccount(bytes []byte) (*Account, error) {
 	return account, err
 }
 
-
 func (a *Account) NeedUpdate() bool {
-	for _, token := range a.tokens {
+	for _, token := range a.Tokens {
 		if token.LockedIn != 0 || token.LockedOut != 0 {
 			return true
 		}
@@ -48,26 +44,26 @@ func (a *Account) NeedUpdate() bool {
 
 // Update through the account transfer log information
 func (a *Account) UpdateLocked(confirmed uint64) error {
-	for _, in := range a.journalOut.GetJournalIns(confirmed) {
-		coinAccount, ok := a.tokens.Get(in.TokenAddress)
+	for _, in := range a.JournalOut.GetJournalIns(confirmed) {
+		coinAccount, ok := a.Tokens.Get(in.TokenAddress)
 		if !ok {
 			return errors.New("wrong journal")
 		}
 		if coinAccount.LockedIn >= in.Amount {
 			coinAccount.LockedIn -= in.Amount
-			a.tokens.Set(coinAccount)
+			a.Tokens.Set(coinAccount)
 
-			tokenAccount, ok := a.tokens.Get(config.Param.MainToken.String())
+			tokenAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
 			if !ok {
 				return errors.New("wrong journal")
 			}
 			if tokenAccount.LockedIn >= in.Fees {
 				tokenAccount.LockedIn -= in.Fees
-				a.tokens.Set(tokenAccount)
+				a.Tokens.Set(tokenAccount)
 			} else {
 				return errors.New("locked in amount not enough when update account journal")
 			}
-			a.journalOut.Remove(in.Height)
+			a.JournalOut.Remove(in.Height)
 
 		} else {
 			return errors.New("locked in amount not enough when update account journal")
@@ -75,11 +71,11 @@ func (a *Account) UpdateLocked(confirmed uint64) error {
 	}
 
 	// Update through account transfer log information
-	for _, out := range a.journalIn.GetJournalOuts(confirmed) {
-		coinAccount, ok := a.tokens.Get(out.TokenAddress)
+	for _, out := range a.JournalIn.GetJournalOuts(confirmed) {
+		coinAccount, ok := a.Tokens.Get(out.TokenAddress)
 		if !ok {
 			coinAccount = &TokenAccount{
-				Address:  out.TokenAddress,
+				Address:   out.TokenAddress,
 				Balance:   0,
 				LockedIn:  0,
 				LockedOut: 0,
@@ -88,13 +84,13 @@ func (a *Account) UpdateLocked(confirmed uint64) error {
 		if coinAccount.LockedOut >= out.Amount {
 			coinAccount.Balance += out.Amount
 			coinAccount.LockedOut -= out.Amount
-			a.tokens.Set(coinAccount)
-			a.journalIn.Remove(out.Height, out.TokenAddress)
+			a.Tokens.Set(coinAccount)
+			a.JournalIn.Remove(out.Height, out.TokenAddress)
 		} else {
 			return errors.New("locked out amount not enough when update account Journal")
 		}
 	}
-	a.confirmed= confirmed
+	a.Confirmed = confirmed
 	return nil
 }
 
@@ -102,7 +98,7 @@ func (a *Account) FromMessage(msg types.IMessage, height uint64) error {
 	if MessageType(msg.Type()) == Token {
 		return a.addToken(msg, height)
 	}
-	if a.nonce+1 != msg.Nonce() {
+	if a.Nonce+1 != msg.Nonce() {
 		return fmt.Errorf("wrong nonce value")
 	}
 	body := msg.MsgBody()
@@ -119,63 +115,61 @@ func (a *Account) addToken(msg types.IMessage, height uint64) error {
 	fees := msg.Fee()
 	msgBody := msg.MsgBody()
 	amount := msgBody.MsgAmount()
-	mainAccount, ok := a.tokens.Get(config.Param.MainToken.String())
+	mainAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
 	if !ok {
 		return errors.New("account is not exist")
 	}
 	consumption := kit.CalConsumption(amount, config.Param.Proportion)
-	if mainAccount.Balance < fees{
+	if mainAccount.Balance < fees {
 		return fmt.Errorf("need a handling fee of %d, insufficient handling fee", fees)
 	}
 	mainAccount.Balance -= fees
 	mainAccount.LockedIn += fees
-	if mainAccount.Balance < consumption{
+	if mainAccount.Balance < consumption {
 		return fmt.Errorf("insufficient balance")
 	}
 
 	mainAccount.Balance -= consumption
 	mainAccount.LockedIn += consumption
 
-	a.tokens.Set(mainAccount)
-	a.nonce = msg.Nonce()
-	a.journalOut.Add(msg, height)
+	a.Tokens.Set(mainAccount)
+	a.Nonce = msg.Nonce()
+	a.JournalOut.Add(msg, height)
 	return nil
 }
-
 
 // Change the primary account status of one party to the transaction transfer
 func (a *Account) changeMain(msg types.IMessage, height uint64) error {
 	amount := msg.Fee() + msg.MsgBody().MsgAmount()
 	if !a.Exist() {
-		a.address = msg.From()
+		a.Address = msg.From()
 	}
-	mainAccount, _ := a.tokens.Get(config.Param.MainToken.String())
+	mainAccount, _ := a.Tokens.Get(config.Param.MainToken.String())
 
 	if mainAccount.Balance < amount {
 		return fmt.Errorf("insufficient balance")
 	}
-	if a.Nonce()+1 != msg.Nonce() {
+	if a.Nonce+1 != msg.Nonce() {
 		return fmt.Errorf("wrong nonce value")
 	}
 
 	mainAccount.Balance -= amount
 	mainAccount.LockedIn += amount
-	a.tokens.Set(mainAccount)
-	a.nonce = msg.Nonce()
-	a.journalOut.Add(msg, height)
+	a.Tokens.Set(mainAccount)
+	a.Nonce = msg.Nonce()
+	a.JournalOut.Add(msg, height)
 	return nil
 }
-
 
 // Change the status of the secondary account of the transaction transfer party.
 // The transaction of the secondary account needs to consume the fee of the
 // primary account.
 func (a *Account) changeToken(msg types.IMessage, height uint64) error {
 	fees := msg.Fee()
-	msgBody:= msg.MsgBody()
+	msgBody := msg.MsgBody()
 
 	amount := msgBody.MsgAmount()
-	mainAccount, ok := a.tokens.Get(config.Param.MainToken.String())
+	mainAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
 	if !ok {
 		return errors.New("account is not exist")
 	}
@@ -183,7 +177,7 @@ func (a *Account) changeToken(msg types.IMessage, height uint64) error {
 		return fmt.Errorf("insufficient balance")
 	}
 	tokenAddr := msgBody.MsgToken()
-	coinAccount, ok := a.tokens.Get(tokenAddr.String())
+	coinAccount, ok := a.Tokens.Get(tokenAddr.String())
 	if !ok {
 		return errors.New("account is not exist")
 	}
@@ -195,20 +189,19 @@ func (a *Account) changeToken(msg types.IMessage, height uint64) error {
 	mainAccount.LockedIn += fees
 	coinAccount.Balance -= amount
 	coinAccount.LockedIn += amount
-	a.tokens.Set(mainAccount)
-	a.tokens.Set(coinAccount)
-	a.nonce = msg.Nonce()
-	a.journalOut.Add(msg, height)
+	a.Tokens.Set(mainAccount)
+	a.Tokens.Set(coinAccount)
+	a.Nonce = msg.Nonce()
+	a.JournalOut.Add(msg, height)
 	return nil
 }
-
 
 func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 	panic("implement me")
 }
 
-func (a *Account) Balance(tokenAddr arry.Address) uint64 {
-	token, ok := a.tokens.Get(tokenAddr.String())
+func (a *Account) GetBalance(tokenAddr arry.Address) uint64 {
+	token, ok := a.Tokens.Get(tokenAddr.String())
 	if !ok {
 		return 0
 	}
@@ -217,22 +210,22 @@ func (a *Account) Balance(tokenAddr arry.Address) uint64 {
 
 func (a *Account) Check(msg types.IMessage, strict bool) error {
 	if !a.Exist() {
-		a.address = msg.MsgBody().MsgTo()
+		a.Address = msg.MsgBody().MsgTo()
 	}
 
 	if strict {
-		if msg.Nonce() != a.nonce+1 {
-			return fmt.Errorf("nonce value must be %d", a.nonce+1)
+		if msg.Nonce() != a.Nonce+1 {
+			return fmt.Errorf("nonce value must be %d", a.Nonce+1)
 		}
-	} else if msg.Nonce() <= a.nonce {
-		return fmt.Errorf("the nonce value of the message must be greater than %d", a.nonce)
+	} else if msg.Nonce() <= a.Nonce {
+		return fmt.Errorf("the nonce value of the message must be greater than %d", a.Nonce)
 	}
 
 	// The nonce value cannot be greater than the
 	// maximum number of address transactions
-	if msg.Nonce() > a.nonce+MaxAddressTxs {
+	if msg.Nonce() > a.Nonce+config.Param.MaxAddressMsg {
 		return fmt.Errorf("the nonce value of the message cannot be greater "+
-			"than the nonce value of the account %d", MaxAddressTxs)
+			"than the nonce value of the account %d", config.Param.MaxAddressMsg)
 	}
 
 	// Verify the balance of the token
@@ -264,7 +257,7 @@ func (a *Account) checkTokenAmount(msg types.IMessage) error {
 	amount := body.MsgAmount()
 	consumption := kit.CalConsumption(amount, config.Param.Proportion)
 	mainAddress := config.Param.MainToken.String()
-	main, ok := a.tokens.Get(mainAddress)
+	main, ok := a.Tokens.Get(mainAddress)
 	if !ok {
 		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
 			Amount(consumption).ToCoin(),
@@ -287,7 +280,7 @@ func (a *Account) checkTokenAmount(msg types.IMessage) error {
 // value and transaction fee cannot be greater than the balance.
 func (a *Account) checkMainBalance(msg types.IMessage) error {
 	main := config.Param.MainToken.String()
-	token, ok := a.tokens.Get(main)
+	token, ok := a.Tokens.Get(main)
 	if !ok {
 		return fmt.Errorf("%s does not have enough balance", main)
 	} else if token.Balance < msg.Fee()+msg.MsgBody().MsgAmount() {
@@ -303,7 +296,7 @@ func (a *Account) checkTokenBalance(msg types.IMessage, body *TransactionBody) e
 		return err
 	}
 
-	coinAccount, ok := a.tokens.Get(body.TokenAddress.String())
+	coinAccount, ok := a.Tokens.Get(body.TokenAddress.String())
 	if !ok {
 		return fmt.Errorf("%s does not have enough balance", body.TokenAddress.String())
 	} else if coinAccount.Balance < body.Amount {
@@ -315,7 +308,7 @@ func (a *Account) checkTokenBalance(msg types.IMessage, body *TransactionBody) e
 // Verification fee
 func (a *Account) checkFees(msg types.IMessage) error {
 	main := config.Param.MainToken.String()
-	token, ok := a.tokens.Get(main)
+	token, ok := a.Tokens.Get(main)
 	if !ok {
 		return fmt.Errorf("%s does not have enough balance to pay the handling fee", main)
 	} else if token.Balance < msg.Fee() {
@@ -325,7 +318,7 @@ func (a *Account) checkFees(msg types.IMessage) error {
 }
 
 func (a *Account) Exist() bool {
-	return !arry.EmptyAddress(a.address)
+	return !arry.EmptyAddress(a.Address)
 }
 
 func (a *Account) Bytes() []byte {
@@ -333,12 +326,8 @@ func (a *Account) Bytes() []byte {
 	return bytes
 }
 
-func (a *Account) Address() arry.Address {
-	return a.address
-}
-
-func (a *Account) Nonce() uint64 {
-	return a.nonce
+func (a *Account) GetAddress() arry.Address {
+	return a.Address
 }
 
 type TokenAccount struct {
@@ -370,7 +359,6 @@ func (t *Tokens) Set(newCoin *TokenAccount) {
 	*t = append(*t, newCoin)
 }
 
-
 // Account transfer log
 type journalOut struct {
 	Outs *TxOutList
@@ -386,15 +374,15 @@ func (j *journalOut) Add(msg types.IMessage, height uint64) {
 	amount := body.MsgAmount()
 	if MessageType(msg.Type()) == Token {
 		TokenAddress = config.Param.MainToken
-		amount = kit.CalConsumption(amount,config.Param.Proportion)
+		amount = kit.CalConsumption(amount, config.Param.Proportion)
 	}
 	j.Outs.Set(&txOut{
 		TokenAddress: TokenAddress.String(),
-		Amount:   amount,
-		Fees:     msg.Fee(),
-		Nonce:    msg.Nonce(),
-		Time:     uint64(msg.Time()),
-		Height:   height,
+		Amount:       amount,
+		Fees:         msg.Fee(),
+		Nonce:        msg.Nonce(),
+		Time:         uint64(msg.Time()),
+		Height:       height,
 	})
 }
 
@@ -453,11 +441,11 @@ func (j *journalOut) IsEmpty() bool {
 
 type txOut struct {
 	TokenAddress string
-	Amount   uint64
-	Fees     uint64
-	Nonce    uint64
-	Time     uint64
-	Height   uint64
+	Amount       uint64
+	Fees         uint64
+	Nonce        uint64
+	Time         uint64
+	Height       uint64
 }
 
 type TxOutList []*txOut
@@ -501,11 +489,11 @@ func newJournalIn() *journalIn {
 
 func (j *journalIn) Add(msg types.IMessage, height uint64) {
 	body := msg.MsgBody()
-	amount :=  body.MsgAmount()
+	amount := body.MsgAmount()
 	tokenAddr := body.MsgToken().String()
 	out, ok := j.Outs.Get(height, tokenAddr)
 	if ok {
-		out.Amount +=amount
+		out.Amount += amount
 	} else {
 		out = &InAmount{}
 		out.Amount = amount
@@ -556,8 +544,8 @@ func (j *journalIn) IsEmpty() bool {
 
 type InAmount struct {
 	TokenAddress string
-	Amount   uint64
-	Height   uint64
+	Amount       uint64
+	Height       uint64
 }
 
 type InList []*InAmount

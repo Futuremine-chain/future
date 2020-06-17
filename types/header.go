@@ -5,16 +5,16 @@ import (
 )
 
 type IHeader interface {
-	Hash() arry.Hash
-	PreHash() arry.Hash
-	MsgRoot() arry.Hash
-	ActRoot() arry.Hash
-	DPosRoot() arry.Hash
-	TokenRoot() arry.Hash
-	Signer() arry.Address
-	Signature() ISignature
-	Height() uint64
-	Time() int64
-	Cycle() int64
+	GetHash() arry.Hash
+	GetPreHash() arry.Hash
+	GetMsgRoot() arry.Hash
+	GetActRoot() arry.Hash
+	GetDPosRoot() arry.Hash
+	GetTokenRoot() arry.Hash
+	GetSigner() arry.Address
+	GetSignature() ISignature
+	GetHeight() uint64
+	GetTime() int64
+	GetCycle() int64
 	ToRlpHeader() IRlpHeader
 }

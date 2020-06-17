@@ -70,14 +70,14 @@ func (f *FMCStatus) Change(msgs []types.IMessage, block types.IBlock) error {
 	for _, msg := range msgs {
 		switch fmctypes.MessageType(msg.Type()) {
 		case fmctypes.Transaction:
-			if err := f.actStatus.ToMessage(msg, block.Height()); err != nil {
+			if err := f.actStatus.ToMessage(msg, block.GetHeight()); err != nil {
 				return err
 			}
 		case fmctypes.Token:
-			if err := f.actStatus.ToMessage(msg, block.Height()); err != nil {
+			if err := f.actStatus.ToMessage(msg, block.GetHeight()); err != nil {
 				return err
 			}
-			if err := f.tokenStatus.UpdateToken(msg, block.Height()); err != nil {
+			if err := f.tokenStatus.UpdateToken(msg, block.GetHeight()); err != nil {
 				return err
 			}
 		case fmctypes.Vote:
@@ -95,12 +95,12 @@ func (f *FMCStatus) Change(msgs []types.IMessage, block types.IBlock) error {
 		default:
 			return errors.New("wrong message type")
 		}
-		if err := f.actStatus.FromMessage(msg, block.Height()); err != nil {
+		if err := f.actStatus.FromMessage(msg, block.GetHeight()); err != nil {
 			return err
 		}
 
 	}
-	f.dPosStatus.AddSuperBlockCount(block.Cycle(), block.Signer())
+	f.dPosStatus.AddSuperBlockCount(block.GetCycle(), block.GetSigner())
 	return nil
 }
 

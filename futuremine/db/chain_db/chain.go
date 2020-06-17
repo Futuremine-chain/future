@@ -150,8 +150,8 @@ func (b *ChainDB) SaveLastHeight(height uint64) {
 }
 
 func (b *ChainDB) SaveHeader(header *types.Header) {
-	b.db.PutInBucket(_header, header.Hash().Bytes(), header.Bytes())
-	b.SaveHeightHash(header.Height(), header.Hash())
+	b.db.PutInBucket(_header, header.Hash.Bytes(), header.Bytes())
+	b.SaveHeightHash(header.Height, header.Hash)
 }
 
 func (b *ChainDB) SaveMessages(msgRoot arry.Hash, iTxs []*types.RlpMessage) {

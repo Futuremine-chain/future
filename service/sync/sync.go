@@ -142,7 +142,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			return nil
 		default:
 			if err := s.chain.Insert(block); err != nil {
-				log.Warn("Insert chain failed!", "error", err, "height", block.Height())
+				log.Warn("Insert chain failed!", "error", err, "height", block.GetHeight())
 				if s.headerValidation(block.BlockHeader()) {
 					s.fallBack()
 					return err
@@ -162,11 +162,11 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 // and the block verification is successful.
 func (s *Sync) headerValidation(header types.IHeader) bool {
 	localEqual := false
-	if header.Height() <= s.chain.LastConfirmed() {
+	if header.GetHeight() <= s.chain.LastConfirmed() {
 		return false
 	}
-	localHeader, err := s.chain.GetHeaderHeight(header.Height())
-	if err == nil && localHeader.Hash().IsEqual(header.Hash()) {
+	localHeader, err := s.chain.GetHeaderHeight(header.GetHeight())
+	if err == nil && localHeader.GetHash().IsEqual(header.GetHash()) {
 		localEqual = true
 	}
 	return s.validation(header, localEqual)
@@ -207,25 +207,25 @@ func (s *Sync) fallBack() {
 // passed back to the local block.
 func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 	localHeight := s.chain.LastHeight()
-	if localHeight == block.Height()-1 {
+	if localHeight == block.GetHeight()-1 {
 		if err := s.chain.Insert(block); err != nil {
-			log.Warn("Failed to insert received block", "err", err, "height", block.Height(), "singer", block.Signer().String())
+			log.Warn("Failed to insert received block", "err", err, "height", block.GetHeight(), "singer", block.GetSigner().String())
 			return err
 		}
-	} else if block.Height() <= localHeight {
-		if localHeader, err := s.chain.GetBlockHeight(block.Height()); err == nil {
-			if !localHeader.Hash().IsEqual(block.Hash()) {
+	} else if block.GetHeight() <= localHeight {
+		if localHeader, err := s.chain.GetBlockHeight(block.GetHeight()); err == nil {
+			if !localHeader.GetHash().IsEqual(block.GetHash()) {
 				if s.headerValidation(block.BlockHeader()) {
 					s.fallBack()
 					return err
 				} else {
-					log.Warn("Remote validation failed!", "height", block.Height(), "signer", block.Signer().String())
+					log.Warn("Remote validation failed!", "height", block.GetHeight(), "signer", block.GetSigner().String())
 					return err
 				}
 			}
 		} else {
 			if err := s.chain.Insert(block); err != nil {
-				log.Warn("Failed to insert received block", "err", err, "height", block.Height(), "singer", block.Signer().String())
+				log.Warn("Failed to insert received block", "err", err, "height", block.GetHeight(), "singer", block.GetSigner().String())
 				return err
 			}
 		}

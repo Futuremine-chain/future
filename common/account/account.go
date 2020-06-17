@@ -12,6 +12,6 @@ type IAccount interface {
 	ToMessage(msg types.IMessage, height uint64) error
 	Check(msg types.IMessage, strict bool) error
 	Bytes() []byte
-	Address() arry.Address
-	Balance(tokenAddr arry.Address) uint64
+	GetAddress() arry.Address
+	GetBalance(tokenAddr arry.Address) uint64
 }

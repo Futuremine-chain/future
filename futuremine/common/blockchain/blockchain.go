@@ -74,7 +74,7 @@ func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
 	}
 	// Build block header
 	header := fmctypes.NewHeader(
-		preHeader.Hash(),
+		preHeader.GetHash(),
 		arry.Hash{},
 		b.actRoot,
 		b.dPosRoot,
@@ -112,7 +112,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlo
 	}
 	// Build block header
 	header := fmctypes.NewHeader(
-		lastHeader.Hash(),
+		lastHeader.GetHash(),
 		fmctypes.MsgRoot(msgs),
 		b.actRoot,
 		b.dPosRoot,
@@ -159,7 +159,7 @@ func (b *FMCChain) GetBlockHeight(height uint64) (types.IBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetMessages(header.MsgRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func (b *FMCChain) GetBlockHash(hash arry.Hash) (types.IBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetMessages(header.MsgRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func (b *FMCChain) GetRlpBlockHeight(height uint64) (types.IRlpBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetMessages(header.MsgRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-	txs, err := b.db.GetMessages(header.MsgRoot())
+	txs, err := b.db.GetMessages(header.MsgRoot)
 	if err != nil {
 		return nil, err
 	}
@@ -253,29 +253,29 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
-	b.db.SaveMessages(block.MsgRoot(), rlpBlock.RlpBody.MsgList())
+	b.db.SaveMessages(block.GetMsgRoot(), rlpBlock.RlpBody.MsgList())
 	b.db.SaveMsgIndex(bk.GetMsgIndexs())
-	b.db.SaveHeightHash(block.Height(), block.Hash())
-	b.db.SaveConfirmedHeight(block.Height(), b.confirmed)
-	b.db.SaveCycleLastHash(block.Cycle(), block.Hash())
+	b.db.SaveHeightHash(block.GetHeight(), block.GetHash())
+	b.db.SaveConfirmedHeight(block.GetHeight(), b.confirmed)
+	b.db.SaveCycleLastHash(block.GetCycle(), block.GetHash())
 	b.actRoot, b.tokenRoot, b.dPosRoot, _ = b.status.Commit()
 	b.db.SaveActRoot(b.actRoot)
 	b.db.SaveDPosRoot(b.dPosRoot)
 	b.db.SaveTokenRoot(b.tokenRoot)
 
-	b.lastHeight = block.Height()
+	b.lastHeight = block.GetHeight()
 	b.db.SaveLastHeight(b.lastHeight)
 
 	log.Info("Save block", "module", "module",
-		"height", block.Height(),
-		"hash", block.Hash().String(),
-		"actroot", block.ActRoot().String(),
-		"tokenroot", block.TokenRoot().String(),
-		"dposroot", block.DPosRoot().String(),
-		"signer", block.Signer().String(),
+		"height", block.GetHeight(),
+		"hash", block.GetHash().String(),
+		"actroot", block.GetActRoot().String(),
+		"tokenroot", block.GetTokenRoot().String(),
+		"dposroot", block.GetDPosRoot().String(),
+		"signer", block.GetSigner().String(),
 		"msgcount", len(block.BlockBody().MsgList()),
-		"time", block.Time(),
-		"cycle", block.Cycle())
+		"time", block.GetTime(),
+		"cycle", block.GetCycle())
 }
 
 func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
@@ -286,11 +286,11 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
-	b.db.SaveMessages(block.MsgRoot(), rlpBlock.RlpBody.MsgList())
+	b.db.SaveMessages(block.GetMsgRoot(), rlpBlock.RlpBody.MsgList())
 	b.db.SaveMsgIndex(bk.GetMsgIndexs())
-	b.db.SaveHeightHash(block.Height(), block.Hash())
-	b.lastHeight = block.Height()
-	b.db.SaveConfirmedHeight(block.Height(), b.confirmed)
+	b.db.SaveHeightHash(block.GetHeight(), block.GetHash())
+	b.lastHeight = block.GetHeight()
+	b.db.SaveConfirmedHeight(block.GetHeight(), b.confirmed)
 	b.status.SetConfirmed(0)
 	b.actRoot, b.tokenRoot, b.dPosRoot, _ = b.status.Commit()
 	b.db.SaveActRoot(b.actRoot)
@@ -299,47 +299,47 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 	b.db.SaveLastHeight(b.lastHeight)
 
 	log.Info("Save block", "module", "module",
-		"height", block.Height(),
-		"hash", block.Hash().String(),
-		"actroot", block.ActRoot().String(),
-		"tokenroot", block.TokenRoot().String(),
-		"dposroot", block.DPosRoot().String(),
-		"signer", block.Signer().String(),
+		"height", block.GetHeight(),
+		"hash", block.GetHash().String(),
+		"actroot", block.GetActRoot().String(),
+		"tokenroot", block.GetTokenRoot().String(),
+		"dposroot", block.GetDPosRoot().String(),
+		"signer", block.GetSigner().String(),
 		"msgcount", len(block.BlockBody().MsgList()),
-		"time", block.Time(),
-		"cycle", block.Cycle())
+		"time", block.GetTime(),
+		"cycle", block.GetCycle())
 }
 
 func (b *FMCChain) checkBlock(block types.IBlock) error {
 	lastHeight := b.LastHeight()
 
-	if lastHeight != block.Height()-1 {
-		return fmt.Errorf("last height is %d, the current block height is %d", lastHeight, block.Height())
+	if lastHeight != block.GetHeight()-1 {
+		return fmt.Errorf("last height is %d, the current block height is %d", lastHeight, block.GetHeight())
 	}
 
 	if !block.CheckMsgRoot() {
 		log.Warn("the message root hash verification failed", "module", module,
-			"height", block.Height(), "msgroot", block.MsgRoot().String())
+			"height", block.GetHeight(), "msgroot", block.GetMsgRoot().String())
 		return errors.New("the message root hash verification failed")
 	}
-	if !block.ActRoot().IsEqual(b.actRoot) {
+	if !block.GetActRoot().IsEqual(b.actRoot) {
 		log.Warn("the account status root hash verification failed", "module", module,
-			"height", block.Height(), "actroot", block.ActRoot().String())
+			"height", block.GetHeight(), "actroot", block.GetActRoot().String())
 		return errors.New("the account status root hash verification failed")
 	}
-	if !block.DPosRoot().IsEqual(b.dPosRoot) {
+	if !block.GetDPosRoot().IsEqual(b.dPosRoot) {
 		log.Warn("the dpos status root hash verification failed", "module", module,
-			"height", block.Height(), "dposroot", block.DPosRoot().String())
+			"height", block.GetHeight(), "dposroot", block.GetDPosRoot().String())
 		return errors.New("wrong contract root")
 	}
-	if !block.TokenRoot().IsEqual(b.tokenRoot) {
+	if !block.GetTokenRoot().IsEqual(b.tokenRoot) {
 		log.Warn("the token status root hash verification failed", "module", module,
-			"height", block.Height(), "tokenroot", block.TokenRoot().String())
+			"height", block.GetHeight(), "tokenroot", block.GetTokenRoot().String())
 		return errors.New("wrong consensus root")
 	}
-	preHeader, err := b.GetHeaderHash(block.PreHash())
+	preHeader, err := b.GetHeaderHash(block.GetPreHash())
 	if err != nil {
-		return fmt.Errorf("no previous block %s found", block.PreHash().String())
+		return fmt.Errorf("no previous block %s found", block.GetPreHash().String())
 	}
 
 	if err := b.dPos.CheckHeader(block.BlockHeader(), preHeader, b); err != nil {
@@ -348,7 +348,7 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 	if err := b.dPos.CheckSeal(block.BlockHeader(), preHeader, b); err != nil {
 		return err
 	}
-	if err := b.checkMsgs(block.BlockBody().MsgList(), block.Height()); err != nil {
+	if err := b.checkMsgs(block.BlockBody().MsgList(), block.GetHeight()); err != nil {
 		return err
 	}
 	return nil
@@ -418,6 +418,6 @@ func (b *FMCChain) UpdateConfirmed(height uint64) {
 func (b *FMCChain) Vote(address arry.Address) uint64 {
 	var vote uint64
 	act := b.status.Account(address)
-	vote += act.Balance(config.Param.MainToken)
+	vote += act.GetBalance(config.Param.MainToken)
 	return vote
 }

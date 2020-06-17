@@ -21,6 +21,7 @@ type Pool struct {
 
 func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
 	pool := &Pool{
+		msgMgt:      msgMgt,
 		horn:        horn,
 		broadcastCh: make(chan types.IMessage, 100),
 	}
@@ -97,4 +98,3 @@ func (p *Pool) removeExpired() {
 func (p *Pool) Delete(msgs []types.IMessage) {
 	p.msgMgt.Delete(msgs)
 }
-

@@ -33,6 +33,7 @@ type Param struct {
 	FallBack         int64
 	PubKeyHashAddrID [2]byte
 	Logging          bool
+	PeerRequestChan  uint32
 	*PrivateParam
 	*TokenParam
 	*P2pParam
@@ -84,6 +85,7 @@ type PoolParam struct {
 	MsgExpiredTime     int64
 	MonitorMsgInterval time.Duration
 	MaxPoolMsg         int
+	MaxAddressMsg      uint64
 }
 
 var TestNetParam = &Param{
@@ -93,6 +95,7 @@ var TestNetParam = &Param{
 	FallBack:         -1,
 	PubKeyHashAddrID: [2]byte{0x1f, 0x13},
 	Logging:          true,
+	PeerRequestChan:  1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
 		PrivatePass: "fmc",
@@ -130,6 +133,7 @@ var TestNetParam = &Param{
 		MaxPoolMsg:         100000,
 		MsgExpiredTime:     60 * 60 * 3,
 		MonitorMsgInterval: 2,
+		MaxAddressMsg:      1000,
 	},
 }
 
@@ -140,6 +144,7 @@ var MainNetParam = &Param{
 	FallBack:         -1,
 	PubKeyHashAddrID: [2]byte{0xd, 0x15},
 	Logging:          true,
+	PeerRequestChan:  1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
 		PrivatePass: "fmc",
@@ -177,5 +182,6 @@ var MainNetParam = &Param{
 		MaxPoolMsg:         100000,
 		MsgExpiredTime:     60 * 60 * 3,
 		MonitorMsgInterval: 2,
+		MaxAddressMsg:      1000,
 	},
 }

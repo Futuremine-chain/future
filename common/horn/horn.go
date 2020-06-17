@@ -50,7 +50,7 @@ func (h *Horn) BroadcastBlock(block types.IBlock) {
 					return h.request.SendBlock(peer.Conn, block)
 				})); err != nil {
 				log.Warn("Adding the task to send the block failed", "module", module,
-					"height", block.Hash().String(), "target", peer.Address.String())
+					"height", block.GetHash().String(), "target", peer.Address.String())
 			}
 		}
 	}

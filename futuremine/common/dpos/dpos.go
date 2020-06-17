@@ -46,7 +46,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 		msg := &fmctypes.Message{
 			Header: &fmctypes.MsgHeader{
 				Type:      fmctypes.Candidate,
-				Nonce:1,
+				Nonce:     1,
 				From:      super.Signer,
 				Time:      time.Unix(config.Param.GenesisTime, 0),
 				Signature: &fmctypes.Signature{},
@@ -61,13 +61,13 @@ func (d *DPos) GenesisBlock() types.IBlock {
 }
 
 func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IChain) error {
-	preHeader, err := chain.GetBlockHash(header.PreHash())
+	preHeader, err := chain.GetBlockHash(header.GetPreHash())
 	if err != nil {
 		return err
 	}
 
-	if err := d.cycle.CheckCycle(chain, preHeader.Time(), header.Time()); err != Err_Elected {
-		if err := d.cycle.Elect(header.Time(), preHeader.Hash(), chain); err != nil {
+	if err := d.cycle.CheckCycle(chain, preHeader.GetTime(), header.GetTime()); err != Err_Elected {
+		if err := d.cycle.Elect(header.GetTime(), preHeader.GetHash(), chain); err != nil {
 			return err
 		}
 	}
@@ -81,11 +81,11 @@ func (d *DPos) CheckTime(header types.IHeader, chain blockchain.IChain) error {
 
 func (d *DPos) CheckSigner(header types.IHeader, chain blockchain.IChain) error {
 	// Find the block address at that time
-	super, err := d.lookupSuper(header.Time())
+	super, err := d.lookupSuper(header.GetTime())
 	if err != nil {
 		return err
 	}
-	if !super.IsEqual(header.Signer()) {
+	if !super.IsEqual(header.GetSigner()) {
 		return errors.New("it's not the miner's turn")
 	}
 	return nil
@@ -93,17 +93,17 @@ func (d *DPos) CheckSigner(header types.IHeader, chain blockchain.IChain) error 
 
 func (d *DPos) CheckHeader(header types.IHeader, parent types.IHeader, chain blockchain.IChain) error {
 	// If the block time is in the future, it will fail
-	if header.Time() > utils.NowUnix() {
+	if header.GetTime() > utils.NowUnix() {
 		return errors.New("block in the future")
 	}
 	// Verify whether it is the time point of block generation
 	if err := d.checkTime(parent, header); err != nil {
 		return errors.New("time check failed")
 	}
-	if header.Signature() == nil {
+	if header.GetSignature() == nil {
 		return errors.New("no signature")
 	}
-	if parent.Time()+param.BlockInterval > header.Time() {
+	if parent.GetTime()+param.BlockInterval > header.GetTime() {
 		return errors.New("invalid timestamp")
 	}
 	return nil
@@ -111,10 +111,10 @@ func (d *DPos) CheckHeader(header types.IHeader, parent types.IHeader, chain blo
 
 func (d *DPos) CheckSeal(header types.IHeader, parent types.IHeader, chain blockchain.IChain) error {
 	// Verifying the genesis block is not supported
-	if header.Height() == 0 {
+	if header.GetHeight() == 0 {
 		return errors.New("unknown block")
 	}
-	if header.Height() <= d.confirmed {
+	if header.GetHeight() <= d.confirmed {
 		return errors.New("height error")
 	}
 	lastCycleHeader, err := d.preCycleLastHash(header, chain)
@@ -130,7 +130,7 @@ func (d *DPos) CheckSeal(header types.IHeader, parent types.IHeader, chain block
 }
 
 func (d *DPos) CheckCreator(header types.IHeader, parent types.IHeader, chain blockchain.IChain) error {
-	signer, err := d.setAndLookupSuper(header.Time(), parent, chain)
+	signer, err := d.setAndLookupSuper(header.GetTime(), parent, chain)
 	if err != nil {
 		return err
 	}
@@ -149,17 +149,17 @@ func (d *DPos) Confirmed() uint64 {
 }
 
 func (d *DPos) checkTime(lastHeader types.IHeader, header types.IHeader) error {
-	nextTime := nextTime(header.Time())
-	if lastHeader.Time() >= nextTime {
+	nextTime := nextTime(header.GetTime())
+	if lastHeader.GetTime() >= nextTime {
 		return errors.New("create the future block")
 	}
-	if nextTime-header.Time() >= 1 {
-		return fmt.Errorf("wait for last block arrived, next slot = %d, block time = %d ", nextTime, header.Time)
+	if nextTime-header.GetTime() >= 1 {
+		return fmt.Errorf("wait for last block arrived, next slot = %d, block time = %d ", nextTime, header.GetTime)
 	}
-	if header.Time() == nextTime {
+	if header.GetTime() == nextTime {
 		return nil
 	}
-	return fmt.Errorf("wait for last block arrived, next slot = %d, block time = %d ", nextTime, header.Time)
+	return fmt.Errorf("wait for last block arrived, next slot = %d, block time = %d ", nextTime, header.GetTime)
 }
 
 func (d *DPos) lookupSuper(now int64) (arry.Address, error) {
@@ -204,8 +204,8 @@ func (d *DPos) setSupers(time int64, parent types.IHeader, chain blockchain.ICha
 
 	// If the election result of the current cycle does not
 	// exist, the current cycle of elections is conducted
-	if err != nil || supers == nil || !parent.Hash().IsEqual(supers.PreHash) {
-		if err := d.cycle.Elect(time, parent.Hash(), chain); err != nil {
+	if err != nil || supers == nil || !parent.GetHash().IsEqual(supers.PreHash) {
+		if err := d.cycle.Elect(time, parent.GetHash(), chain); err != nil {
 			return nil, err
 		}
 		if supers, err = d.cycle.DPosStatus.CycleSupers(cycle); err != nil {
@@ -218,11 +218,11 @@ func (d *DPos) setSupers(time int64, parent types.IHeader, chain blockchain.ICha
 // Get the hash of the last block of the previous cycle
 // as the random number seed of the new cycle.
 func (d *DPos) preCycleLastHash(current types.IHeader, chain blockchain.IChain) (types.IHeader, error) {
-	preTermLastHash, err := chain.CycleLastHash(current.Cycle() - 1)
+	preTermLastHash, err := chain.CycleLastHash(current.GetCycle() - 1)
 	if err == nil {
 		header, _ := chain.GetBlockHash(preTermLastHash)
-		tHeader, _ := chain.GetHeaderHeight(header.Height())
-		if header.Height() < current.Height() && header.Hash().IsEqual(tHeader.Hash()) {
+		tHeader, _ := chain.GetHeaderHeight(header.GetHeight())
+		if header.GetHeight() < current.GetHeight() && header.GetHash().IsEqual(tHeader.GetHash()) {
 			return header, nil
 		}
 	}
@@ -238,17 +238,17 @@ func (d *DPos) preCycleLastHash(current types.IHeader, chain blockchain.IChain) 
 		return genesis, nil
 	}
 
-	if header.Cycle() >= current.Cycle() {
+	if header.GetCycle() >= current.GetCycle() {
 		return genesis, nil
 	}
-	height := current.Height()
+	height := current.GetHeight()
 	for height > 0 {
 		height--
 		header, err := chain.GetHeaderHeight(height)
 		if err != nil {
 			continue
 		}
-		if header.Cycle() < current.Cycle() {
+		if header.GetCycle() < current.GetCycle() {
 			return header, nil
 		}
 	}
@@ -256,10 +256,10 @@ func (d *DPos) preCycleLastHash(current types.IHeader, chain blockchain.IChain) 
 }
 
 func (d *DPos) checkSigner(super arry.Address, header types.IHeader) error {
-	if !fmctypes.VerifySigner(config.Param.Name, super, header.Signature().PubicKey()) {
+	if !fmctypes.VerifySigner(config.Param.Name, super, header.GetSignature().PubicKey()) {
 		return errors.New("not the signature of the address")
 	}
-	if !fmctypes.Verify(header.Hash(), header.Signature()) {
+	if !fmctypes.Verify(header.GetHash(), header.GetSignature()) {
 		return errors.New("verify seal failed")
 	}
 	return nil
@@ -274,7 +274,7 @@ func (d *DPos) updateConfirmed(chain blockchain.IChain) error {
 			if err != nil {
 				return err
 			}
-			height = header.Height()
+			height = header.GetHeight()
 		}
 		d.confirmed = height
 	}
@@ -287,8 +287,8 @@ func (d *DPos) updateConfirmed(chain blockchain.IChain) error {
 
 	cycle := int64(0)
 	superMap := make(map[string]int)
-	for d.confirmed < curHeader.Height() {
-		curCycle := curHeader.Time() / param.CycleInterval
+	for d.confirmed < curHeader.GetHeight() {
+		curCycle := curHeader.GetTime() / param.CycleInterval
 		if curCycle != cycle {
 			cycle = curCycle
 			superMap = make(map[string]int)
@@ -297,17 +297,17 @@ func (d *DPos) updateConfirmed(chain blockchain.IChain) error {
 		// if block number difference less consensusSize-witnessNum
 		// there is no need to check block is confirmed
 
-		count := superMap[curHeader.Signer().String()]
-		superMap[curHeader.Signer().String()] = count + 1
+		count := superMap[curHeader.GetSigner().String()]
+		superMap[curHeader.GetSigner().String()] = count + 1
 
 		if len(superMap) >= param.DPosSize /*dpos.checkWinnerMapCount(winnerMap, 1)*/ {
-			d.cycle.DPosStatus.SetConfirmed(curHeader.Height())
-			d.confirmed = curHeader.Height()
-			chain.SetConfirmed(curHeader.Height())
+			d.cycle.DPosStatus.SetConfirmed(curHeader.GetHeight())
+			d.confirmed = curHeader.GetHeight()
+			chain.SetConfirmed(curHeader.GetHeight())
 			//log.Info("DPos set confirmed block header", "currentHeader", curHeader.Height)
 			return nil
 		}
-		curHeader, err = chain.GetHeaderHash(curHeader.PreHash())
+		curHeader, err = chain.GetHeaderHash(curHeader.GetPreHash())
 		if err != nil {
 			return errors.New("nil block header returned")
 		}

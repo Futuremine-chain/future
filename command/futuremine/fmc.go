@@ -114,7 +114,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	}
 	rpcSv := rpc.NewRpc()
 	syncSv := sync_service.NewSync(peersSv, dpos, reqHandler, chain)
-	generateSv := generate.NewGenerate(chain)
+	generateSv := generate.NewGenerate(chain, dpos)
 	node := node.NewFMCNode()
 
 	// Register peer nodes to send blocks and message processing

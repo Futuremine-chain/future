@@ -24,9 +24,10 @@ type Generate struct {
 	stopped     chan bool
 }
 
-func NewGenerate(chain blockchain.IChain) *Generate {
+func NewGenerate(chain blockchain.IChain, dPos dpos.IDPos) *Generate {
 	return &Generate{
 		chain:   chain,
+		dPos:    dPos,
 		stop:    make(chan bool),
 		stopped: make(chan bool),
 	}
@@ -37,6 +38,7 @@ func (g *Generate) Name() string {
 }
 
 func (g *Generate) Start() error {
+	go g.generate()
 	log.Info("Generate started successfully", "module", module)
 	return nil
 }
@@ -45,7 +47,7 @@ func (g *Generate) Stop() error {
 	return nil
 }
 
-func (g *Generate) Generate() {
+func (g *Generate) generate() {
 	ticker := time.NewTicker(time.Second).C
 	for {
 		select {
@@ -81,9 +83,9 @@ func (g *Generate) generateBlock(now time.Time) {
 		return
 	}
 	log.Info("Block generation successful", "module", module,
-		"height", nextBlock.Hash().String(),
-		"hash", nextBlock.Hash().String(),
-		"signer", nextBlock.Signer().String(),
+		"height", nextBlock.GetHash().String(),
+		"hash", nextBlock.GetHash().String(),
+		"signer", nextBlock.GetSigner().String(),
 	)
 	g.horn.BroadcastBlock(nextBlock)
 }

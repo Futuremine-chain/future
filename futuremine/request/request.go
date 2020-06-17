@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"github.com/libp2p/go-libp2p-core/network"
@@ -37,7 +38,8 @@ type RequestHandler struct {
 
 func NewRequestHandler(chain blockchain.IChain) *RequestHandler {
 	return &RequestHandler{
-		chain: chain,
+		chain:   chain,
+		readyCh: make(chan *ReqStream, config.Param.PeerRequestChan),
 		bytesPool: sync.Pool{
 			New: func() interface{} {
 				return make([]byte, maxReadBytes)
@@ -57,6 +59,11 @@ func (r *RequestHandler) Stop() error {
 // Listen for message requests
 func (r *RequestHandler) Start() error {
 	log.Info("Request handler started successfully", "module", module)
+	go r.dealRequest()
+	return nil
+}
+
+func (r *RequestHandler) dealRequest() {
 	var h IHandler
 	for reqStream := range r.readyCh {
 		switch reqStream.request.Method {
@@ -67,7 +74,6 @@ func (r *RequestHandler) Start() error {
 		}
 		go response(reqStream, h)
 	}
-	return nil
 }
 
 func (r *RequestHandler) RegisterReceiveBlock(f func(types.IBlock) error) {

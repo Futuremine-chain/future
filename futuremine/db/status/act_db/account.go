@@ -49,7 +49,7 @@ func (a *ActDB) Account(address arry.Address) account.IAccount {
 }
 
 func (a *ActDB) SetAccount(account account.IAccount) {
-	a.trie.Update(account.Address().Bytes(), account.Bytes())
+	a.trie.Update(account.GetAddress().Bytes(), account.Bytes())
 }
 
 func (a *ActDB) Nonce(address arry.Address) uint64 {
@@ -58,7 +58,7 @@ func (a *ActDB) Nonce(address arry.Address) uint64 {
 	if err != nil {
 		return 0
 	}
-	return account.Nonce()
+	return account.Nonce
 }
 
 func (a *ActDB) Close() error {

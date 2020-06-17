@@ -12,23 +12,23 @@ type Block struct {
 }
 
 func (b *Block) Hash() arry.Hash {
-	return b.Header.Hash()
+	return b.Header.Hash
 }
 
 func (b *Block) MsgRoot() arry.Hash {
-	return b.Header.MsgRoot()
+	return b.Header.MsgRoot
 }
 
 func (b *Block) Signer() arry.Address {
-	return b.Header.Signer()
+	return b.Header.Signer
 }
 
 func (b *Block) Height() uint64 {
-	return b.Header.height
+	return b.Header.Height
 }
 
 func (b *Block) Time() int64 {
-	return b.Header.time.Unix()
+	return int64(b.Header.Time)
 }
 
 func (b *Block) Add(message types.IMessage) {
@@ -70,7 +70,7 @@ func (b *Block) Sign(key *secp256k1.PrivateKey) error {
 
 func (b *Block) CheckMsgRoot() bool {
 	msgRoot := MsgRoot(b.Body.Messages)
-	return b.Header.MsgRoot().IsEqual(msgRoot)
+	return b.Header.MsgRoot.IsEqual(msgRoot)
 }
 
 func (b *Block) GetMsgIndexs() map[arry.Hash]*MsgIndex {
