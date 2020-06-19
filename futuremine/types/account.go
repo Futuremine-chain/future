@@ -44,50 +44,50 @@ func (a *Account) NeedUpdate() bool {
 
 // Update through the account transfer log information
 func (a *Account) UpdateLocked(confirmed uint64) error {
-	for _, in := range a.JournalOut.GetJournalIns(confirmed) {
-		coinAccount, ok := a.Tokens.Get(in.TokenAddress)
+	for _, out := range a.JournalOut.GetJournalOuts(confirmed) {
+		coinAccount, ok := a.Tokens.Get(out.TokenAddress)
 		if !ok {
 			return errors.New("wrong journal")
 		}
-		if coinAccount.LockedIn >= in.Amount {
-			coinAccount.LockedIn -= in.Amount
+		if coinAccount.LockedOut >= out.Amount {
+			coinAccount.LockedOut -= out.Amount
 			a.Tokens.Set(coinAccount)
 
 			tokenAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
 			if !ok {
 				return errors.New("wrong journal")
 			}
-			if tokenAccount.LockedIn >= in.Fees {
-				tokenAccount.LockedIn -= in.Fees
+			if tokenAccount.LockedOut >= out.Fees {
+				tokenAccount.LockedOut -= out.Fees
 				a.Tokens.Set(tokenAccount)
 			} else {
-				return errors.New("locked in amount not enough when update account journal")
+				return errors.New("locked out amount not enough when update account journal")
 			}
-			a.JournalOut.Remove(in.Height)
+			a.JournalOut.Remove(out.Height)
 
 		} else {
-			return errors.New("locked in amount not enough when update account journal")
+			return errors.New("locked out amount not enough when update account journal")
 		}
 	}
 
 	// Update through account transfer log information
-	for _, out := range a.JournalIn.GetJournalOuts(confirmed) {
-		coinAccount, ok := a.Tokens.Get(out.TokenAddress)
+	for _, in := range a.JournalIn.GetJournalIns(confirmed) {
+		coinAccount, ok := a.Tokens.Get(in.TokenAddress)
 		if !ok {
 			coinAccount = &TokenAccount{
-				Address:   out.TokenAddress,
+				Address:   in.TokenAddress,
 				Balance:   0,
 				LockedIn:  0,
 				LockedOut: 0,
 			}
 		}
-		if coinAccount.LockedOut >= out.Amount {
-			coinAccount.Balance += out.Amount
-			coinAccount.LockedOut -= out.Amount
+		if coinAccount.LockedIn >= in.Amount {
+			coinAccount.Balance += in.Amount
+			coinAccount.LockedIn -= in.Amount
 			a.Tokens.Set(coinAccount)
-			a.JournalIn.Remove(out.Height, out.TokenAddress)
+			a.JournalIn.Remove(in.Height, in.TokenAddress)
 		} else {
-			return errors.New("locked out amount not enough when update account Journal")
+			return errors.New("locked in amount not enough when update account Journal")
 		}
 	}
 	a.Confirmed = confirmed
@@ -124,13 +124,13 @@ func (a *Account) addToken(msg types.IMessage, height uint64) error {
 		return fmt.Errorf("need a handling fee of %d, insufficient handling fee", fees)
 	}
 	mainAccount.Balance -= fees
-	mainAccount.LockedIn += fees
+	mainAccount.LockedOut += fees
 	if mainAccount.Balance < consumption {
 		return fmt.Errorf("insufficient balance")
 	}
 
 	mainAccount.Balance -= consumption
-	mainAccount.LockedIn += consumption
+	mainAccount.LockedOut += consumption
 
 	a.Tokens.Set(mainAccount)
 	a.Nonce = msg.Nonce()
@@ -154,7 +154,7 @@ func (a *Account) changeMain(msg types.IMessage, height uint64) error {
 	}
 
 	mainAccount.Balance -= amount
-	mainAccount.LockedIn += amount
+	mainAccount.LockedOut += amount
 	a.Tokens.Set(mainAccount)
 	a.Nonce = msg.Nonce()
 	a.JournalOut.Add(msg, height)
@@ -186,9 +186,9 @@ func (a *Account) changeToken(msg types.IMessage, height uint64) error {
 	}
 
 	mainAccount.Balance -= fees
-	mainAccount.LockedIn += fees
+	mainAccount.LockedOut += fees
 	coinAccount.Balance -= amount
-	coinAccount.LockedIn += amount
+	coinAccount.LockedOut += amount
 	a.Tokens.Set(mainAccount)
 	a.Tokens.Set(coinAccount)
 	a.Nonce = msg.Nonce()
@@ -197,7 +197,51 @@ func (a *Account) changeToken(msg types.IMessage, height uint64) error {
 }
 
 func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
-	panic("implement me")
+	body := msg.MsgBody()
+	if !a.Exist() {
+		a.Address = body.MsgTo()
+	}
+	if MessageType(msg.Type()) == Token {
+		return a.toTokenChange(msg, height)
+	}
+	tokenAccount, ok := a.Tokens.Get(body.MsgToken().String())
+	if ok {
+		tokenAccount.LockedIn += body.MsgAmount()
+	} else {
+		tokenAccount = &TokenAccount{
+			Address:  body.MsgToken().String(),
+			Balance:   0,
+			LockedIn:  body.MsgAmount(),
+			LockedOut: 0,
+		}
+	}
+	a.Tokens.Set(tokenAccount)
+	a.JournalIn.Add(msg, height)
+	return nil
+}
+
+
+// Change of contract information
+func (a *Account) toTokenChange(msg types.IMessage, height uint64) error {
+	body := msg.MsgBody()
+	amount := body.MsgAmount()
+	tokenAddr := body.MsgToken()
+
+	tokenAccount, ok := a.Tokens.Get(tokenAddr.String())
+	if ok {
+		tokenAccount.LockedIn += amount
+	} else {
+		tokenAccount = &TokenAccount{
+			Address:  tokenAddr.String(),
+			Balance:   0,
+			LockedOut: 0,
+			LockedIn:  amount,
+		}
+	}
+
+	a.Tokens.Set(tokenAccount)
+	a.JournalIn.Add(msg, height)
+	return nil
 }
 
 func (a *Account) GetBalance(tokenAddr arry.Address) uint64 {
@@ -409,7 +453,7 @@ func (j *journalOut) IsExist(height uint64) bool {
 	return false
 }
 
-func (j *journalOut) GetJournalIns(confirmedHeight uint64) []*txOut {
+func (j *journalOut) GetJournalOuts(confirmedHeight uint64) []*txOut {
 	txIns := make([]*txOut, 0)
 	for _, txIn := range *j.Outs {
 		if txIn.Height <= confirmedHeight {
@@ -524,7 +568,7 @@ func (j *journalIn) Remove(height uint64, contract string) *InAmount {
 	return j.Outs.Remove(height, contract)
 }
 
-func (j *journalIn) GetJournalOuts(confirmedHeight uint64) map[string]*InAmount {
+func (j *journalIn) GetJournalIns(confirmedHeight uint64) map[string]*InAmount {
 	txOuts := make(map[string]*InAmount)
 	for _, out := range *j.Outs {
 		if out.Height <= confirmedHeight {
