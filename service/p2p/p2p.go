@@ -61,7 +61,7 @@ func NewP2p(ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 	ser.local = peers.NewPeer(config.Param.IPrivate.PrivateKey(),
 		&peer.AddrInfo{
 			ID:    host.ID(),
-			Addrs: host.Addrs()}, nil)
+			Addrs: host.Addrs()}, nil, nil)
 	ser.initP2pHandle()
 	ps.SetLocal(ser.local)
 	log.Info("P2p host created", "module", module, "id", host.ID(), "address", host.Addrs())
@@ -211,11 +211,12 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 					continue
 				}
 				if !p.peers.AddressExist(&addrInfo) {
-					if !p.isAlive(addrInfo.ID) {
+					if stream, err := p.connect(addrInfo.ID);err != nil {
 						p.peers.RemovePeer(addrInfo.ID.String())
 						continue
+					}else{
+						p.peers.AddPeer(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream, stream))
 					}
-					p.peers.AddPeer(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream))
 				}
 			} else {
 				return
@@ -224,14 +225,14 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 	}
 }
 
-func (p *P2p) isAlive(id peer.ID) bool {
+func (p *P2p) connect(id peer.ID)(network.Stream, error) {
 	stream, err := p.newStream(id)
 	if err != nil {
-		return false
+		return nil, err
 	}
 	stream.Reset()
 	stream.Close()
-	return true
+	return stream, nil
 }
 
 func PrivateToP2pId(key private.IPrivate) (peer.ID, error) {

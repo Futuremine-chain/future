@@ -44,7 +44,7 @@ func (t *Sorted) All() []types.IMessage {
 }
 
 func (t *Sorted) NeedPackaged(count int) []types.IMessage {
-	msgs := make([]types.IMessage, count)
+	msgs := make([]types.IMessage, 0)
 	rIndex := t.index.CopySelf()
 
 	for rIndex.Len() > 0 && count > 0 {
@@ -109,7 +109,7 @@ func (t *Sorted) RemoveExecuted(v validator.IValidator) {
 // Delete expired messages
 func (t *Sorted) RemoveExpiredTx(timeThreshold int64) {
 	for _, msg := range t.cache {
-		if msg.Time() <= timeThreshold {
+		if msg.Time() <= uint64(timeThreshold) {
 			t.Remove(msg)
 		}
 	}
@@ -122,7 +122,7 @@ type msgInfo struct {
 	msgHash string
 	fees    uint64
 	nonce   uint64
-	time    int64
+	time    uint64
 }
 
 func (t msgInfos) Len() int           { return len(t) }

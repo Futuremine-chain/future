@@ -96,13 +96,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	status := fmcstatus.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
 	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
-	horn := horn.NewHorn(peersSv, gPool)
-	msgManage, err := msglist.NewMsgManagement(status, actStatus)
-	if err != nil {
-		return nil, err
-	}
-	poolSv := pool.NewPool(horn, msgManage)
-	chain, err := blockchain.NewFMCChain(status, dpos, poolSv)
+	chain, err := blockchain.NewFMCChain(status, dpos )
 	if err != nil {
 		return nil, err
 	}
@@ -112,10 +106,21 @@ func createFMCNode() (*node.FMCNode, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	horn := horn.NewHorn(peersSv, gPool, reqHandler)
+	msgManage, err := msglist.NewMsgManagement(status, actStatus)
+	if err != nil {
+		return nil, err
+	}
+	poolSv := pool.NewPool(horn, msgManage)
+
+
 	rpcSv := rpc.NewRpc()
 	syncSv := sync_service.NewSync(peersSv, dpos, reqHandler, chain)
-	generateSv := generate.NewGenerate(chain, dpos)
+	generateSv := generate.NewGenerate(chain, dpos, poolSv, horn)
 	node := node.NewFMCNode()
+
+	chain.RegisterMsgPoolDeleteFunc(poolSv.Delete)
 
 	// Register peer nodes to send blocks and message processing
 	reqHandler.RegisterReceiveMessage(poolSv.ReceiveMsgFromPeer)

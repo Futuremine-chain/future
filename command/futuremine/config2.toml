@@ -35,7 +35,7 @@ FallBackTo = -1
 
 # If it is a block generating node, it needs to be configured
 # Json file address of the address private key
-KeyFile = ""
+KeyFile = "../wallet/keystore/xBx2VZpE5RdC7cVfMgPet7rtWcmvtfRu7vH.json"
 # Password to decrypt the private key json file
-KeyPass = ""
+KeyPass = "1"
 

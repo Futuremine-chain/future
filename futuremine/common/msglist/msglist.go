@@ -100,13 +100,11 @@ func (t *MsgManagement) put(msg types.IMessage) error {
 	return nil
 }
 
-func (t *MsgManagement) Delete(messages []types.IMessage) {
+func (t *MsgManagement) Delete(msg types.IMessage) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-	for _, msg := range messages {
 		t.Remove(msg)
-	}
 	t.update()
 }
 
@@ -171,7 +169,7 @@ func (t *MsgManagement) DeleteExpired(timeThreshold int64) {
 	t.ready.RemoveExpiredTx(timeThreshold)
 
 	for _, msg := range t.cache.msgs {
-		if msg.Time() <= timeThreshold {
+		if msg.Time() <= uint64(timeThreshold) {
 			t.cache.Remove(msg)
 		}
 	}

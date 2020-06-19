@@ -13,7 +13,7 @@ type IChainDB interface {
 	GetMessages(txRoot arry.Hash) ([]*types.RlpMessage, error)
 	GetHeaderHeight(height uint64) (*types.Header, error)
 	GetHeaderHash(hash arry.Hash) (*types.Header, error)
-	CycleLastHash(cycle int64) (arry.Hash, error)
+	CycleLastHash(cycle uint64) (arry.Hash, error)
 
 	SaveHeader(header *types.Header)
 	SaveLastHeight(height uint64)
@@ -24,5 +24,5 @@ type IChainDB interface {
 	SaveTokenRoot(hash arry.Hash)
 	SaveDPosRoot(hash arry.Hash)
 	SaveConfirmedHeight(height uint64, confirmed uint64)
-	SaveCycleLastHash(cycle int64, hash arry.Hash)
+	SaveCycleLastHash(cycle uint64, hash arry.Hash)
 }

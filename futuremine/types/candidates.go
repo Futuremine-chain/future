@@ -24,7 +24,7 @@ func (m *Member) Bytes() []byte {
 
 func DecodeMember(bytes []byte) (*Member, error) {
 	var mem *Member
-	err := rlp.DecodeBytes(bytes, mem)
+	err := rlp.DecodeBytes(bytes, &mem)
 	if err != nil {
 		return nil, err
 	}

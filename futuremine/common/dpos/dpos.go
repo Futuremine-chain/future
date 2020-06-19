@@ -11,7 +11,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
-	"time"
 )
 
 const (
@@ -48,7 +47,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 				Type:      fmctypes.Candidate,
 				Nonce:     1,
 				From:      super.Signer,
-				Time:      time.Unix(config.Param.GenesisTime, 0),
+				Time:     config.Param.GenesisTime,
 				Signature: &fmctypes.Signature{},
 			},
 			Body: &fmctypes.CandidateBody{Peer: peerId},
@@ -93,7 +92,7 @@ func (d *DPos) CheckSigner(header types.IHeader, chain blockchain.IChain) error 
 
 func (d *DPos) CheckHeader(header types.IHeader, parent types.IHeader, chain blockchain.IChain) error {
 	// If the block time is in the future, it will fail
-	if header.GetTime() > utils.NowUnix() {
+	if header.GetTime() > uint64(utils.NowUnix()) {
 		return errors.New("block in the future")
 	}
 	// Verify whether it is the time point of block generation
@@ -162,7 +161,7 @@ func (d *DPos) checkTime(lastHeader types.IHeader, header types.IHeader) error {
 	return fmt.Errorf("wait for last block arrived, next slot = %d, block time = %d ", nextTime, header.GetTime)
 }
 
-func (d *DPos) lookupSuper(now int64) (arry.Address, error) {
+func (d *DPos) lookupSuper(now uint64) (arry.Address, error) {
 	offset := now % param.CycleInterval
 	if offset%param.BlockInterval != 0 {
 		return arry.Address{}, errors.New("invalid time to mint the block")
@@ -175,12 +174,12 @@ func (d *DPos) lookupSuper(now int64) (arry.Address, error) {
 	if len(supers.Candidates) == 0 {
 		return arry.Address{}, errors.New("no super to be found in storage")
 	}
-	offset %= int64(len(supers.Candidates))
+	offset %= uint64(len(supers.Candidates))
 	super := supers.Candidates[offset]
 	return super.Signer, nil
 }
 
-func (d *DPos) setAndLookupSuper(now int64, parent types.IHeader, chain blockchain.IChain) (arry.Address, error) {
+func (d *DPos) setAndLookupSuper(now uint64, parent types.IHeader, chain blockchain.IChain) (arry.Address, error) {
 	offset := now % param.CycleInterval
 	if offset%param.BlockInterval != 0 {
 		return arry.Address{}, errors.New("invalid time to mint the block")
@@ -193,12 +192,12 @@ func (d *DPos) setAndLookupSuper(now int64, parent types.IHeader, chain blockcha
 	if len(supers) == 0 {
 		return arry.Address{}, errors.New("no winner to be found in storage")
 	}
-	offset %= int64(len(supers))
+	offset %= uint64(len(supers))
 	winner := supers[offset]
 	return winner.Signer, nil
 }
 
-func (d *DPos) setSupers(time int64, parent types.IHeader, chain blockchain.IChain) ([]*fmctypes.Member, error) {
+func (d *DPos) setSupers(time uint64, parent types.IHeader, chain blockchain.IChain) ([]*fmctypes.Member, error) {
 	cycle := time / param.CycleInterval
 	supers, err := d.cycle.DPosStatus.CycleSupers(cycle)
 
@@ -285,7 +284,7 @@ func (d *DPos) updateConfirmed(chain blockchain.IChain) error {
 	// If there are already more than two-thirds of different nodes generating blocks,
 	// it means that the blocks before these blocks have been confirmed
 
-	cycle := int64(0)
+	cycle := uint64(0)
 	superMap := make(map[string]int)
 	for d.confirmed < curHeader.GetHeight() {
 		curCycle := curHeader.GetTime() / param.CycleInterval
@@ -315,6 +314,6 @@ func (d *DPos) updateConfirmed(chain blockchain.IChain) error {
 	return nil
 }
 
-func nextTime(now int64) int64 {
+func nextTime(now uint64) uint64 {
 	return (now + param.BlockInterval - 1) / param.BlockInterval * param.BlockInterval
 }

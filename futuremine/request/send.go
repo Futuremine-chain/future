@@ -76,6 +76,7 @@ func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
 func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 	s, err := conn.Stream.Conn().NewStream()
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	defer func() {

@@ -48,11 +48,11 @@ func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
 	return nil
 }
 
-func (d *DPosStatus) CycleSupers(cycle int64) (*fmctypes.Supers, error) {
+func (d *DPosStatus) CycleSupers(cycle uint64) (*fmctypes.Supers, error) {
 	return d.db.CycleSupers(cycle)
 }
 
-func (d *DPosStatus) SaveCycle(cycle int64, supers *fmctypes.Supers) {
+func (d *DPosStatus) SaveCycle(cycle uint64, supers *fmctypes.Supers) {
 	d.db.SaveCycle(cycle, supers)
 }
 
@@ -99,6 +99,6 @@ func (d *DPosStatus) Voter(msg types.IMessage) error {
 	return nil
 }
 
-func (d *DPosStatus) AddSuperBlockCount(cycle int64, signer arry.Address) {
+func (d *DPosStatus) AddSuperBlockCount(cycle uint64, signer arry.Address) {
 	d.db.AddSuperBlockCount(cycle, signer)
 }

@@ -87,7 +87,7 @@ func (t *TokenRecord) amount() uint64 {
 type Record struct {
 	Height  uint64
 	MsgHash arry.Hash
-	Time    int64
+	Time    uint64
 	Amount  uint64
 }
 

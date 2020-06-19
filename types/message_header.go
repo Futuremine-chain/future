@@ -8,6 +8,6 @@ type IMessageHeader interface {
 	From() arry.Address
 	Nonce() uint64
 	Fee() uint64
-	Time() int64
+	Time() uint64
 	IsCoinBase() bool
 }

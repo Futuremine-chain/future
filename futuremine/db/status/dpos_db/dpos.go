@@ -83,7 +83,7 @@ func (d *DPosDB) CancelCandidate(signer arry.Address) {
 	d.trie.Delete(base.Key(_candidates, signer.Bytes()))
 }
 
-func (d *DPosDB) CycleSupers(cycle int64) (*types.Supers, error) {
+func (d *DPosDB) CycleSupers(cycle uint64) (*types.Supers, error) {
 	var supers *types.Supers
 	cycleBytes, err := rlp.EncodeToBytes(cycle)
 	if err != nil {
@@ -96,7 +96,7 @@ func (d *DPosDB) CycleSupers(cycle int64) (*types.Supers, error) {
 	return supers, nil
 }
 
-func (d *DPosDB) SaveCycle(cycle int64, supers *types.Supers) {
+func (d *DPosDB) SaveCycle(cycle uint64, supers *types.Supers) {
 	value, _ := rlp.EncodeToBytes(supers)
 	key, _ := rlp.EncodeToBytes(cycle)
 	d.base.PutInBucket(_cycleSupers, key, value)
@@ -104,7 +104,7 @@ func (d *DPosDB) SaveCycle(cycle int64, supers *types.Supers) {
 
 func (d *DPosDB) Candidates() (*types.Candidates, error) {
 	cans := types.NewCandidates()
-	iter := d.trie.PrefixIterator(base.Prefix(_voters))
+	iter := d.trie.PrefixIterator(base.Prefix(_candidates))
 	for iter.Next(true) {
 		if iter.Leaf() {
 			value := iter.LeafBlob()
@@ -139,7 +139,7 @@ func (d *DPosDB) Voter(from, to arry.Address) {
 	d.trie.Update(base.Key(_voters, from.Bytes()), to.Bytes())
 }
 
-func (d *DPosDB) AddSuperBlockCount(cycle int64, signer arry.Address) {
+func (d *DPosDB) AddSuperBlockCount(cycle uint64, signer arry.Address) {
 	hash := cycleSuperCountKey(cycle, signer)
 	cnt := d.SuperBlockCount(cycle, signer)
 	cnt++
@@ -147,7 +147,7 @@ func (d *DPosDB) AddSuperBlockCount(cycle int64, signer arry.Address) {
 	d.trie.Update(base.Key(_blockCount, hash.Bytes()), bytes)
 }
 
-func (d *DPosDB) SuperBlockCount(cycle int64, signer arry.Address) uint32 {
+func (d *DPosDB) SuperBlockCount(cycle uint64, signer arry.Address) uint32 {
 	hash := cycleSuperCountKey(cycle, signer)
 	bytes := d.trie.Get(base.Key(_blockCount, hash.Bytes()))
 	var count uint32
@@ -155,7 +155,7 @@ func (d *DPosDB) SuperBlockCount(cycle int64, signer arry.Address) uint32 {
 	return count
 }
 
-func cycleSuperCountKey(cycle int64, signer arry.Address) arry.Hash {
-	bytes := bytes.Join([][]byte{[]byte(strconv.FormatInt(cycle, 10)), signer.Bytes()}, []byte{})
+func cycleSuperCountKey(cycle uint64, signer arry.Address) arry.Hash {
+	bytes := bytes.Join([][]byte{[]byte(strconv.FormatUint(cycle, 10)), signer.Bytes()}, []byte{})
 	return hash.Hash(bytes)
 }

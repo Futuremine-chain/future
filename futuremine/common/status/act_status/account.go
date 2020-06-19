@@ -33,7 +33,7 @@ func (a *ActStatus) SetTrieRoot(stateRoot arry.Hash) error {
 }
 
 func (a *ActStatus) CheckMessage(msg types.IMessage, strict bool) error {
-	if msg.Time() > utils.NowUnix() {
+	if msg.Time() > uint64(utils.NowUnix()) {
 		return errors.New("incorrect transaction time")
 	}
 
@@ -113,7 +113,7 @@ func (a *ActStatus) SetConfirmed(height uint64) {
 
 // Verify the status of the trading account
 func (a *ActStatus) Check(msg types.IMessage, strict bool) error {
-	if msg.Time() > utils.NowUnix() {
+	if msg.Time() > uint64(utils.NowUnix()) {
 		return errors.New("incorrect message time")
 	}
 

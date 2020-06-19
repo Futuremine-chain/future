@@ -25,7 +25,7 @@ type Header struct {
 }
 
 func NewHeader(preHash, msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height uint64,
-	blockTime int64, signer arry.Address) *Header {
+	blockTime uint64, signer arry.Address) *Header {
 	return &Header{
 		PreHash:   preHash,
 		MsgRoot:   msgRoot,
@@ -33,8 +33,8 @@ func NewHeader(preHash, msgRoot, actRoot, dPosRoot, tokenRoot arry.Hash, height 
 		DPosRoot:  dPosRoot,
 		TokenRoot: tokenRoot,
 		Height:    height,
-		Time:      uint64(blockTime),
-		Cycle:     uint64(blockTime) / uint64(param.CycleInterval),
+		Time:      blockTime,
+		Cycle:     blockTime / uint64(param.CycleInterval),
 		Signer:    signer,
 		Signature: &Signature{},
 	}
@@ -89,12 +89,12 @@ func (h *Header) GetSignature() types.ISignature {
 	return h.Signature
 }
 
-func (h *Header) GetTime() int64 {
-	return int64(h.Time)
+func (h *Header) GetTime() uint64 {
+	return h.Time
 }
 
-func (h *Header) GetCycle() int64 {
-	return int64(h.Cycle)
+func (h *Header) GetCycle() uint64 {
+	return h.Cycle
 }
 
 func (h *Header) SetHash() {

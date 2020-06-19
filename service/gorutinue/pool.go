@@ -23,6 +23,7 @@ func (t *Task) Run(flagCh chan bool) {
 	flagCh <- true
 	go func() {
 		<-flagCh
+		t.f()
 	}()
 }
 

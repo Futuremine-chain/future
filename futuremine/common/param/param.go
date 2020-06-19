@@ -8,7 +8,7 @@ import (
 
 const (
 	// Block interval period
-	BlockInterval = int64(5)
+	BlockInterval = uint64(5)
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
@@ -73,12 +73,12 @@ type RpcParam struct {
 }
 
 type DPosParam struct {
-	BlockInterval int64
-	CycleInterval int64
+	BlockInterval uint64
+	CycleInterval uint64
 	SuperSize     int
 	DPosSize      int
-	GenesisTime   int64
-	GenesisCycle  int64
+	GenesisTime   uint64
+	GenesisCycle  uint64
 }
 
 type PoolParam struct {

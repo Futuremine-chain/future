@@ -135,8 +135,8 @@ func (b *ChainDB) GetHistoryConfirmedHeight(height uint64) (uint64, error) {
 	return strconv.ParseUint(string(heightBytes), 10, 64)
 }
 
-func (b *ChainDB) CycleLastHash(cycle int64) (arry.Hash, error) {
-	bytes := []byte(strconv.FormatInt(cycle, 10))
+func (b *ChainDB) CycleLastHash(cycle uint64) (arry.Hash, error) {
+	bytes := []byte(strconv.FormatUint(cycle, 10))
 	bytes, err := b.db.GetFromBucket(_cycleHash, bytes)
 	if err != nil {
 		return arry.Hash{}, err
@@ -188,7 +188,7 @@ func (b *ChainDB) SaveConfirmedHeight(height uint64, confirmed uint64) {
 	b.db.PutInBucket(_hisConfirmed, heightBytes, confirmedBytes)
 }
 
-func (b *ChainDB) SaveCycleLastHash(cycle int64, hash arry.Hash) {
-	bytes := []byte(strconv.FormatInt(cycle, 10))
+func (b *ChainDB) SaveCycleLastHash(cycle uint64, hash arry.Hash) {
+	bytes := []byte(strconv.FormatUint(cycle, 10))
 	b.db.PutInBucket(_cycleHash, bytes, hash.Bytes())
 }

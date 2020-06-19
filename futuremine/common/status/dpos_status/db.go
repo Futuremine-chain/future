@@ -13,12 +13,12 @@ type IDPosDB interface {
 	Candidates() (*types.Candidates, error)
 	AddCandidate(member *types.Member)
 	CancelCandidate(signer arry.Address)
-	CycleSupers(cycle int64) (*types.Supers, error)
-	SaveCycle(cycle int64, supers *types.Supers)
+	CycleSupers(cycle uint64) (*types.Supers, error)
+	SaveCycle(cycle uint64, supers *types.Supers)
 	Voters() map[arry.Address][]arry.Address
 	Confirmed() (uint64, error)
 	SetConfirmed(uint64)
 	Voter(from, to arry.Address)
-	AddSuperBlockCount(cycle int64, signer arry.Address)
-	SuperBlockCount(cycle int64, signer arry.Address) uint32
+	AddSuperBlockCount(cycle uint64, signer arry.Address)
+	SuperBlockCount(cycle uint64, signer arry.Address) uint32
 }

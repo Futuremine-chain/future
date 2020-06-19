@@ -17,6 +17,7 @@ type Pool struct {
 	msgMgt      msglist.IMsgList
 	horn        *horn.Horn
 	broadcastCh chan types.IMessage
+	deleteMsg chan types.IMessage
 }
 
 func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
@@ -24,6 +25,7 @@ func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
 		msgMgt:      msgMgt,
 		horn:        horn,
 		broadcastCh: make(chan types.IMessage, 100),
+		deleteMsg:make(chan types.IMessage, 10000),
 	}
 	return pool
 }
@@ -73,6 +75,8 @@ func (p *Pool) startChan() {
 		select {
 		case msg := <-p.broadcastCh:
 			p.horn.BroadcastMsg(msg)
+			case msg := <-p.deleteMsg:
+				p.msgMgt.Delete(msg)
 		}
 	}
 }
@@ -95,6 +99,6 @@ func (p *Pool) removeExpired() {
 	p.msgMgt.DeleteExpired(threshold)
 }
 
-func (p *Pool) Delete(msgs []types.IMessage) {
-	p.msgMgt.Delete(msgs)
+func (p *Pool) Delete(msg types.IMessage) {
+	p.deleteMsg <- msg
 }

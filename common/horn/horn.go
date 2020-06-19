@@ -17,10 +17,10 @@ type Horn struct {
 	gPool   *gorutinue.Pool
 }
 
-func NewHorn(peers *peers.Peers, gPool *gorutinue.Pool) *Horn {
+func NewHorn(peers *peers.Peers, gPool *gorutinue.Pool, request request.IRequestHandler) *Horn {
 	return &Horn{
 		peers:   peers,
-		request: nil,
+		request: request,
 		local:   peers.Local(),
 		gPool:   gPool,
 	}
@@ -29,7 +29,7 @@ func NewHorn(peers *peers.Peers, gPool *gorutinue.Pool) *Horn {
 func (h *Horn) BroadcastMsg(message types.IMessage) {
 	peers := h.peers.PeersMap()
 	for id, peer := range peers {
-		if id != h.local.Address.ID.String() {
+		if h.local == nil || id != h.local.Address.ID.String() {
 			if err := h.gPool.AddTask(gorutinue.NewTask(
 				func() error {
 					return h.request.SendMsg(peer.Conn, message)
@@ -44,7 +44,7 @@ func (h *Horn) BroadcastMsg(message types.IMessage) {
 func (h *Horn) BroadcastBlock(block types.IBlock) {
 	peers := h.peers.PeersMap()
 	for id, peer := range peers {
-		if id != h.local.Address.ID.String() {
+		if h.local == nil || id != h.local.Address.ID.String() {
 			if err := h.gPool.AddTask(gorutinue.NewTask(
 				func() error {
 					return h.request.SendBlock(peer.Conn, block)

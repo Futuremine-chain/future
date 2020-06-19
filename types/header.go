@@ -14,7 +14,7 @@ type IHeader interface {
 	GetSigner() arry.Address
 	GetSignature() ISignature
 	GetHeight() uint64
-	GetTime() int64
-	GetCycle() int64
+	GetTime() uint64
+	GetCycle() uint64
 	ToRlpHeader() IRlpHeader
 }

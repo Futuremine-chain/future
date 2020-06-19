@@ -15,13 +15,13 @@ type IChain interface {
 	GetHeaderHeight(uint64) (types.IHeader, error)
 	GetHeaderHash(arry.Hash) (types.IHeader, error)
 
-	CycleLastHash(int64) (arry.Hash, error)
+	CycleLastHash(uint64) (arry.Hash, error)
 
 	GetRlpBlockHeight(uint64) (types.IRlpBlock, error)
 	GetRlpBlockHash(arry.Hash) (types.IRlpBlock, error)
 
-	NextHeader(int64) (types.IHeader, error)
-	NextBlock([]types.IMessage, int64) (types.IBlock, error)
+	NextHeader(uint64) (types.IHeader, error)
+	NextBlock([]types.IMessage, uint64) (types.IBlock, error)
 	Insert(types.IBlock) error
 	Roll() error
 	Vote(arry.Address) uint64

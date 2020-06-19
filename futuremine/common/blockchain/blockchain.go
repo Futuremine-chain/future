@@ -8,12 +8,10 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
-	"time"
 )
 
 const chainDB = "chain_db"
@@ -23,18 +21,19 @@ type FMCChain struct {
 	mutex      sync.RWMutex
 	status     status.IStatus
 	db         IChainDB
-	msgPool    *pool.Pool
 	dPos       dpos.IDPos
 	actRoot    arry.Hash
 	dPosRoot   arry.Hash
 	tokenRoot  arry.Hash
 	lastHeight uint64
 	confirmed  uint64
+
+	poolDeleteMsg func(message types.IMessage)
 }
 
-func NewFMCChain(status status.IStatus, dPos dpos.IDPos, msgPool *pool.Pool) (*FMCChain, error) {
+func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	var err error
-	fmc := &FMCChain{status: status, dPos: dPos, msgPool: msgPool}
+	fmc := &FMCChain{status: status, dPos: dPos}
 	fmc.db, err = chain_db.Open(config.Param.Data + "/" + chainDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open chain db, %s", err.Error())
@@ -64,7 +63,7 @@ func (b *FMCChain) LastHeight() uint64 {
 	return b.lastHeight
 }
 
-func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
+func (b *FMCChain) NextHeader(time uint64) (types.IHeader, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
 
@@ -87,7 +86,7 @@ func (b *FMCChain) NextHeader(time int64) (types.IHeader, error) {
 	return header, nil
 }
 
-func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlock, error) {
+func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBlock, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
 
@@ -95,12 +94,12 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlo
 		Header: &fmctypes.MsgHeader{
 			Type: fmctypes.Transaction,
 			From: fmctypes.CoinBase,
-			Time: time.Unix(blockTime, 0),
+			Time: blockTime,
 		},
 		Body: &fmctypes.TransactionBody{
 			TokenAddress: config.Param.TokenParam.MainToken,
 			Receiver:     config.Param.IPrivate.Address(),
-			Amount:       config.Param.TokenParam.Proportion + fmctypes.CalculateFee(msgs),
+			Amount:       config.Param.TokenParam.CoinBase + fmctypes.CalculateFee(msgs),
 		},
 	}
 	coinBase.SetHash()
@@ -113,7 +112,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime int64) (types.IBlo
 	// Build block header
 	header := fmctypes.NewHeader(
 		lastHeader.GetHash(),
-		fmctypes.MsgRoot(msgs),
+		fmctypes.MsgRoot(fmcMsgs),
 		b.actRoot,
 		b.dPosRoot,
 		b.tokenRoot,
@@ -201,7 +200,7 @@ func (b *FMCChain) getHeaderHash(hash arry.Hash) (*fmctypes.Header, error) {
 	return b.db.GetHeaderHash(hash)
 }
 
-func (b *FMCChain) CycleLastHash(cycle int64) (arry.Hash, error) {
+func (b *FMCChain) CycleLastHash(cycle uint64) (arry.Hash, error) {
 	return b.db.CycleLastHash(cycle)
 }
 
@@ -365,6 +364,11 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 			if err := b.checkMsg(msg); err != nil {
 				return err
 			}
+			if b.poolDeleteMsg != nil{
+				b.poolDeleteMsg(msg)
+			}else{
+				log.Warn("Need to register message pool delete function")
+			}
 		}
 		from := msg.From().String()
 		if _, ok := address[from]; !ok {
@@ -373,7 +377,6 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 			return errors.New("one address in a block can only send one transaction")
 		}
 	}
-	b.msgPool.Delete(msgs)
 	return nil
 }
 
@@ -420,4 +423,8 @@ func (b *FMCChain) Vote(address arry.Address) uint64 {
 	act := b.status.Account(address)
 	vote += act.GetBalance(config.Param.MainToken)
 	return vote
+}
+
+func (b *FMCChain)RegisterMsgPoolDeleteFunc(fun func(message types.IMessage)){
+	b.poolDeleteMsg = fun
 }

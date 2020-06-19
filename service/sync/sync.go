@@ -40,7 +40,7 @@ func (s *Sync) Name() string {
 }
 
 func (s *Sync) Start() error {
-	go s.syncBlocks()
+	//go s.syncBlocks()
 	log.Info("Sync started successfully", "module", module)
 	return nil
 }

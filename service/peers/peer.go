@@ -12,8 +12,8 @@ type Peer struct {
 	Conn    *Conn
 }
 
-func NewPeer(private crypto.PrivateKey, addr *peer.AddrInfo, createF CreateConnF) *Peer {
-	return &Peer{Private: private, Address: addr, Conn: &Conn{PeerId: addr.ID, Create: createF}}
+func NewPeer(private crypto.PrivateKey, addr *peer.AddrInfo, createF CreateConnF, stream network.Stream) *Peer {
+	return &Peer{Private: private, Address: addr, Conn: &Conn{Stream:stream, PeerId: addr.ID, Create: createF}}
 }
 
 type CreateConnF func(peerId peer.ID) (network.Stream, error)
