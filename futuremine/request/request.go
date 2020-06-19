@@ -14,6 +14,8 @@ import (
 
 const module = "request"
 
+type request func(*ReqStream) (*Response, error)
+
 type ReqStream struct {
 	request *Request
 	stream  network.Stream
@@ -64,12 +66,14 @@ func (r *RequestHandler) Start() error {
 }
 
 func (r *RequestHandler) dealRequest() {
-	var h IHandler
+	var h handler
 	for reqStream := range r.readyCh {
 		switch reqStream.request.Method {
-
+		case sendBlock:
+			h = r.respSendBlock
 		default:
-			reqStream.Close()
+			reqStream.stream.Reset()
+			reqStream.stream.Close()
 			continue
 		}
 		go response(reqStream, h)
@@ -85,10 +89,10 @@ func (r *RequestHandler) RegisterReceiveMessage(f func(types.IMessage) error) {
 }
 
 // Handling message requests
-func response(req *ReqStream, h IHandler) {
+func response(req *ReqStream, h handler) {
 	defer req.Close()
 
-	if response, err := h.handler(req); err != nil {
+	if response, err := h(req); err != nil {
 		log.Warn("Response error", "module", module,
 			"method", req.request.Method,
 			"peer", req.stream.Conn().RemotePeer(),
@@ -109,8 +113,6 @@ func response(req *ReqStream, h IHandler) {
 }
 
 func (r *RequestHandler) SendToReady(stream network.Stream) {
-	fmt.Println(stream.Conn().RemoteMultiaddr())
-	err := stream.SetDeadline(time.Unix(time.Now().Unix()+timeOut, 0))
 	request, err := r.UnmarshalRequest(stream)
 	if err != nil {
 		return
@@ -134,15 +136,16 @@ func (r *RequestHandler) UnmarshalRequest(stream network.Stream) (*Request, erro
 func (r *RequestHandler) UnmarshalResponse(stream network.Stream) (*Response, error) {
 	reBytes, err := r.read(stream)
 	if err != nil {
+		fmt.Println("UnmarshalResponse", err)
 		return nil, err
 	}
-	request := &Response{}
+	resp := &Response{}
 
-	err = json.Unmarshal(reBytes, request)
+	err = json.Unmarshal(reBytes, resp)
 	if err != nil {
 		return nil, err
 	}
-	return request, nil
+	return resp, nil
 }
 
 // Read message bytes
@@ -171,9 +174,8 @@ func (rm *RequestHandler) read(stream network.Stream) ([]byte, error) {
 	return rs[0:len], err
 }
 
-type IHandler interface {
-	handler(*ReqStream) (*Response, error)
-}
+type handler func(*ReqStream) (*Response, error)
+
 
 func reset(bytes []byte) {
 	for i, _ := range bytes {

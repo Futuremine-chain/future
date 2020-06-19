@@ -16,11 +16,19 @@ func (r *RlpBlock) Bytes() []byte {
 }
 
 func (r *RlpBlock) ToBlock() types.IBlock {
+	return &Block{
+		Header: r.RlpHeader,
+		Body:   r.RlpBody.ToBody(),
+	}
 	return nil
 }
 
-func DecodeRlpBlock([]byte) (*RlpBlock, error) {
-	return nil, nil
+func DecodeRlpBlock(bytes []byte) (*RlpBlock, error) {
+	var rlpBlock *RlpBlock
+	if err := rlp.DecodeBytes(bytes, &rlpBlock);err != nil{
+		return nil, err
+	}
+	return rlpBlock, nil
 }
 
 type RlpBlocks []types.IRlpBlock

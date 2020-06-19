@@ -22,10 +22,11 @@ var (
 
 func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
 	var height uint64 = 0
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return 0, err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()
@@ -50,10 +51,11 @@ func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
 }
 
 func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()
@@ -74,11 +76,11 @@ func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
 }
 
 func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()
@@ -100,10 +102,11 @@ func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 }
 
 func (r *RequestHandler) GetBlocks(conn *peers.Conn, height uint64) ([]types.IBlock, error) {
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()
@@ -134,10 +137,11 @@ func (r *RequestHandler) GetBlocks(conn *peers.Conn, height uint64) ([]types.IBl
 }
 
 func (r *RequestHandler) GetBlock(conn *peers.Conn, height uint64) (types.IBlock, error) {
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()
@@ -168,10 +172,11 @@ func (r *RequestHandler) GetBlock(conn *peers.Conn, height uint64) (types.IBlock
 }
 
 func (r *RequestHandler) IsEqual(conn *peers.Conn, header types.IHeader) (bool, error) {
-	s, err := conn.Stream.Conn().NewStream()
+	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return false, err
 	}
+
 	defer func() {
 		s.Reset()
 		s.Close()

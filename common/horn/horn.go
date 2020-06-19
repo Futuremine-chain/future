@@ -1,6 +1,7 @@
 package horn
 
 import (
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/service/gorutinue"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
@@ -47,6 +48,7 @@ func (h *Horn) BroadcastBlock(block types.IBlock) {
 		if h.local == nil || id != h.local.Address.ID.String() {
 			if err := h.gPool.AddTask(gorutinue.NewTask(
 				func() error {
+					fmt.Println("send block to ", id)
 					return h.request.SendBlock(peer.Conn, block)
 				})); err != nil {
 				log.Warn("Adding the task to send the block failed", "module", module,

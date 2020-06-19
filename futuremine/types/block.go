@@ -52,12 +52,10 @@ func (b *Block) BlockBody() types.IBody {
 }
 
 func (b *Block) ToRlpBlock() types.IRlpBlock {
-
 	return &RlpBlock{
 		RlpHeader: b.Header,
 		RlpBody:   b.Body.ToRlpBody(),
 	}
-
 }
 
 func (b *Block) SetHash() {

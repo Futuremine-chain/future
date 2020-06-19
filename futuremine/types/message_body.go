@@ -87,7 +87,7 @@ func (c *CandidateBody) MsgToken() arry.Address {
 type CancelBody struct {
 }
 
-func (c *CancelBody) To() arry.Address {
+func (c *CancelBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
 
@@ -99,10 +99,15 @@ func (c *CancelBody) MsgToken() arry.Address {
 	return config.Param.MainToken
 }
 
+
+func (c *CancelBody) MsgAmount() uint64 {
+	return 0
+}
+
 type VoteBody struct {
 }
 
-func (v *VoteBody) To() arry.Address {
+func (v *VoteBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
 
@@ -112,4 +117,8 @@ func (v *VoteBody) CheckBody() error {
 
 func (v *VoteBody) MsgToken() arry.Address {
 	return config.Param.MainToken
+}
+
+func (v *VoteBody) MsgAmount() uint64 {
+	return 0
 }

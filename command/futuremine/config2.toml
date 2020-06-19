@@ -1,11 +1,8 @@
 # testnet or mainnet
 TestNet = true
 
-# Program home directory
-Home = ""
-
 # chain data directory
-Data = ""
+Data = "data"
 
 # Logging switch
 Logging = true
