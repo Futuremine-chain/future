@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/private"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
 	private2 "github.com/Futuremine-chain/futuremine/futuremine/common/private"
 	log2 "github.com/Futuremine-chain/futuremine/tools/log"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"

@@ -26,6 +26,11 @@ const (
 	Version = "0.1.1"
 )
 
+const (
+	MaxReadBytes = 1024 * 10
+	MaxReqBytes  = MaxReadBytes * 1000
+)
+
 type Param struct {
 	Name             string
 	Data             string

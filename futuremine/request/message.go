@@ -5,8 +5,6 @@ const (
 	Failed
 )
 
-const maxReadBytes = 1024 * 10
-const MaxReqBytes = maxReadBytes * 1000
 const timeOut = 5
 
 type Code int

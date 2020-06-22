@@ -1,14 +1,35 @@
 package rpc
 
-import log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/certgen"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/futuremine/tools/utils"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/reflection"
+	"net"
+	"os"
+)
 
 const module = "rpc"
 
 type Rpc struct {
+	grpcServer *grpc.Server
+	status     status.IStatus
 }
 
-func NewRpc() *Rpc {
-	return &Rpc{}
+func NewRpc(status status.IStatus) *Rpc {
+	return &Rpc{status: status}
 }
 
 func (r *Rpc) Name() string {
@@ -16,10 +37,124 @@ func (r *Rpc) Name() string {
 }
 
 func (r *Rpc) Start() error {
-	log.Info("Rpc started successfully", "module", module)
+	lis, err := net.Listen("tcp", ":"+config.Param.RpcPort)
+	if err != nil {
+		return err
+	}
+	r.grpcServer, err = r.NewGRpcServer()
+	if err != nil {
+		return err
+	}
+
+	RegisterGreeterServer(r.grpcServer, r)
+	reflection.Register(r.grpcServer)
+	go func() {
+		if err := r.grpcServer.Serve(lis); err != nil {
+			log.Info("Rpc startup failed!", "module", module, "err", err)
+			os.Exit(1)
+			return
+		}
+
+	}()
+	if config.Param.RpcTLS {
+		log.Info("Rpc startup", "module", module, "port", config.Param.RpcPort, "pem", config.Param.RpcCert)
+	} else {
+		log.Info("Rpc startup", "module", module, "port", config.Param.RpcPort)
+	}
 	return nil
 }
 
 func (r *Rpc) Stop() error {
+	return nil
+}
+
+func (r *Rpc) NewGRpcServer() (*grpc.Server, error) {
+	var opts []grpc.ServerOption
+	var interceptor grpc.UnaryServerInterceptor
+	interceptor = r.interceptor
+	opts = append(opts, grpc.UnaryInterceptor(interceptor))
+
+	// If tls is configured, generate tls certificate
+	if config.Param.RpcTLS {
+		if err := r.certFile(); err != nil {
+			return nil, err
+		}
+		transportCredentials, err := credentials.NewServerTLSFromFile(config.Param.RpcCert, config.Param.RpcCertKey)
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, grpc.Creds(transportCredentials))
+
+	}
+
+	// Set the maximum number of bytes received and sent
+	opts = append(opts, grpc.MaxRecvMsgSize(param.MaxReqBytes))
+	opts = append(opts, grpc.MaxSendMsgSize(param.MaxReqBytes))
+	return grpc.NewServer(opts...), nil
+}
+
+func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) == 0 {
+		return NewResponse(Err_Params, nil, "no address"), nil
+	}
+	if address, ok := params[0].(string); !ok {
+		return NewResponse(Err_Params, nil, "address type error"), nil
+	} else {
+		arryAddr := arry.StringToAddress(address)
+		if !kit.CheckAddress(config.Param.Name, arryAddr) {
+			return NewResponse(Err_Params, nil, fmt.Sprintf("%s address check failed", string(req.Params))), nil
+		}
+		account := r.status.Account(arryAddr)
+		bytes, _ := json.Marshal(account)
+		return NewResponse(Success, bytes, ""), nil
+	}
+}
+
+func NewResponse(code int32, result []byte, err string) *Response {
+	return &Response{Code: code, Result: result, Err: err}
+}
+
+// Authenticate rpc users
+func (r *Rpc) auth(ctx context.Context) error {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return errors.New("no token authentication information")
+	}
+	var (
+		password string
+	)
+
+	if val, ok := md["password"]; ok {
+		password = val[0]
+	}
+
+	if password != config.Param.RpcPass {
+		return fmt.Errorf("the token authentication information is invalid: password=%s", password)
+	}
+	return nil
+}
+
+func (r *Rpc) interceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	err = r.auth(ctx)
+	if err != nil {
+		return
+	}
+	return handler(ctx, req)
+}
+
+func (r *Rpc) certFile() error {
+	if config.Param.RpcCert == "" {
+		config.Param.RpcCert = config.Param.Data + "/server.pem"
+	}
+	if config.Param.RpcCertKey == "" {
+		config.Param.RpcCertKey = config.Param.Data + "/server.key"
+	}
+	if !utils.Exist(config.Param.RpcCert) || !utils.Exist(config.Param.RpcCertKey) {
+		return certgen.GenCertPair(config.Param.RpcCert, config.Param.RpcCertKey)
+	}
 	return nil
 }

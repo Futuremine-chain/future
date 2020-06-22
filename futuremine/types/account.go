@@ -11,12 +11,12 @@ import (
 )
 
 type Account struct {
-	Address    arry.Address
-	Nonce      uint64
-	Tokens     Tokens
-	Confirmed  uint64
-	JournalIn  *journalIn
-	JournalOut *journalOut
+	Address    arry.Address `json:"address"`
+	Nonce      uint64       `json:"nonce"`
+	Tokens     Tokens       `json:"tokens"`
+	Confirmed  uint64       `json:"confirmed"`
+	JournalIn  *journalIn   `json:"-"`
+	JournalOut *journalOut  `json:"-"`
 }
 
 func NewAccount() *Account {
@@ -209,7 +209,7 @@ func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 		tokenAccount.LockedIn += body.MsgAmount()
 	} else {
 		tokenAccount = &TokenAccount{
-			Address:  body.MsgToken().String(),
+			Address:   body.MsgToken().String(),
 			Balance:   0,
 			LockedIn:  body.MsgAmount(),
 			LockedOut: 0,
@@ -219,7 +219,6 @@ func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 	a.JournalIn.Add(msg, height)
 	return nil
 }
-
 
 // Change of contract information
 func (a *Account) toTokenChange(msg types.IMessage, height uint64) error {
@@ -232,7 +231,7 @@ func (a *Account) toTokenChange(msg types.IMessage, height uint64) error {
 		tokenAccount.LockedIn += amount
 	} else {
 		tokenAccount = &TokenAccount{
-			Address:  tokenAddr.String(),
+			Address:   tokenAddr.String(),
 			Balance:   0,
 			LockedOut: 0,
 			LockedIn:  amount,
@@ -375,10 +374,10 @@ func (a *Account) GetAddress() arry.Address {
 }
 
 type TokenAccount struct {
-	Address   string
-	Balance   uint64
-	LockedIn  uint64
-	LockedOut uint64
+	Address   string `json:"address"`
+	Balance   uint64 `json:"balance"`
+	LockedIn  uint64 `json:"locked"`
+	LockedOut uint64 `json:"-"`
 }
 
 // List of secondary accounts

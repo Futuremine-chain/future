@@ -7,6 +7,7 @@ require (
 	github.com/Qitmeer/qitmeer-lib v0.0.0-20190929044832-b10740b316a8
 	github.com/btcsuite/goleveldb v0.0.0-20160330041536-7834afc9e8cd
 	github.com/go-stack/stack v1.8.0
+	github.com/golang/protobuf v1.4.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jrick/logrotate v1.0.0
 	github.com/libp2p/go-libp2p v0.7.2
@@ -24,5 +25,6 @@ require (
 	github.com/whyrusleeping/go-smux-yamux v2.0.9+incompatible // indirect
 	github.com/whyrusleeping/yamux v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	google.golang.org/grpc v1.20.1
 	gopkg.in/karalabe/cookiejar.v2 v2.0.0-20150724131613-8dcd6a7f4951
 )

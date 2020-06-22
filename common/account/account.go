@@ -1,6 +1,7 @@
 package account
 
 import (
+	rpctypes "github.com/Futuremine-chain/futuremine/service/rpc/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 )

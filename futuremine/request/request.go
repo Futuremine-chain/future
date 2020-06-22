@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/common/param"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
 	"github.com/libp2p/go-libp2p-core/network"
@@ -44,7 +45,7 @@ func NewRequestHandler(chain blockchain.IChain) *RequestHandler {
 		readyCh: make(chan *ReqStream, config.Param.PeerRequestChan),
 		bytesPool: sync.Pool{
 			New: func() interface{} {
-				return make([]byte, maxReadBytes)
+				return make([]byte, param.MaxReadBytes)
 			},
 		},
 	}
@@ -155,7 +156,7 @@ func (rm *RequestHandler) read(stream network.Stream) ([]byte, error) {
 	var n int
 	len := 0
 	arry := rm.bytesPool.Get().([]byte)
-	for len < MaxReqBytes {
+	for len < param.MaxReqBytes {
 		reset(arry)
 		n, err = stream.Read(arry)
 		if err != nil {
@@ -163,19 +164,18 @@ func (rm *RequestHandler) read(stream network.Stream) ([]byte, error) {
 		}
 		rs = append(rs, arry...)
 		len += n
-		if n < maxReadBytes {
+		if n < param.MaxReadBytes {
 			break
 		}
 	}
 	rm.bytesPool.Put(arry)
-	if len > MaxReqBytes {
-		return nil, fmt.Errorf("request data must be less than %d", MaxReqBytes)
+	if len > param.MaxReqBytes {
+		return nil, fmt.Errorf("request data must be less than %d", param.MaxReqBytes)
 	}
 	return rs[0:len], err
 }
 
 type handler func(*ReqStream) (*Response, error)
-
 
 func reset(bytes []byte) {
 	for i, _ := range bytes {

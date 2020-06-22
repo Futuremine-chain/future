@@ -6,7 +6,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/common/param"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -47,7 +47,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 				Type:      fmctypes.Candidate,
 				Nonce:     1,
 				From:      super.Signer,
-				Time:     config.Param.GenesisTime,
+				Time:      config.Param.GenesisTime,
 				Signature: &fmctypes.Signature{},
 			},
 			Body: &fmctypes.CandidateBody{Peer: peerId},
