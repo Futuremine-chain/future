@@ -2,6 +2,7 @@ package gorutinue
 
 import (
 	"errors"
+	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"sync"
 )
 
@@ -60,6 +61,7 @@ func (p *Pool) Stop() error {
 	close(p.readyCh)
 	close(p.flagCh)
 	p.wg.Wait()
+	log.Info("Goroutine pool was stopped", "module", module)
 	return nil
 }
 

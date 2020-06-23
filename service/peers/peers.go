@@ -19,10 +19,11 @@ type Peers struct {
 	cache  map[string]*Peer
 	idList []string
 	rwm    sync.RWMutex
+	close  chan bool
 }
 
 func NewPeers() *Peers {
-	return &Peers{cache: make(map[string]*Peer, maxPeers)}
+	return &Peers{cache: make(map[string]*Peer, maxPeers), close: make(chan bool)}
 }
 
 func (p *Peers) Name() string {
@@ -36,6 +37,7 @@ func (p *Peers) Start() error {
 }
 
 func (p *Peers) Stop() error {
+	log.Info("Peers was stopped", "module", module)
 	return nil
 }
 

@@ -96,7 +96,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	status := fmcstatus.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
 	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
-	chain, err := blockchain.NewFMCChain(status, dpos )
+	chain, err := blockchain.NewFMCChain(status, dpos)
 	if err != nil {
 		return nil, err
 	}
@@ -114,8 +114,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	}
 	poolSv := pool.NewPool(horn, msgManage)
 
-
-	rpcSv := rpc.NewRpc()
+	rpcSv := rpc.NewRpc(status)
 	syncSv := sync_service.NewSync(peersSv, dpos, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain, dpos, poolSv, horn)
 	node := node.NewFMCNode()

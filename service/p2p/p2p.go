@@ -52,7 +52,7 @@ func NewP2p(ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 		CustomBootPeers = append(CustomBootPeers, ma)
 	}
 
-	host, err := newP2PHost(config.Param.IPrivate.PrivateKey(), config.Param.ExternalIp,
+	host, err := NewP2PHost(config.Param.IPrivate.PrivateKey(), config.Param.ExternalIp,
 		config.Param.P2pPort, config.Param.ExternalIp)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func NewP2p(ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 	return ser, nil
 }
 
-func newP2PHost(private *secp256k1.PrivateKey, ip, port, external string) (core.Host, error) {
+func NewP2PHost(private *secp256k1.PrivateKey, ip, port, external string) (core.Host, error) {
 	ips := utils.GetLocalIp()
 	ips = append(ips, external)
 	f := newFactory(ips, port)
@@ -116,7 +116,6 @@ func (p *P2p) Start() error {
 
 func (p *P2p) Stop() error {
 	p.close <- true
-	<-p.closed
 	if err := p.host.Close(); err != nil {
 		return err
 	}
@@ -186,7 +185,6 @@ func (p *P2p) peerDiscovery() {
 	for {
 		select {
 		case _ = <-p.close:
-			p.closed <- true
 			return
 		default:
 			log.Info("Look for other peers...", "module", module)
@@ -211,10 +209,10 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 					continue
 				}
 				if !p.peers.AddressExist(&addrInfo) {
-					if stream, err := p.connect(addrInfo.ID);err != nil {
+					if stream, err := p.connect(addrInfo.ID); err != nil {
 						p.peers.RemovePeer(addrInfo.ID.String())
 						continue
-					}else{
+					} else {
 						p.peers.AddPeer(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream, stream))
 					}
 				}
@@ -225,7 +223,7 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 	}
 }
 
-func (p *P2p) connect(id peer.ID)(network.Stream, error) {
+func (p *P2p) connect(id peer.ID) (network.Stream, error) {
 	stream, err := p.newStream(id)
 	if err != nil {
 		return nil, err

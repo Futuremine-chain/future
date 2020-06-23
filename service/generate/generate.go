@@ -26,7 +26,7 @@ type Generate struct {
 
 func NewGenerate(chain blockchain.IChain, dPos dpos.IDPos, pool *pool.Pool, horn *horn.Horn) *Generate {
 	return &Generate{
-		pool:	 pool,
+		pool:    pool,
 		horn:    horn,
 		chain:   chain,
 		dPos:    dPos,
@@ -46,6 +46,7 @@ func (g *Generate) Start() error {
 }
 
 func (g *Generate) Stop() error {
+	g.stop <- true
 	return nil
 }
 
@@ -54,7 +55,6 @@ func (g *Generate) generate() {
 	for {
 		select {
 		case _, _ = <-g.stop:
-			g.stopped <- true
 			log.Info("Stop generate block")
 			return
 		case t := <-ticker:

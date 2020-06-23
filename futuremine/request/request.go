@@ -72,9 +72,10 @@ func (r *RequestHandler) dealRequest() {
 		switch reqStream.request.Method {
 		case sendBlock:
 			h = r.respSendBlock
+		case getBlocks:
+			h = r.respGetBlocks
 		default:
-			reqStream.stream.Reset()
-			reqStream.stream.Close()
+			reqStream.Close()
 			continue
 		}
 		go response(reqStream, h)

@@ -2,6 +2,7 @@ package p2p
 
 import (
 	"context"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/libp2p/go-libp2p-core/peer"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -17,7 +18,7 @@ var CustomBootPeers []multiaddr.Multiaddr
 
 func init() {
 	for _, s := range []string{
-		"/ip4/127.0.0.1/tcp/2211/ipfs/16Uiu2HAmJBN2NPzA1nHpyN2Doifq5CK36GqRf2vwcQ1gcz4JoZRm",
+		"/ip4/127.0.0.1/tcp/19100/ipfs/16Uiu2HAmFDJBV3Nd2sv4YrpysgRGV3Jbyrtumk52dajoYQ2ibnpQ",
 	} {
 		ma, err := multiaddr.NewMultiaddr(s)
 		if err != nil {
@@ -38,6 +39,16 @@ func IsBootPeers(id peer.ID) bool {
 		}
 	}
 	return false
+}
+
+func NewBoot(ip, port, external string, private *secp256k1.PrivateKey) (*P2p, error) {
+	host, err := NewP2PHost(private, ip, port, external)
+	if err != nil {
+		return nil, err
+	}
+	p2p := &P2p{host: host}
+	log.Info("Host created", "id", p2p.host.ID(), "address", p2p.host.Addrs())
+	return p2p, nil
 }
 
 func (p *P2p) StartBoot() error {

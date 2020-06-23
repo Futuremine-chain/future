@@ -2,6 +2,7 @@ package msglist
 
 import (
 	"github.com/Futuremine-chain/futuremine/common/db/base"
+	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
@@ -24,7 +25,13 @@ func Open(path string) (*MsgListDB, error) {
 }
 
 func (t *MsgListDB) Read() []types.IMessage {
-	return nil
+	msgs := t.base.Foreach(bucket)
+	rs := make([]types.IMessage, 0)
+	for _, bytes := range msgs {
+		rlpMsg, _ := fmctypes.DecodeMessage(bytes)
+		rs = append(rs, rlpMsg.ToMessage())
+	}
+	return rs
 }
 
 func (t *MsgListDB) Save(msg types.IMessage) {

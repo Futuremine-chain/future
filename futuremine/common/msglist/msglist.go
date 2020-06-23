@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/common/db/msglist"
 	"github.com/Futuremine-chain/futuremine/common/validator"
+	"github.com/Futuremine-chain/futuremine/futuremine/db/msglist"
 	"github.com/Futuremine-chain/futuremine/types"
 	"sync"
 )
@@ -104,7 +104,7 @@ func (t *MsgManagement) Delete(msg types.IMessage) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-		t.Remove(msg)
+	t.Remove(msg)
 	t.update()
 }
 

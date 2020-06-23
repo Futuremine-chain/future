@@ -65,6 +65,8 @@ func (r *Rpc) Start() error {
 }
 
 func (r *Rpc) Stop() error {
+	r.grpcServer.Stop()
+	log.Info("Rpc was stopped", "module", module)
 	return nil
 }
 

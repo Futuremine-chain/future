@@ -17,7 +17,8 @@ type Pool struct {
 	msgMgt      msglist.IMsgList
 	horn        *horn.Horn
 	broadcastCh chan types.IMessage
-	deleteMsg chan types.IMessage
+	deleteMsg   chan types.IMessage
+	close       chan bool
 }
 
 func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
@@ -25,7 +26,8 @@ func NewPool(horn *horn.Horn, msgMgt msglist.IMsgList) *Pool {
 		msgMgt:      msgMgt,
 		horn:        horn,
 		broadcastCh: make(chan types.IMessage, 100),
-		deleteMsg:make(chan types.IMessage, 10000),
+		deleteMsg:   make(chan types.IMessage, 10000),
+		close:       make(chan bool),
 	}
 	return pool
 }
@@ -47,9 +49,11 @@ func (p *Pool) Start() error {
 
 func (p *Pool) Stop() error {
 	if err := p.msgMgt.Close(); err != nil {
+		p.close <- true
 		return err
 	}
-	log.Info("Message pool stopped", "module", module)
+	p.close <- true
+	log.Info("Message pool was stopped", "module", module)
 	return nil
 }
 
@@ -73,10 +77,12 @@ func (p *Pool) NeedPackaged(count int) []types.IMessage {
 func (p *Pool) startChan() {
 	for {
 		select {
+		case _ = <-p.close:
+			return
 		case msg := <-p.broadcastCh:
 			p.horn.BroadcastMsg(msg)
-			case msg := <-p.deleteMsg:
-				p.msgMgt.Delete(msg)
+		case msg := <-p.deleteMsg:
+			p.msgMgt.Delete(msg)
 		}
 	}
 }

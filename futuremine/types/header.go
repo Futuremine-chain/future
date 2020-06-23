@@ -111,5 +111,5 @@ func (h *Header) Sign(key *secp256k1.PrivateKey) error {
 }
 
 func (h *Header) ToRlpHeader() types.IRlpHeader {
-	return nil
+	return h
 }

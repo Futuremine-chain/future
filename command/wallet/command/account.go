@@ -7,18 +7,69 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/keystore"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/mnemonic"
+	"github.com/jhdriver/UBaseCoin/rpc/rpctypes"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 )
 
 func init() {
 	accountCmds := []*cobra.Command{
 		CreateAccountCmd,
+		GetAccountCmd,
 	}
 
 	RootCmd.AddCommand(accountCmds...)
 	RootSubCmdGroups["account"] = accountCmds
+}
+
+var GetAccountCmd = &cobra.Command{
+	Use:     "QueryAccount {address};Get account status;",
+	Aliases: []string{"queryaccount", "qa", "QA"},
+	Short:   "QueryAccount {address};Get account status;",
+	Example: `
+	QueryAccount 23zE69fmaqK2LCHQrMQifTASSF1U 
+	`,
+	Args: cobra.MinimumNArgs(1),
+	Run:  QueryAccount,
+}
+
+func QueryAccount(cmd *cobra.Command, args []string) {
+	resp, err := GetAccountByRpc(args[0])
+	if err != nil {
+		log.Error(cmd.Use+" err: ", err)
+		return
+	}
+	if resp.Code == 0 {
+		account := &rpctypes.Account{}
+		json.Unmarshal(resp.Result, account)
+		if account.Address != args[0] {
+			account.Address = args[0]
+		}
+		bytes, _ := json.Marshal(account)
+		output(string(bytes))
+		return
+	} else {
+		outputRespError(cmd.Use, resp)
+	}
+}
+
+func GetAccountByRpc(addr string) (*rpc.Response, error) {
+	client, err := NewRpcClient()
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
+	params := []interface{}{addr}
+	if bytes, err := json.Marshal(params); err != nil {
+		return nil, err
+	} else {
+		re := &rpc.Request{Params: bytes}
+		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
+		defer cancel()
+		return client.Gc.GetAccount(ctx, re)
+	}
 }
 
 var CreateAccountCmd = &cobra.Command{
