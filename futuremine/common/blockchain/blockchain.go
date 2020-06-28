@@ -144,6 +144,7 @@ func (b *FMCChain) SetConfirmed(confirmed uint64) {
 	defer b.mutex.Unlock()
 
 	b.confirmed = confirmed
+	b.status.SetConfirmed(confirmed)
 }
 
 func (b *FMCChain) LastHeader() (types.IHeader, error) {
