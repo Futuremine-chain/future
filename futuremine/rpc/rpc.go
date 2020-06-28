@@ -9,8 +9,8 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	types2 "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/service/rpc/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/certgen"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
@@ -114,23 +114,26 @@ func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
 		}
 		account := r.status.Account(arryAddr)
 
-		bytes, _ := json.Marshal(types.ToRpcAccount(account.(*fmctypes.Account)))
+		bytes, _ := json.Marshal(types2.ToRpcAccount(account.(*fmctypes.Account)))
 		return NewResponse(Success, bytes, ""), nil
 	}
 }
 
-func (r *Rpc)SendTransactionRaw(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)GetTransaction(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)GetBlockHash(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)GetBlockHeight(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)LastHeight(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)Confirmed(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)GetMsgPool(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)Candidates(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)GetCycleSupers(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)Token(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)PeersInfo(context.Context, *Request) (*Response, error){return nil, nil}
-func (r *Rpc)LocalInfo(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc) SendMessageRaw(context.Context, *Request) (*Response, error) {
+
+	return nil, nil
+}
+func (r *Rpc) GetMessage(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) GetBlockHash(context.Context, *Request) (*Response, error)   { return nil, nil }
+func (r *Rpc) GetBlockHeight(context.Context, *Request) (*Response, error) { return nil, nil }
+func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) Confirmed(context.Context, *Request) (*Response, error)      { return nil, nil }
+func (r *Rpc) GetMsgPool(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) Candidates(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) GetCycleSupers(context.Context, *Request) (*Response, error) { return nil, nil }
+func (r *Rpc) Token(context.Context, *Request) (*Response, error)          { return nil, nil }
+func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error)      { return nil, nil }
+func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error)      { return nil, nil }
 
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}

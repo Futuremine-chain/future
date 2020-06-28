@@ -1,7 +1,9 @@
 package types
 
 import (
+	"errors"
 	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 )
 
@@ -38,7 +40,6 @@ func (t *TransactionBody) MsgAmount() uint64 {
 func (t *TransactionBody) MsgToken() arry.Address {
 	return t.TokenAddress
 }
-
 
 type TokenBody struct {
 	TokenAddress arry.Address
@@ -99,19 +100,22 @@ func (c *CancelBody) MsgToken() arry.Address {
 	return config.Param.MainToken
 }
 
-
 func (c *CancelBody) MsgAmount() uint64 {
 	return 0
 }
 
 type VoteBody struct {
+	To arry.Address
 }
 
 func (v *VoteBody) MsgTo() arry.Address {
-	return arry.Address{}
+	return v.To
 }
 
 func (v *VoteBody) CheckBody() error {
+	if !kit.CheckAddress(config.Param.Name, v.To) {
+		return errors.New("wrong to address")
+	}
 	return nil
 }
 

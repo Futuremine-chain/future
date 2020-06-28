@@ -20,8 +20,8 @@ package rpc;
 service Greeter {
     // Sends a greeting
     rpc GetAccount(Request)returns (Response) {}
-    rpc SendTransactionRaw(Request)returns (Response) {}
-    rpc GetTransaction(Request)returns (Response) {}
+    rpc SendMessageRaw(Request)returns (Response) {}
+    rpc GetMessage(Request)returns (Response) {}
     rpc GetBlockHash(Request)returns (Response) {}
     rpc GetBlockHeight(Request)returns (Response) {}
     rpc LastHeight(Request)returns (Response) {}

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/command/wallet/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/service/rpc"
+	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
