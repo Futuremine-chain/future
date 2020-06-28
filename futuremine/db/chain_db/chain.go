@@ -127,7 +127,7 @@ func (b *ChainDB) GetHashByHeight(height uint64) (arry.Hash, error) {
 	return arry.BytesToHash(hash), nil
 }
 
-func (b *ChainDB) GetHistoryConfirmedHeight(height uint64) (uint64, error) {
+func (b *ChainDB) GetConfirmedHeight(height uint64) (uint64, error) {
 	heightBytes, err := b.db.GetFromBucket(_hisConfirmed, []byte(strconv.FormatUint(height, 10)))
 	if err != nil {
 		return 0, err

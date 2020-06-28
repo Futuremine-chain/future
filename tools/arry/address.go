@@ -60,7 +60,14 @@ func (a Address) Hash() Hash    { return BytesToHash(a[:]) }
 
 // String implements the stringer interface and is used also by the logger.
 func (a Address) String() string {
-	return string(a[:])
+	start := 0
+	for i, c := range a {
+		if c != '\u0000' {
+			start = i
+			break
+		}
+	}
+	return string(a[start:])
 }
 
 // Format implements fmt.Formatter, forcing the byte slice to be formatted as is,

@@ -210,6 +210,7 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 				}
 				if !p.peers.AddressExist(&addrInfo) {
 					if stream, err := p.connect(addrInfo.ID); err != nil {
+						fmt.Println("readAddrInfo remove peer")
 						p.peers.RemovePeer(addrInfo.ID.String())
 						continue
 					} else {

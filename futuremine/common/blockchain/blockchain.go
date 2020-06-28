@@ -238,6 +238,12 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.checkBlock(block); err != nil {
 		return err
 	}
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	if b.lastHeight >=block.GetHeight(){
+		return errors.New("wrong block height")
+	}
 	if err := b.status.Change(block.BlockBody().MsgList(), block); err != nil {
 		return err
 	}
@@ -246,8 +252,7 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 }
 
 func (b *FMCChain) saveBlock(block types.IBlock) {
-	b.mutex.Lock()
-	defer b.mutex.Unlock()
+
 
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
@@ -261,7 +266,9 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	b.db.SaveActRoot(b.actRoot)
 	b.db.SaveDPosRoot(b.dPosRoot)
 	b.db.SaveTokenRoot(b.tokenRoot)
-
+	fmt.Println(b.actRoot.String())
+	fmt.Println(b.dPosRoot.String())
+	fmt.Println(b.tokenRoot.String())
 	b.lastHeight = block.GetHeight()
 	b.db.SaveLastHeight(b.lastHeight)
 
@@ -408,7 +415,78 @@ func (b *FMCChain) checkMsg(msg types.IMessage) error {
 	return nil
 }
 
-func (b *FMCChain) Roll() error { return nil }
+func (b *FMCChain) Confirmed() uint64 {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	return b.confirmed
+}
+
+
+func (b *FMCChain) Roll() error {
+	var curHeight uint64
+	confirmed := b.Confirmed()
+	if confirmed != 0 {
+		curHeight = confirmed - 1
+	}
+	return b.RollbackTo(curHeight)
+}
+
+func (b *FMCChain)RollbackTo(height uint64)error{
+	confirmedHeight := b.confirmed
+	if height >= confirmedHeight && height != 0 {
+		err := fmt.Sprintf("the height of the fallback must be less than %d and greater than %d", confirmedHeight, 0)
+		log.Error("Fall back to block height", "height", height, "error", err)
+		return errors.New(err)
+	}
+
+	var curBlockHeight, nextBlockHeight uint64
+	curActRoot := arry.Hash{}
+	curTokenRoot := arry.Hash{}
+	curDPosRoot := arry.Hash{}
+
+	nextBlockHeight = height + 1
+	curBlockHeight = height
+
+	// set new confirmed height and header
+	hisConfirmedHeight, err := b.db.GetConfirmedHeight(curBlockHeight)
+	if err != nil {
+		log.Error("Fall back to block height", "height", height, "error", "can not find history confirmed height")
+		return fmt.Errorf("fall back to block height %d failed! Can not find history confirmed height", height)
+	}
+	b.dPos.SetConfirmed(hisConfirmedHeight)
+
+	log.Warn("Fall back to block height", "height", height)
+	header, err := b.GetHeaderHeight(nextBlockHeight)
+	if err != nil {
+		log.Error("Fall back to block height", "height", height, "error", "can not find block")
+		return fmt.Errorf("fall back to block height %d failed! Can not find block %d", height, nextBlockHeight)
+	}
+
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	b.confirmed = hisConfirmedHeight
+	b.status.SetConfirmed(hisConfirmedHeight)
+
+	// fall back to pre state root
+	curActRoot = header.GetActRoot()
+	curTokenRoot = header.GetTokenRoot()
+	curDPosRoot = header.GetDPosRoot()
+	err = b.status.InitRoots(curActRoot, curDPosRoot, curTokenRoot)
+	if err != nil {
+		log.Error("Fall back to block height", "height", height, "error", "init state trie failed")
+		return fmt.Errorf("fall back to block height %d failed! nit state trie failed", height)
+	}
+	b.actRoot = curActRoot
+	b.tokenRoot = curTokenRoot
+	b.dPosRoot = curDPosRoot
+
+	b.lastHeight = curBlockHeight
+	b.db.SaveLastHeight(curBlockHeight)
+	return nil
+}
+
 
 func (b *FMCChain) UpdateConfirmed(height uint64) {
 	b.mutex.Lock()

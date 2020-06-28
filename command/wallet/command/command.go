@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/command/wallet/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/service/rpc"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
 	"reflect"
@@ -41,9 +43,8 @@ func output(dataStr string) {
 	}
 }
 
-/*
 func outputRespError(cmdUser string, resp *rpc.Response) {
-	log.Errorf(cmdUser+" err code :%d, message :%s", resp.Code, resp.Err)
+	logrus.Error(cmdUser+" err code :%d, message :%s", resp.Code, resp.Err)
 }
 
 func NewRpcClient() (*rpc.Client, error) {
@@ -58,7 +59,7 @@ func NewRpcClient() (*rpc.Client, error) {
 		return nil, err
 	}
 	return rpcClient, nil
-}*/
+}
 
 var cmdHelpTpl = `Usage:{{if .Runnable}}
 {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}

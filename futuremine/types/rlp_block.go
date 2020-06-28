@@ -31,25 +31,20 @@ func DecodeRlpBlock(bytes []byte) (*RlpBlock, error) {
 	return rlpBlock, nil
 }
 
-type RlpBlocks []types.IRlpBlock
-
-func (r *RlpBlocks) ToBlocks() []types.IBlock {
-	rs := make([]types.IBlock, len(*r))
-	for i, rlpBlock := range *r {
+func RlpBlocksToBlocks(rlpBlocks []*RlpBlock) []types.IBlock {
+	rs := make([]types.IBlock, len(rlpBlocks))
+	for i, rlpBlock := range rlpBlocks {
 		rs[i] = rlpBlock.ToBlock()
 	}
 	return rs
 }
 
-func (r *RlpBlocks) Add(block types.IRlpBlock) {
+func EncodeRlpBlocks(rlpBlocks []*RlpBlock) ([]byte, error) {
+	return rlp.EncodeToBytes(rlpBlocks)
 }
 
-func (r *RlpBlocks) Encode() ([]byte, error) {
-	return rlp.EncodeToBytes(r)
-}
-
-func DecodeRlpBlocks(bytes []byte) (*RlpBlocks, error) {
-	var rlpBlocks *RlpBlocks
+func DecodeRlpBlocks(bytes []byte) ([]*RlpBlock, error) {
+	var rlpBlocks []*RlpBlock
 	err := rlp.DecodeBytes(bytes, &rlpBlocks)
 	if err != nil {
 		return nil, err

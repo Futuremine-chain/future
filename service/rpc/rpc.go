@@ -9,6 +9,8 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/service/rpc/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/certgen"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
@@ -111,7 +113,8 @@ func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
 			return NewResponse(Err_Params, nil, fmt.Sprintf("%s address check failed", string(req.Params))), nil
 		}
 		account := r.status.Account(arryAddr)
-		bytes, _ := json.Marshal(account)
+
+		bytes, _ := json.Marshal(types.ToRpcAccount(account.(*fmctypes.Account)))
 		return NewResponse(Success, bytes, ""), nil
 	}
 }

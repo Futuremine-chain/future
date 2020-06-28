@@ -13,18 +13,19 @@ const timeout = 30
 type Client struct {
 	conn *grpc.ClientConn
 	Gc   GreeterClient
+	cfg  *config.RpcConfig
 }
 
-func NewClient() *Client {
-	return &Client{}
+func NewClient(cfg *config.RpcConfig) *Client {
+	return &Client{cfg: cfg}
 }
 
 func (c *Client) Connect() error {
 	var conn *grpc.ClientConn
 	var err error
 	var opts []grpc.DialOption
-	if config.Param.RpcTLS {
-		creds, err := credentials.NewClientTLSFromFile(config.Param.RpcCert, "")
+	if c.cfg.RpcTLS {
+		creds, err := credentials.NewClientTLSFromFile(c.cfg.RpcCert, "")
 		if err != nil {
 			return fmt.Errorf("failed to create TLS credentials %v", err)
 		}
@@ -32,9 +33,9 @@ func (c *Client) Connect() error {
 	} else {
 		opts = append(opts, grpc.WithInsecure())
 	}
-	opts = append(opts, grpc.WithPerRPCCredentials(&customCredential{Password: config.Param.RpcPass, OpenTLS: config.Param.RpcTLS}))
+	opts = append(opts, grpc.WithPerRPCCredentials(&customCredential{Password: c.cfg.RpcPass, OpenTLS: c.cfg.RpcTLS}))
 
-	conn, err = grpc.Dial(config.Param.RpcIp+":"+config.Param.RpcPort, opts...)
+	conn, err = grpc.Dial(c.cfg.RpcIp+":"+c.cfg.RpcPort, opts...)
 	if err != nil {
 		return err
 	}

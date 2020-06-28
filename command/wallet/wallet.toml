@@ -11,7 +11,7 @@ KeystoreDir = ""
 RpcIp = "127.0.0.1"
 
 #RPC port
-RpcPort = "30001"
+RpcPort = "33331"
 
 #RPC TLS switch
 RpcTLS = false

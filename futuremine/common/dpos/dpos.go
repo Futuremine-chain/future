@@ -147,6 +147,12 @@ func (d *DPos) Confirmed() uint64 {
 	return d.confirmed
 }
 
+func (d *DPos)SetConfirmed(confirmed uint64){
+	d.confirmed = confirmed
+	d.cycle.DPosStatus.SetConfirmed(confirmed)
+}
+
+
 func (d *DPos) checkTime(lastHeader types.IHeader, header types.IHeader) error {
 	nextTime := nextTime(header.GetTime())
 	if lastHeader.GetTime() >= nextTime {

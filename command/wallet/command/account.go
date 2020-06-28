@@ -1,13 +1,15 @@
 package command
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/keystore"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/futuremine/service/rpc"
+	"github.com/Futuremine-chain/futuremine/service/rpc/types"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/mnemonic"
-	"github.com/jhdriver/UBaseCoin/rpc/rpctypes"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
@@ -16,7 +18,7 @@ import (
 
 func init() {
 	accountCmds := []*cobra.Command{
-		CreateAccountCmd,
+		CreateCmd,
 		GetAccountCmd,
 	}
 
@@ -25,25 +27,26 @@ func init() {
 }
 
 var GetAccountCmd = &cobra.Command{
-	Use:     "QueryAccount {address};Get account status;",
-	Aliases: []string{"queryaccount", "qa", "QA"},
-	Short:   "QueryAccount {address};Get account status;",
+	Use:     "Account {address};Get account status;",
+	Aliases: []string{"Account", "A", "a"},
+	Short:   "Account {address};Get account status;",
 	Example: `
-	QueryAccount 23zE69fmaqK2LCHQrMQifTASSF1U 
+	Account xC8RqvGNhQ8sEpKrBHqnxJQh2rrtiJCXZrH 
 	`,
 	Args: cobra.MinimumNArgs(1),
-	Run:  QueryAccount,
+	Run:  Account,
 }
 
-func QueryAccount(cmd *cobra.Command, args []string) {
-	resp, err := GetAccountByRpc(args[0])
+func Account(cmd *cobra.Command, args []string) {
+	resp, err := AccountByRpc(args[0])
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
 	}
 	if resp.Code == 0 {
-		account := &rpctypes.Account{}
+		account := &types.Account{}
 		json.Unmarshal(resp.Result, account)
+
 		if account.Address != args[0] {
 			account.Address = args[0]
 		}
@@ -55,7 +58,7 @@ func QueryAccount(cmd *cobra.Command, args []string) {
 	}
 }
 
-func GetAccountByRpc(addr string) (*rpc.Response, error) {
+func AccountByRpc(addr string) (*rpc.Response, error) {
 	client, err := NewRpcClient()
 	if err != nil {
 		return nil, err
@@ -72,20 +75,20 @@ func GetAccountByRpc(addr string) (*rpc.Response, error) {
 	}
 }
 
-var CreateAccountCmd = &cobra.Command{
-	Use:     "CreateAccount {password}",
-	Short:   "CreateAccount {password}; Create account;",
-	Aliases: []string{"createaccount", "CA", "ca"},
+var CreateCmd = &cobra.Command{
+	Use:     "Create {password}",
+	Short:   "Create {password}; Create account;",
+	Aliases: []string{"create", "C", "c"},
 	Example: `
-	CreateAccount  
+	Create  
 		OR
-	CreateAccount 123456
+	Create 123456
 	`,
 	Args: cobra.MinimumNArgs(0),
-	Run:  CreateAccount,
+	Run:  Create,
 }
 
-func CreateAccount(cmd *cobra.Command, args []string) {
+func Create(cmd *cobra.Command, args []string) {
 	var passWd []byte
 	var err error
 	if len(args) == 1 && args[0] != "" {

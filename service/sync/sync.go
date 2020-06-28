@@ -2,8 +2,10 @@ package sync
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
+	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
@@ -18,12 +20,12 @@ type Sync struct {
 	request request.IRequestHandler
 	peers   *peers.Peers
 	curPeer *peers.Peer
-	dPos    dpos.IDPos
+	dPos    dpos.IDPosStatus
 	stop    chan bool
 	stopped chan bool
 }
 
-func NewSync(peers *peers.Peers, dPos dpos.IDPos, request request.IRequestHandler, chain blockchain.IChain) *Sync {
+func NewSync(peers *peers.Peers, dPos dpos.IDPosStatus, request request.IRequestHandler, chain blockchain.IChain) *Sync {
 	s := &Sync{
 		chain:   chain,
 		peers:   peers,
@@ -123,6 +125,7 @@ func (s *Sync) syncFromConn() error {
 			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1)
 			if err != nil {
 				if err == request.Err_PeerClosed {
+					fmt.Println("sync remove peer")
 					s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				}
 				return err
@@ -142,11 +145,15 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			return nil
 		default:
 			if err := s.chain.Insert(block); err != nil {
-				log.Warn("Insert chain failed!", "error", err, "height", block.GetHeight())
+				log.Warn("Insert chain failed!", "module", module,
+					"error", err, "height",
+					block.GetHeight(),
+					"signer", block.GetSigner())
 				if s.headerValidation(block.BlockHeader()) {
 					s.fallBack()
 					return err
 				}
+				fmt.Println("insert remove peer")
 				s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				return err
 			}
@@ -175,10 +182,13 @@ func (s *Sync) headerValidation(header types.IHeader) bool {
 
 func (s *Sync) validation(header types.IHeader, localEqual bool) bool {
 	count := 0
-	ids := s.dPos.SuperIds()
-	for _, id := range ids {
-		if id != s.peers.Local().Address.ID.String() {
-			peer := s.peers.Peer(id)
+	supers, err := s.dPos.CycleSupers(header.GetCycle())
+	if err != nil{
+		return false
+	}
+	for _, mem := range supers.Candidates {
+		if mem.PeerId != s.peers.Local().Address.ID.String() {
+			peer := s.peers.Peer(mem.PeerId)
 			if peer != nil {
 				rs, err := s.request.IsEqual(peer.Conn, header)
 				if err == nil && rs {
@@ -189,7 +199,7 @@ func (s *Sync) validation(header types.IHeader, localEqual bool) bool {
 			count++
 		}
 	}
-	if count > len(ids)/2 {
+	if count > param.SuperSize/2 {
 		return true
 	}
 	return false

@@ -29,7 +29,7 @@ func NewAccount() *Account {
 
 func DecodeAccount(bytes []byte) (*Account, error) {
 	var account *Account
-	err := rlp.DecodeBytes(bytes, account)
+	err := rlp.DecodeBytes(bytes, &account)
 	return account, err
 }
 
@@ -144,7 +144,10 @@ func (a *Account) changeMain(msg types.IMessage, height uint64) error {
 	if !a.Exist() {
 		a.Address = msg.From()
 	}
-	mainAccount, _ := a.Tokens.Get(config.Param.MainToken.String())
+	mainAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
+	if !ok {
+		mainAccount.Address = config.Param.MainToken.String()
+	}
 
 	if mainAccount.Balance < amount {
 		return fmt.Errorf("insufficient balance")
@@ -523,31 +526,31 @@ func (t *TxOutList) Remove(height uint64) {
 
 // Account transfer log
 type journalIn struct {
-	Outs *InList
+	Ins *InList
 }
 
 func newJournalIn() *journalIn {
-	return &journalIn{Outs: &InList{}}
+	return &journalIn{Ins: &InList{}}
 }
 
 func (j *journalIn) Add(msg types.IMessage, height uint64) {
 	body := msg.MsgBody()
 	amount := body.MsgAmount()
 	tokenAddr := body.MsgToken().String()
-	out, ok := j.Outs.Get(height, tokenAddr)
+	in, ok := j.Ins.Get(height, tokenAddr)
 	if ok {
-		out.Amount += amount
+		in.Amount += amount
 	} else {
-		out = &InAmount{}
-		out.Amount = amount
-		out.Height = height
-		out.TokenAddress = tokenAddr
+		in = &InAmount{}
+		in.Amount = amount
+		in.Height = height
+		in.TokenAddress = tokenAddr
 	}
-	j.Outs.Set(out)
+	j.Ins.Set(in)
 }
 
 func (j *journalIn) Get(height uint64, contract string) *InAmount {
-	txOut, ok := j.Outs.Get(height, contract)
+	txOut, ok := j.Ins.Get(height, contract)
 	if ok {
 		return txOut
 	}
@@ -555,7 +558,7 @@ func (j *journalIn) Get(height uint64, contract string) *InAmount {
 }
 
 func (j *journalIn) IsExist(height uint64) bool {
-	for _, out := range *j.Outs {
+	for _, out := range *j.Ins {
 		if out.Height >= height {
 			return true
 		}
@@ -564,12 +567,12 @@ func (j *journalIn) IsExist(height uint64) bool {
 }
 
 func (j *journalIn) Remove(height uint64, contract string) *InAmount {
-	return j.Outs.Remove(height, contract)
+	return j.Ins.Remove(height, contract)
 }
 
 func (j *journalIn) GetJournalIns(confirmedHeight uint64) map[string]*InAmount {
 	txOuts := make(map[string]*InAmount)
-	for _, out := range *j.Outs {
+	for _, out := range *j.Ins {
 		if out.Height <= confirmedHeight {
 			key := fmt.Sprintf("%s_%d", out.TokenAddress, out.Height)
 			txOuts[key] = out
@@ -579,7 +582,7 @@ func (j *journalIn) GetJournalIns(confirmedHeight uint64) map[string]*InAmount {
 }
 
 func (j *journalIn) IsEmpty() bool {
-	if j.Outs == nil || len(*j.Outs) == 0 {
+	if j.Ins == nil || len(*j.Ins) == 0 {
 		return true
 	}
 	return false

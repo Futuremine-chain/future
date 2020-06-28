@@ -77,6 +77,7 @@ func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
 
 func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 	s, err := conn.Create(conn.PeerId)
+	fmt.Println("send block", conn.PeerId)
 	if err != nil {
 		return err
 	}
@@ -128,7 +129,7 @@ func (r *RequestHandler) GetBlocks(conn *peers.Conn, height uint64) ([]types.IBl
 		if err != nil {
 			return nil, err
 		}
-		return blocks.ToBlocks(), nil
+		return fmctypes.RlpBlocksToBlocks(blocks), nil
 	} else if response != nil && response.Message == request2.Err_BlockNotFound.Error() {
 		return nil, request2.Err_BlockNotFound
 	} else {
@@ -184,7 +185,7 @@ func (r *RequestHandler) IsEqual(conn *peers.Conn, header types.IHeader) (bool, 
 
 	s.SetDeadline(time.Unix(time.Now().Unix()+timeOut, 0))
 
-	request := NewRequest(isEqual, header.ToRlpHeader().Bytes())
+	request := NewRequest(isEqual, header.Bytes())
 	err = requestStream(request, s)
 	response, err := r.UnmarshalResponse(s)
 	var rs bool

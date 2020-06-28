@@ -74,6 +74,8 @@ func (r *RequestHandler) dealRequest() {
 			h = r.respSendBlock
 		case getBlocks:
 			h = r.respGetBlocks
+		case isEqual:
+			h = r.respIsEqual
 		default:
 			reqStream.Close()
 			continue
