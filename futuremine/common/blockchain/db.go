@@ -10,6 +10,7 @@ type IChainDB interface {
 	DPosRoot() (arry.Hash, error)
 	TokenRoot() (arry.Hash, error)
 	LastHeight() (uint64, error)
+	GetMessage(hash arry.Hash) (*types.RlpMessage, error)
 	GetMessages(txRoot arry.Hash) ([]*types.RlpMessage, error)
 	GetHeaderHeight(height uint64) (*types.Header, error)
 	GetHeaderHash(hash arry.Hash) (*types.Header, error)

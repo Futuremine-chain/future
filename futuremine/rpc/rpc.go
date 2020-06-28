@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
@@ -30,10 +31,11 @@ type Rpc struct {
 	grpcServer *grpc.Server
 	status     status.IStatus
 	msgPool    *pool.Pool
+	chain      blockchain.IChain
 }
 
-func NewRpc(status status.IStatus, msgPool *pool.Pool) *Rpc {
-	return &Rpc{status: status, msgPool: msgPool}
+func NewRpc(status status.IStatus, msgPool *pool.Pool, chain blockchain.IChain) *Rpc {
+	return &Rpc{status: status, msgPool: msgPool, chain: chain}
 }
 
 func (r *Rpc) Name() string {
@@ -135,7 +137,31 @@ func (r *Rpc) SendMessageRaw(ctx context.Context, req *Request) (*Response, erro
 	}
 	return NewResponse(Success, []byte(fmt.Sprintf("send transaction raw %s success", tx.Hash().String())), ""), nil
 }
-func (r *Rpc) GetMessage(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) GetMessage(ctx context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) < 1 {
+		return NewResponse(Err_Params, nil, "no hash"), nil
+	}
+	if hashStr, ok := params[0].(string); !ok {
+		return NewResponse(Err_Params, nil, "only string hash is allowed"), nil
+	} else {
+		hash, err := arry.StringToHash(hashStr)
+		if err != nil {
+			return NewResponse(Err_Params, nil, "wrong hash "+err.Error()), nil
+		}
+		msg, err := r.chain.GetMessage(hash)
+		if err != nil {
+			return NewResponse(Err_Chain, nil, err.Error()), nil
+		}
+		rpcMsg, _ := rpctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
+		bytes, _ := json.Marshal(rpcMsg)
+
+		return NewResponse(Success, bytes, ""), nil
+	}
+}
 func (r *Rpc) GetBlockHash(context.Context, *Request) (*Response, error)   { return nil, nil }
 func (r *Rpc) GetBlockHeight(context.Context, *Request) (*Response, error) { return nil, nil }
 func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error)     { return nil, nil }

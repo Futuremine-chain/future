@@ -235,6 +235,14 @@ func (b *FMCChain) GetRlpBlockHash(hash arry.Hash) (types.IRlpBlock, error) {
 	return block, nil
 }
 
+func (b *FMCChain) GetMessage(hash arry.Hash) (types.IMessage, error) {
+	rlpTx, err := b.db.GetMessage(hash)
+	if err != nil {
+		return nil, err
+	}
+	return rlpTx.ToMessage(), nil
+}
+
 func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.checkBlock(block); err != nil {
 		return err
@@ -242,7 +250,7 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	if b.lastHeight >=block.GetHeight(){
+	if b.lastHeight >= block.GetHeight() {
 		return errors.New("wrong block height")
 	}
 	if err := b.status.Change(block.BlockBody().MsgList(), block); err != nil {
@@ -253,7 +261,6 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 }
 
 func (b *FMCChain) saveBlock(block types.IBlock) {
-
 
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
@@ -372,9 +379,9 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 			if err := b.checkMsg(msg); err != nil {
 				return err
 			}
-			if b.poolDeleteMsg != nil{
+			if b.poolDeleteMsg != nil {
 				b.poolDeleteMsg(msg)
-			}else{
+			} else {
 				log.Warn("Need to register message pool delete function")
 			}
 		}
@@ -423,7 +430,6 @@ func (b *FMCChain) Confirmed() uint64 {
 	return b.confirmed
 }
 
-
 func (b *FMCChain) Roll() error {
 	var curHeight uint64
 	confirmed := b.Confirmed()
@@ -433,7 +439,7 @@ func (b *FMCChain) Roll() error {
 	return b.RollbackTo(curHeight)
 }
 
-func (b *FMCChain)RollbackTo(height uint64)error{
+func (b *FMCChain) RollbackTo(height uint64) error {
 	confirmedHeight := b.confirmed
 	if height >= confirmedHeight && height != 0 {
 		err := fmt.Sprintf("the height of the fallback must be less than %d and greater than %d", confirmedHeight, 0)
@@ -488,7 +494,6 @@ func (b *FMCChain)RollbackTo(height uint64)error{
 	return nil
 }
 
-
 func (b *FMCChain) UpdateConfirmed(height uint64) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
@@ -504,6 +509,6 @@ func (b *FMCChain) Vote(address arry.Address) uint64 {
 	return vote
 }
 
-func (b *FMCChain)RegisterMsgPoolDeleteFunc(fun func(message types.IMessage)){
+func (b *FMCChain) RegisterMsgPoolDeleteFunc(fun func(message types.IMessage)) {
 	b.poolDeleteMsg = fun
 }
