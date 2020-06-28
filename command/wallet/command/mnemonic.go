@@ -19,11 +19,11 @@ func init() {
 }
 
 var EntropyCmd = &cobra.Command{
-	Use:     "Entropy ;Generate a cryptographically secure pseudorandom entropy(seed);",
-	Aliases: []string{"entropy", "E", "e"},
-	Short:   "Entropy ;Generate a cryptographically secure pseudorandom entropy(seed);",
+	Use:     "NewEntropy ;Generate a cryptographically secure pseudorandom entropy(seed);",
+	Aliases: []string{"neewentropy", "NE", "ne"},
+	Short:   "NewEntropy ;Generate a cryptographically secure pseudorandom entropy(seed);",
 	Example: `
-	Entropy 
+	NewEntropy 
 	`,
 	Args: cobra.MinimumNArgs(0),
 	Run:  Entropy,
@@ -40,11 +40,11 @@ func Entropy(cmd *cobra.Command, args []string) {
 }
 
 var MnemonicCmd = &cobra.Command{
-	Use:     "Mnemonic {entropy};Create a mnemonic world-list (BIP39) from an entropy;",
-	Aliases: []string{"mnemonic", "M", "m"},
-	Short:   "Mnemonic {entropy};Create a mnemonic world-list (BIP39) from an entropy;",
+	Use:     "NewMnemonic {entropy};Create a mnemonic world-list (BIP39) from an entropy;",
+	Aliases: []string{"newmnemonic", "NM", "nm"},
+	Short:   "NewMnemonic {entropy};Create a mnemonic world-list (BIP39) from an entropy;",
 	Example: `
-	Mnemonic dad1f695098e409da517aa09d91bb163ea749c3f9ee564cb75e223a78f460a1e
+	NewMnemonic dad1f695098e409da517aa09d91bb163ea749c3f9ee564cb75e223a78f460a1e
 	`,
 	Args: cobra.MinimumNArgs(1),
 	Run:  Mnemonic,

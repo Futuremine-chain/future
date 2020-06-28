@@ -119,6 +119,19 @@ func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
 	}
 }
 
+func (r *Rpc)SendTransactionRaw(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)GetTransaction(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)GetBlockHash(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)GetBlockHeight(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)LastHeight(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)Confirmed(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)GetMsgPool(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)Candidates(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)GetCycleSupers(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)Token(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)PeersInfo(context.Context, *Request) (*Response, error){return nil, nil}
+func (r *Rpc)LocalInfo(context.Context, *Request) (*Response, error){return nil, nil}
+
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}
 }

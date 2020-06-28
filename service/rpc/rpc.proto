@@ -18,8 +18,20 @@ package rpc;
 
 // The greeting service definition.
 service Greeter {
-  // Sends a greeting
-  rpc GetAccount(Request)returns (Response) {}
+    // Sends a greeting
+    rpc GetAccount(Request)returns (Response) {}
+    rpc SendTransactionRaw(Request)returns (Response) {}
+    rpc GetTransaction(Request)returns (Response) {}
+    rpc GetBlockHash(Request)returns (Response) {}
+    rpc GetBlockHeight(Request)returns (Response) {}
+    rpc LastHeight(Request)returns (Response) {}
+    rpc Confirmed(Request)returns (Response) {}
+    rpc GetMsgPool(Request)returns (Response) {}
+    rpc Candidates(Request)returns (Response) {}
+    rpc GetCycleSupers(Request)returns (Response) {}
+    rpc Token(Request)returns (Response) {}
+    rpc PeersInfo(Request)returns (Response) {}
+    rpc LocalInfo(Request)returns (Response) {}
 }
 
 // The request message containing the user's name.

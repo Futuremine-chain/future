@@ -5,6 +5,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/Futuremine-chain/futuremine/command/wallet/command"
 	"github.com/Futuremine-chain/futuremine/command/wallet/config"
+	config2 "github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/spf13/cobra"
@@ -54,12 +55,18 @@ func LoadConfig(cmd *cobra.Command, args []string) (err error) {
 			}
 		}
 	}
+	if fileCfg.TestNet{
+		config2.Param = param.TestNetParam
+	}else{
+		config2.Param = param.MainNetParam
+	}
+
 	if fileCfg.KeystoreDir == "" {
 		fileCfg.KeystoreDir = defaultKeyStoreDir
 	}
 
 	if fileCfg.RpcPort == "" {
-		fileCfg.RpcPort = "19161"
+		fileCfg.RpcPort = config2.Param.RpcPort
 	}
 
 	if fileCfg.RpcIp == "" {
