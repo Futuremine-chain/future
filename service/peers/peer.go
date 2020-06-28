@@ -29,3 +29,4 @@ func (s *Conn) Close() {
 	s.Stream.Close()
 	s.Stream = nil
 }
+

@@ -45,12 +45,9 @@ func (p *Peers) AddressExist(address *peer.AddrInfo) bool {
 	p.rwm.RLock()
 	defer p.rwm.RUnlock()
 
-	if peer, ok := p.cache[address.ID.String()]; !ok {
+
+	if _, ok := p.cache[address.ID.String()]; !ok {
 		return false
-	} else {
-		if peer.Address.String() != address.String() {
-			return false
-		}
 	}
 	return true
 }
