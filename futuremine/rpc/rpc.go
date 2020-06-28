@@ -9,8 +9,9 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
-	types2 "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
+	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/certgen"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
@@ -28,10 +29,11 @@ const module = "rpc"
 type Rpc struct {
 	grpcServer *grpc.Server
 	status     status.IStatus
+	msgPool    *pool.Pool
 }
 
-func NewRpc(status status.IStatus) *Rpc {
-	return &Rpc{status: status}
+func NewRpc(status status.IStatus, msgPool *pool.Pool) *Rpc {
+	return &Rpc{status: status, msgPool: msgPool}
 }
 
 func (r *Rpc) Name() string {
@@ -114,14 +116,24 @@ func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
 		}
 		account := r.status.Account(arryAddr)
 
-		bytes, _ := json.Marshal(types2.ToRpcAccount(account.(*fmctypes.Account)))
+		bytes, _ := json.Marshal(rpctypes.ToRpcAccount(account.(*fmctypes.Account)))
 		return NewResponse(Success, bytes, ""), nil
 	}
 }
 
-func (r *Rpc) SendMessageRaw(context.Context, *Request) (*Response, error) {
-
-	return nil, nil
+func (r *Rpc) SendMessageRaw(ctx context.Context, req *Request) (*Response, error) {
+	var rpcMsg *rpctypes.RpcMessage
+	if err := json.Unmarshal(req.Params, &rpcMsg); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	tx, err := rpctypes.RpcMsgToMsg(rpcMsg)
+	if err != nil {
+		return NewResponse(Err_Params, nil, ""), nil
+	}
+	if err := r.msgPool.Put(tx, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send transaction raw %s success", tx.Hash().String())), ""), nil
 }
 func (r *Rpc) GetMessage(context.Context, *Request) (*Response, error)     { return nil, nil }
 func (r *Rpc) GetBlockHash(context.Context, *Request) (*Response, error)   { return nil, nil }

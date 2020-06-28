@@ -114,7 +114,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	}
 	poolSv := pool.NewPool(horn, msgManage)
 
-	rpcSv := rpc.NewRpc(status)
+	rpcSv := rpc.NewRpc(status, poolSv)
 	syncSv := sync_service.NewSync(peersSv, dPosStatus, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain, dpos, poolSv, horn)
 	node := node.NewFMCNode()
