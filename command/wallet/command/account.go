@@ -180,11 +180,11 @@ var DecryptPrivateCmd = &cobra.Command{
 	Aliases: []string{"decryptprivate", "DP", "dp"},
 
 	Example: `
-	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf
+	DecryptPrivate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ
 		OR
-	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456
+	DecryptPrivate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 123456
 		OR
-	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf.json
+	DecryptPrivate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 123456 xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ.json
 	`,
 	Args: cobra.MinimumNArgs(1),
 	Run:  DecryptPrivate,

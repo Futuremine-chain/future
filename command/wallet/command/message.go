@@ -37,11 +37,11 @@ var SendMessageCmd = &cobra.Command{
 	Aliases: []string{"sendtransction", "ST", "st"},
 	Short:   "SendTransction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
 	Example: `
-	SendTransaction 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ UB 10 0.1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1
 		OR
-	SendTransaction 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ UB 10 0.1 123456
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1 123456
 		OR
-	SendTransaction 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ UB 10 0.1 123456 1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1 123456 1
 	`,
 	Args: cobra.MinimumNArgs(5),
 	Run:  SendTransaction,
@@ -176,11 +176,11 @@ var SendCandidateCmd = &cobra.Command{
 	Aliases: []string{"sendcandidate", "SC", "sc"},
 	Short:   "SendCandidate {address} {fees} {password} {nonce}; Become candidate;",
 	Example: `
-	SendCandidate 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001
+	SendCandidate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001
 		OR
-	SendCandidate 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001 123456
+	SendCandidate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001 123456
 		OR
-	SendCandidate 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001 123456 1
+	SendCandidate xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001 123456 1
 `,
 	Args: cobra.MinimumNArgs(2),
 	Run:  SendCandidate,
@@ -272,11 +272,11 @@ var SendCancelCmd = &cobra.Command{
 	Aliases: []string{"sendcancel", "SCL", "scl"},
 	Short:   "SendCancel {address} {fees} {password} {nonce}; Cancel candidate;",
 	Example: `
-	SendCancel 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001
+	SendCancel xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001
 		OR
-	SendCancel 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001 123456
+	SendCancel xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001 123456
 		OR
-	SendCancel 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 0.001 123456 1
+	SendCancel xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ 0.001 123456 1
 	`,
 	Args: cobra.MinimumNArgs(2),
 	Run:  CancelCandidate,
@@ -359,11 +359,11 @@ var SendVoteCmd = &cobra.Command{
 	Aliases: []string{"sendvote", "SV", "sv"},
 	Short:   "SendVote {from} {to} {fees} {password} {nonce}; Vote for a candidate;",
 	Example: `
-	Vote 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 0.001
+	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001
 		OR
-	Vote 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 0.001 123456
+	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456
 		OR
-	Vote 3ajF4MdbBYE2UPESEyhQbdUj2Y28CNwGDCWA 3ajDJUnMYDyzXLwefRfNp7yLcdmg3ULb9ndQ 0.001 123456 1
+	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456 1
 `,
 	Args: cobra.MinimumNArgs(3),
 	Run:  Vote,
