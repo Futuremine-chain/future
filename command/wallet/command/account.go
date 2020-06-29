@@ -20,6 +20,9 @@ func init() {
 	accountCmds := []*cobra.Command{
 		CreateCmd,
 		GetAccountCmd,
+		ShowAccountsCmd,
+		DecryptPrivateCmd,
+		MnemonicToAccountCmd,
 	}
 
 	RootCmd.AddCommand(accountCmds...)
@@ -38,27 +41,17 @@ var GetAccountCmd = &cobra.Command{
 }
 
 func Account(cmd *cobra.Command, args []string) {
-	resp, err := AccountByRpc(args[0])
+	account, err := AccountByRpc(args[0])
 	if err != nil {
-		log.Error(cmd.Use+" err: ", err)
+		outputError(cmd.Use, err)
 		return
 	}
-	if resp.Code == 0 {
-		account := &types.Account{}
-		json.Unmarshal(resp.Result, account)
-
-		if account.Address != args[0] {
-			account.Address = args[0]
-		}
-		bytes, _ := json.Marshal(account)
-		output(string(bytes))
-		return
-	} else {
-		outputRespError(cmd.Use, resp)
-	}
+	bytes, _ := json.Marshal(account)
+	output(string(bytes))
+	return
 }
 
-func AccountByRpc(addr string) (*rpc.Response, error) {
+func AccountByRpc(addr string) (*types.Account, error) {
 	client, err := NewRpcClient()
 	if err != nil {
 		return nil, err
@@ -71,7 +64,22 @@ func AccountByRpc(addr string) (*rpc.Response, error) {
 		re := &rpc.Request{Params: bytes}
 		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 		defer cancel()
-		return client.Gc.GetAccount(ctx, re)
+		resp, err := client.Gc.GetAccount(ctx, re)
+		if err != nil {
+			return nil, err
+		}
+		if resp.Code == 0 {
+			var account *types.Account
+			if err := json.Unmarshal(resp.Result, &account); err != nil {
+				return nil, err
+			}
+			if account.Address != addr {
+				account.Address = addr
+			}
+			return account, nil
+		} else {
+			return nil, fmt.Errorf("err code :%d, message :%s", resp.Code, resp.Err)
+		}
 	}
 }
 
@@ -146,18 +154,18 @@ func readPassWd() ([]byte, error) {
 	return passWd[:n-1], nil
 }
 
-var ShowAccountCmd = &cobra.Command{
-	Use:     "ShowAccounts",
-	Short:   "ShowAccounts; Show all account of the wallet;",
-	Aliases: []string{"showaccounts", "sa", "SA"},
+var ShowAccountsCmd = &cobra.Command{
+	Use:     "ListAccounts",
+	Short:   "ListAccounts; List all account of the wallet;",
+	Aliases: []string{"listaccounts", "LA", "la"},
 	Example: `
-	ShowAccounts
+	ListAccounts
 	`,
 	Args: cobra.MinimumNArgs(0),
-	Run:  ShowAccount,
+	Run:  ListAccount,
 }
 
-func ShowAccount(cmd *cobra.Command, args []string) {
+func ListAccount(cmd *cobra.Command, args []string) {
 	if addrList, err := keystore.ReadAllAccount(Cfg.KeystoreDir); err != nil {
 		log.Error(cmd.Use+" err: ", fmt.Errorf("read account failed! %s", err.Error()))
 	} else {
@@ -166,23 +174,23 @@ func ShowAccount(cmd *cobra.Command, args []string) {
 	}
 }
 
-var DecryptAccountCmd = &cobra.Command{
-	Use:     "DecryptAccount {address} {password} {keyfile}；Decrypting account json file generates the private key and mnemonic;；",
-	Short:   "DecryptAccount {address} {password} {keyfile}; Decrypting account json file generates the private key and mnemonic;",
-	Aliases: []string{"decryptaccount", "DA", "da"},
+var DecryptPrivateCmd = &cobra.Command{
+	Use:     "DecryptPrivate {address} {password} {key file}；Decrypting account json file generates the private key and mnemonic;；",
+	Short:   "DecryptPrivate {address} {password} {key file}; Decrypting account json file generates the private key and mnemonic;",
+	Aliases: []string{"decryptprivate", "DP", "dp"},
 
 	Example: `
-	DecryptAccount 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf
+	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf
 		OR
-	DecryptAccount 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456
+	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456
 		OR
-	DecryptAccount 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf.json
+	DecryptPrivate 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf 123456 3ajKPvYpncZ8YtmCXogJFkKSQJb2FeXYceBf.json
 	`,
 	Args: cobra.MinimumNArgs(1),
-	Run:  DecryptAccount,
+	Run:  DecryptPrivate,
 }
 
-func DecryptAccount(cmd *cobra.Command, args []string) {
+func DecryptPrivate(cmd *cobra.Command, args []string) {
 	var passWd []byte
 	var keyFile string
 	var err error
@@ -202,7 +210,7 @@ func DecryptAccount(cmd *cobra.Command, args []string) {
 		keyFile = getAddJsonPath(args[0])
 	}
 
-	privKey, err := ReadAddrPrivate(keyFile, passWd)
+	privKey, err := loadPrivate(keyFile, passWd)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", fmt.Errorf("wrong password"))
 		return
@@ -264,7 +272,7 @@ func getAddJsonPath(addr string) string {
 	return Cfg.KeystoreDir + "/" + addr + ".json"
 }
 
-func ReadAddrPrivate(jsonFile string, password []byte) (*keystore.Private, error) {
+func loadPrivate(jsonFile string, password []byte) (*keystore.Private, error) {
 	j, err := keystore.ReadJson(jsonFile)
 	if err != nil {
 		return nil, err

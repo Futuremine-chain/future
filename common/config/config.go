@@ -5,7 +5,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/private"
-	private2 "github.com/Futuremine-chain/futuremine/futuremine/common/private"
 	log2 "github.com/Futuremine-chain/futuremine/tools/log"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -39,7 +38,7 @@ type Config struct {
 }
 
 // LoadConfig load the parse node startup parameter
-func LoadParam() error {
+func LoadParam(private private.IPrivate) error {
 	cfg := &Config{}
 	appName := filepath.Base(os.Args[0])
 	appName = strings.TrimSuffix(appName, filepath.Ext(appName))
@@ -126,7 +125,7 @@ func LoadParam() error {
 	// generation and signature of the node that generates the block.
 	// If this parameter is not configured in the startup parameter,
 	// the node will be automatically generated and loaded automatically at startup
-	Param.IPrivate = private2.NewPrivate()
+	Param.IPrivate = private
 	if cfg.KeyFile == "" {
 		Param.PrivateFile = Param.Data + "/" + Param.PrivateFile
 		if err := Param.IPrivate.Load(Param.PrivateFile, Param.PrivatePass); err != nil {

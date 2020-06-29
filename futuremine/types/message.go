@@ -130,6 +130,14 @@ func (m *Message) SetHash() {
 	m.Header.Hash = hash.Hash(m.Bytes())
 }
 
+func (m *Message) SignMessage(key *secp256k1.PrivateKey) error {
+	var err error
+	if m.Header.Signature, err = Sign(key, m.Header.Hash); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *Message) copy() *Message {
 	return &Message{
 		Header: &MsgHeader{

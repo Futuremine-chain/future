@@ -7,6 +7,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/blockchain"
 	fmcdpos "github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/msglist"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/private"
 	fmcstatus "github.com/Futuremine-chain/futuremine/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/act_status"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/status/dpos_status"
@@ -75,7 +76,7 @@ func FMCMain() error {
 }
 
 func createFMCNode() (*node.FMCNode, error) {
-	err := config.LoadParam()
+	err := config.LoadParam(private.NewPrivate(nil))
 	if err != nil {
 		return nil, err
 	}

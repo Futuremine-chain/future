@@ -87,6 +87,8 @@ func (r *RequestHandler) dealRequest() {
 			h = r.respIsEqual
 		case localInfo:
 			h = r.respLocalInfo
+		case sendMsg:
+			h = r.respSendMsg
 		default:
 			reqStream.Close()
 			continue

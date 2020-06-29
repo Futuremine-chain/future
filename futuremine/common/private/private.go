@@ -21,8 +21,8 @@ type Private struct {
 	mnemonic string
 }
 
-func NewPrivate() *Private {
-	return &Private{}
+func NewPrivate(private *secp256k1.PrivateKey) *Private {
+	return &Private{priKey: private}
 }
 
 func CreatePrivate(network string) (*Private, error) {

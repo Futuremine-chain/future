@@ -12,7 +12,7 @@ import (
 
 var (
 	lastHeight = Method("lastHeight")
-	sendTx     = Method("sendTx")
+	sendMsg    = Method("sendMsg")
 	sendBlock  = Method("sendBlock")
 	getBlocks  = Method("getBlocks")
 	getBlock   = Method("getBlock")
@@ -62,7 +62,7 @@ func (r *RequestHandler) SendMsg(conn *types.Conn, msg types.IMessage) error {
 	}()
 
 	s.SetDeadline(time.Unix(utils.NowUnix()+timeOut, 0))
-	req := NewRequest(sendTx, msg.ToRlp().Bytes())
+	req := NewRequest(sendMsg, msg.ToRlp().Bytes())
 	err = requestStream(req, s)
 	if err != nil {
 		return err

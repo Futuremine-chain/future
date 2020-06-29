@@ -22,7 +22,7 @@ func (r *RequestHandler) respLastHeight(req *ReqStream) (*Response, error) {
 	return response, nil
 }
 
-func (r *RequestHandler) respSendTx(req *ReqStream) (*Response, error) {
+func (r *RequestHandler) respSendMsg(req *ReqStream) (*Response, error) {
 	defer func() {
 		req.stream.Reset()
 		req.stream.Close()

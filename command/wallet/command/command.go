@@ -47,6 +47,10 @@ func outputRespError(cmdUser string, resp *rpc.Response) {
 	logrus.Error(cmdUser+" err code :%d, message :%s", resp.Code, resp.Err)
 }
 
+func outputError(cmdUser string, err error) {
+	logrus.Error(cmdUser+" %s", err.Error())
+}
+
 func NewRpcClient() (*rpc.Client, error) {
 	if Cfg.RpcConfig.RpcTLS {
 		if Cfg.RpcConfig.RpcCert == "" {
