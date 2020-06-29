@@ -2,7 +2,6 @@ package act_status
 
 import (
 	"errors"
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/status/act_db"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
@@ -44,7 +43,7 @@ func (a *ActStatus) CheckMessage(msg types.IMessage, strict bool) error {
 // Get account status, if the account status needs to be updated
 // according to the effective block height, it will be updated,
 // but not stored.
-func (a *ActStatus) Account(address arry.Address) account.IAccount {
+func (a *ActStatus) Account(address arry.Address) types.IAccount {
 	a.mutex.RLock()
 	account := a.db.Account(address)
 	a.mutex.RUnlock()
@@ -91,7 +90,7 @@ func (a *ActStatus) ToMessage(msg types.IMessage, height uint64) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	var toAct account.IAccount
+	var toAct types.IAccount
 
 	toAct = a.db.Account(msg.MsgBody().MsgTo())
 	err := toAct.UpdateLocked(a.confirmed)
@@ -133,12 +132,12 @@ func (a *ActStatus) Close() error {
 	return a.db.Close()
 }
 
-func (a *ActStatus) setAccount(account account.IAccount) {
+func (a *ActStatus) setAccount(account types.IAccount) {
 	a.db.SetAccount(account)
 }
 
 // Update the locked balance of an account
-func (a *ActStatus) updateLocked(address arry.Address) account.IAccount {
+func (a *ActStatus) updateLocked(address arry.Address) types.IAccount {
 	act := a.db.Account(address)
 	act.UpdateLocked(a.confirmed)
 	return act

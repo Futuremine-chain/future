@@ -2,7 +2,6 @@ package status
 
 import (
 	"errors"
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/token"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
@@ -13,12 +12,12 @@ import (
 const module = "chain"
 
 type FMCStatus struct {
-	actStatus   account.IActStatus
+	actStatus   types.IActStatus
 	dPosStatus  dpos.IDPosStatus
 	tokenStatus token.ITokenStatus
 }
 
-func NewFMCStatus(actStatus account.IActStatus, dPosStatus dpos.IDPosStatus, tokenStatus token.ITokenStatus) *FMCStatus {
+func NewFMCStatus(actStatus types.IActStatus, dPosStatus dpos.IDPosStatus, tokenStatus token.ITokenStatus) *FMCStatus {
 	return &FMCStatus{
 		actStatus:   actStatus,
 		dPosStatus:  dPosStatus,
@@ -43,7 +42,7 @@ func (f *FMCStatus) SetConfirmed(confirmed uint64) {
 	f.actStatus.SetConfirmed(confirmed)
 }
 
-func (f *FMCStatus) Account(address arry.Address) account.IAccount {
+func (f *FMCStatus) Account(address arry.Address) types.IAccount {
 	return f.actStatus.Account(address)
 }
 

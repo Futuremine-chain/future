@@ -1,8 +1,8 @@
 package act_status
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 type IActDB interface {
@@ -10,7 +10,7 @@ type IActDB interface {
 	Root() arry.Hash
 	Commit() (arry.Hash, error)
 	Close() error
-	Account(address arry.Address) account.IAccount
-	SetAccount(account account.IAccount)
+	Account(address arry.Address) types.IAccount
+	SetAccount(account types.IAccount)
 	Nonce(address arry.Address) uint64
 }

@@ -1,11 +1,11 @@
 package act_db
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/common/db/base"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/trie"
+	types2 "github.com/Futuremine-chain/futuremine/types"
 )
 
 type ActDB struct {
@@ -39,7 +39,7 @@ func (a *ActDB) Commit() (arry.Hash, error) {
 	return a.trie.Commit()
 }
 
-func (a *ActDB) Account(address arry.Address) account.IAccount {
+func (a *ActDB) Account(address arry.Address) types2.IAccount {
 	bytes := a.trie.Get(address.Bytes())
 	if account, err := types.DecodeAccount(bytes); err != nil {
 		return types.NewAccount()
@@ -48,7 +48,7 @@ func (a *ActDB) Account(address arry.Address) account.IAccount {
 	}
 }
 
-func (a *ActDB) SetAccount(account account.IAccount) {
+func (a *ActDB) SetAccount(account types2.IAccount) {
 	a.trie.Update(account.GetAddress().Bytes(), account.Bytes())
 }
 

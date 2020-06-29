@@ -1,7 +1,6 @@
 package status
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
 )
@@ -12,7 +11,8 @@ type IStatus interface {
 	SetConfirmed(confirmed uint64)
 	CheckMsg(msg types.IMessage, strict bool) error
 	Change(msgs []types.IMessage, block types.IBlock) error
-	Account(address arry.Address) account.IAccount
+	Account(address arry.Address) types.IAccount
+	Token(address arry.Address) types.IToken
 	Candidates() types.ICandidates
 	CycleSupers(cycle uint64) types.ICandidates
 }

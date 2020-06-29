@@ -9,6 +9,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/common/token"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
@@ -263,7 +264,31 @@ func (r *Rpc) GetCycleSupers(ctx context.Context, req *Request) (*Response, erro
 		return NewResponse(Success, bytes, ""), nil
 	}
 }
-func (r *Rpc) Token(context.Context, *Request) (*Response, error)     { return nil, nil }
+
+func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) < 1 {
+		return NewResponse(Err_Params, nil, "no token"), nil
+	}
+	if tokenStr, ok := params[0].(string); !ok {
+		return NewResponse(Err_Params, nil, "token type error"), nil
+	} else {
+		token := r.status.CheckMessage(arry.StringToAddress(tokenStr))
+		if token == nil {
+			return NewResponse(rpctypes.RpcErrContract, nil, fmt.Sprintf("contract address %s is not exist", string(req.Params))), nil
+		}
+		bytes, err := json.Marshal(rpctypes.TranslateContractToRpcContract(contract))
+		if err != nil {
+			return NewResponse(rpctypes.RpcErrMarshal, nil, err.Error()), nil
+		}
+		return NewResponse(rpctypes.RpcSuccess, bytes, ""), nil
+	}
+	return nil, nil
+}
+
 func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error) { return nil, nil }
 func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error) { return nil, nil }
 

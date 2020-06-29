@@ -2,7 +2,6 @@ package msglist
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/account"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/validator"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/msglist"
@@ -17,12 +16,12 @@ type MsgManagement struct {
 	cache     *Cache
 	ready     *Sorted
 	validator validator.IValidator
-	actStatus account.IActStatus
+	actStatus types.IActStatus
 	mutex     sync.RWMutex
 	msgDB     ITxListDB
 }
 
-func NewMsgManagement(validator validator.IValidator, actStatus account.IActStatus) (*MsgManagement, error) {
+func NewMsgManagement(validator validator.IValidator, actStatus types.IActStatus) (*MsgManagement, error) {
 	msgDB, err := msglist.Open(config.Param.Data + "/" + msgList_db)
 	if err != nil {
 		return nil, err
