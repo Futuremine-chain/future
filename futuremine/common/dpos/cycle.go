@@ -24,7 +24,7 @@ func (c *Cycle) CheckCycle(chain blockchain.IChain, preTime, time uint64) error 
 	currentTerm := time / param.CycleInterval
 
 	supers, _ := c.DPosStatus.CycleSupers(currentTerm)
-	if supers != nil && len(supers.Candidates) != 0 {
+	if supers != nil && supers.Len() != 0 {
 		return Err_Elected
 	}
 	return nil
@@ -65,21 +65,22 @@ func (c *Cycle) Elect(time uint64, preHash arry.Hash, chain blockchain.IChain) e
 }
 
 func (c *Cycle) calVotes(chain blockchain.IChain) ([]*types.Member, error) {
-	candidates, err := c.DPosStatus.Candidates()
+	iCans, err := c.DPosStatus.Candidates()
 	if err != nil {
 		return nil, errors.New("no candidate")
 	}
-	if len(candidates.Members) < SuperCount {
+	if iCans.Len() < SuperCount {
 		return nil, errors.New("not enough candidates")
 	}
+	cans := iCans.(*types.Candidates)
 	voterMap := c.DPosStatus.Voters()
-	for index, candidate := range candidates.Members {
+	for index, candidate := range cans.Members {
 		voters, ok := voterMap[candidate.Signer]
 		if ok {
 			for _, voter := range voters {
-				candidates.Members[index].Weight += chain.Vote(voter)
+				cans.Members[index].Weight += chain.Vote(voter)
 			}
 		}
 	}
-	return candidates.Members, nil
+	return cans.Members, nil
 }

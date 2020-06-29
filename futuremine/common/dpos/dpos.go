@@ -176,12 +176,12 @@ func (d *DPos) lookupSuper(now uint64) (arry.Address, error) {
 	if err != nil {
 		return arry.Address{}, err
 	}
-	if len(supers.Candidates) == 0 {
+	if supers.Len() == 0 {
 		return arry.Address{}, errors.New("no super to be found in storage")
 	}
-	offset %= uint64(len(supers.Candidates))
-	super := supers.Candidates[offset]
-	return super.Signer, nil
+	offset %= uint64(supers.Len())
+	candidate := supers.Get(int(offset))
+	return candidate.GetSinger(), nil
 }
 
 func (d *DPos) setAndLookupSuper(now uint64, parent types.IHeader, chain blockchain.IChain) (arry.Address, error) {
@@ -194,21 +194,21 @@ func (d *DPos) setAndLookupSuper(now uint64, parent types.IHeader, chain blockch
 	if err != nil {
 		return arry.Address{}, err
 	}
-	if len(supers) == 0 {
+	if supers.Len() == 0 {
 		return arry.Address{}, errors.New("no winner to be found in storage")
 	}
-	offset %= uint64(len(supers))
-	winner := supers[offset]
-	return winner.Signer, nil
+	offset %= uint64(supers.Len())
+	super := supers.Get(int(offset))
+	return super.GetSinger(), nil
 }
 
-func (d *DPos) setSupers(time uint64, parent types.IHeader, chain blockchain.IChain) ([]*fmctypes.Member, error) {
+func (d *DPos) setSupers(time uint64, parent types.IHeader, chain blockchain.IChain) (types.ICandidates, error) {
 	cycle := time / param.CycleInterval
 	supers, err := d.cycle.DPosStatus.CycleSupers(cycle)
 
 	// If the election result of the current cycle does not
 	// exist, the current cycle of elections is conducted
-	if err != nil || supers == nil || !parent.GetHash().IsEqual(supers.PreHash) {
+	if err != nil || supers == nil || !parent.GetHash().IsEqual(supers.GetPreHash()) {
 		if err := d.cycle.Elect(time, parent.GetHash(), chain); err != nil {
 			return nil, err
 		}
@@ -216,7 +216,7 @@ func (d *DPos) setSupers(time uint64, parent types.IHeader, chain blockchain.ICh
 			return nil, err
 		}
 	}
-	return supers.Candidates, nil
+	return supers, nil
 }
 
 // Get the hash of the last block of the previous cycle

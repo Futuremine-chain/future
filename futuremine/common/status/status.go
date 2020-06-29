@@ -3,7 +3,6 @@ package status
 import (
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/common/token"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -14,10 +13,10 @@ const module = "chain"
 type FMCStatus struct {
 	actStatus   types.IActStatus
 	dPosStatus  dpos.IDPosStatus
-	tokenStatus token.ITokenStatus
+	tokenStatus types.ITokenStatus
 }
 
-func NewFMCStatus(actStatus types.IActStatus, dPosStatus dpos.IDPosStatus, tokenStatus token.ITokenStatus) *FMCStatus {
+func NewFMCStatus(actStatus types.IActStatus, dPosStatus dpos.IDPosStatus, tokenStatus types.ITokenStatus) *FMCStatus {
 	return &FMCStatus{
 		actStatus:   actStatus,
 		dPosStatus:  dPosStatus,
@@ -125,12 +124,17 @@ func (f *FMCStatus) Candidates() types.ICandidates {
 }
 
 func (f *FMCStatus) CycleSupers(cycle uint64) types.ICandidates {
-	supers, err := f.dPosStatus.CycleSupers(cycle)
+	candidates, err := f.dPosStatus.CycleSupers(cycle)
 	if err != nil {
 		return fmctypes.NewSupers()
 	}
+	supers := candidates.(*fmctypes.Supers)
 	for i, s := range supers.Candidates {
 		supers.Candidates[i].MntCount = f.dPosStatus.SuperBlockCount(cycle, s.Signer)
 	}
 	return supers
+}
+
+func (f *FMCStatus) Token(address arry.Address) types.IToken {
+	return make([]types.IToken, 0)[0]
 }

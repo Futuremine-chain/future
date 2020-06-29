@@ -48,15 +48,16 @@ func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
 	return nil
 }
 
-func (d *DPosStatus) CycleSupers(cycle uint64) (*fmctypes.Supers, error) {
+func (d *DPosStatus) CycleSupers(cycle uint64) (types.ICandidates, error) {
 	return d.db.CycleSupers(cycle)
 }
 
-func (d *DPosStatus) SaveCycle(cycle uint64, supers *fmctypes.Supers) {
-	d.db.SaveCycle(cycle, supers)
+func (d *DPosStatus) SaveCycle(cycle uint64, supers types.ICandidates) {
+	ss := supers.(*fmctypes.Supers)
+	d.db.SaveCycle(cycle, ss)
 }
 
-func (d *DPosStatus) Candidates() (*fmctypes.Candidates, error) {
+func (d *DPosStatus) Candidates() (types.ICandidates, error) {
 	return d.db.Candidates()
 }
 

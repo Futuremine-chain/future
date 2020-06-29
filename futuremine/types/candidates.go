@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 // Super nodes
@@ -19,6 +20,22 @@ func (s *Supers) Len() int {
 	return len(s.Candidates)
 }
 
+func (s *Supers) List() []types.ICandidate {
+	iCans := make([]types.ICandidate, s.Len())
+	for i, mem := range s.Candidates {
+		iCans[i] = mem
+	}
+	return iCans
+}
+
+func (s *Supers) Get(i int) types.ICandidate {
+	return s.Candidates[i]
+}
+
+func (s *Supers) GetPreHash() arry.Hash {
+	return s.PreHash
+}
+
 type Member struct {
 	Signer   arry.Address
 	PeerId   string
@@ -29,6 +46,14 @@ type Member struct {
 func (m *Member) Bytes() []byte {
 	bytes, _ := rlp.EncodeToBytes(m)
 	return bytes
+}
+
+func (m *Member) GetPeerId() string {
+	return m.PeerId
+}
+
+func (m *Member) GetSinger() arry.Address {
+	return m.Signer
 }
 
 func DecodeMember(bytes []byte) (*Member, error) {
@@ -61,8 +86,24 @@ func (c *Candidates) Remove(reMem *Member) {
 	}
 }
 
+func (c *Candidates) List() []types.ICandidate {
+	iCans := make([]types.ICandidate, c.Len())
+	for i, mem := range c.Members {
+		iCans[i] = mem
+	}
+	return iCans
+}
+
 func (c *Candidates) Len() int {
 	return len(c.Members)
+}
+
+func (c *Candidates) Get(i int) types.ICandidate {
+	return c.Members[i]
+}
+
+func (c *Candidates) GetPreHash() arry.Hash {
+	return arry.Hash{}
 }
 
 type SortableCandidates []*Member

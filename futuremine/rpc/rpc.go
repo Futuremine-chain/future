@@ -9,7 +9,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/common/status"
-	"github.com/Futuremine-chain/futuremine/common/token"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
@@ -266,7 +265,7 @@ func (r *Rpc) GetCycleSupers(ctx context.Context, req *Request) (*Response, erro
 }
 
 func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
+	/*params := make([]interface{}, 0)
 	if err := json.Unmarshal(req.Params, &params); err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
@@ -285,7 +284,7 @@ func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
 			return NewResponse(rpctypes.RpcErrMarshal, nil, err.Error()), nil
 		}
 		return NewResponse(rpctypes.RpcSuccess, bytes, ""), nil
-	}
+	}*/
 	return nil, nil
 }
 

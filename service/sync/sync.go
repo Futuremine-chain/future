@@ -183,12 +183,12 @@ func (s *Sync) headerValidation(header types.IHeader) bool {
 func (s *Sync) validation(header types.IHeader, localEqual bool) bool {
 	count := 0
 	supers, err := s.dPos.CycleSupers(header.GetCycle())
-	if err != nil{
+	if err != nil {
 		return false
 	}
-	for _, mem := range supers.Candidates {
-		if mem.PeerId != s.peers.Local().Address.ID.String() {
-			peer := s.peers.Peer(mem.PeerId)
+	for _, candidate := range supers.List() {
+		if candidate.GetPeerId() != s.peers.Local().Address.ID.String() {
+			peer := s.peers.Peer(candidate.GetPeerId())
 			if peer != nil {
 				rs, err := s.request.IsEqual(peer.Conn, header)
 				if err == nil && rs {
