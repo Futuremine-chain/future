@@ -23,6 +23,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
+	"strconv"
 )
 
 const module = "rpc"
@@ -188,13 +189,50 @@ func (r *Rpc) GetBlockHash(ctx context.Context, req *Request) (*Response, error)
 		bytes, _ := json.Marshal(rpcBlock)
 		return NewResponse(Success, bytes, ""), nil
 	}
-	return nil, nil
 }
 
-func (r *Rpc) GetBlockHeight(context.Context, *Request) (*Response, error) { return nil, nil }
-func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error)     { return nil, nil }
-func (r *Rpc) Confirmed(context.Context, *Request) (*Response, error)      { return nil, nil }
-func (r *Rpc) GetMsgPool(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) GetBlockHeight(ctx context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) < 1 {
+		return NewResponse(Err_Params, nil, "no height"), nil
+	}
+	if height, ok := params[0].(float64); !ok {
+		return NewResponse(Err_Params, nil, "height type error"), nil
+	} else {
+		block, err := r.chain.GetBlockHeight(uint64(height))
+		if err != nil {
+			return NewResponse(Err_Chain, nil, err.Error()), nil
+		}
+		rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
+		if err != nil {
+			return NewResponse(Err_Chain, nil, err.Error()), nil
+		}
+		bytes, _ := json.Marshal(rpcBlock)
+
+		return NewResponse(Success, bytes, ""), nil
+	}
+}
+
+func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error) {
+	height := r.chain.LastHeight()
+	sHeight := strconv.FormatUint(height, 10)
+	return NewResponse(Success, []byte(sHeight), ""), nil
+}
+func (r *Rpc) Confirmed(context.Context, *Request) (*Response, error) {
+	height := r.chain.LastConfirmed()
+	sHeight := strconv.FormatUint(height, 10)
+	return NewResponse(Success, []byte(sHeight), ""), nil
+}
+
+func (r *Rpc) GetMsgPool(context.Context, *Request) (*Response, error) {
+	preparedTxs, futureTxs := r.msgPool.All()
+	txPoolTxs := rpctypes.MsgsToRpcMsgsPool(preparedTxs, futureTxs)
+	bytes, _ := json.Marshal(txPoolTxs)
+	return NewResponse(Success, bytes, ""), nil
+}
 func (r *Rpc) Candidates(context.Context, *Request) (*Response, error)     { return nil, nil }
 func (r *Rpc) GetCycleSupers(context.Context, *Request) (*Response, error) { return nil, nil }
 func (r *Rpc) Token(context.Context, *Request) (*Response, error)          { return nil, nil }

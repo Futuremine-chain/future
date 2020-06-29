@@ -5,6 +5,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/horn"
 	"github.com/Futuremine-chain/futuremine/common/msglist"
+	types2 "github.com/Futuremine-chain/futuremine/futuremine/types"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -107,4 +108,10 @@ func (p *Pool) removeExpired() {
 
 func (p *Pool) Delete(msg types.IMessage) {
 	p.deleteMsg <- msg
+}
+
+// Get all transactions in the trading pool
+func (p *Pool) All() ([]types.IMessage, []types.IMessage) {
+	prepareTxs, futureTxs := p.msgMgt.GetAll()
+	return prepareTxs, futureTxs
 }
