@@ -102,3 +102,7 @@ func (d *DPosStatus) Voter(msg types.IMessage) error {
 func (d *DPosStatus) AddSuperBlockCount(cycle uint64, signer arry.Address) {
 	d.db.AddSuperBlockCount(cycle, signer)
 }
+
+func (d *DPosStatus) SuperBlockCount(cycle uint64, signer arry.Address) uint32 {
+	return d.db.SuperBlockCount(cycle, signer)
+}

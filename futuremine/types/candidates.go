@@ -11,10 +11,19 @@ type Supers struct {
 	PreHash    arry.Hash
 }
 
+func NewSupers() *Supers {
+	return &Supers{Candidates: make([]*Member, 0)}
+}
+
+func (s *Supers) Len() int {
+	return len(s.Candidates)
+}
+
 type Member struct {
-	Signer arry.Address
-	PeerId string
-	Weight uint64
+	Signer   arry.Address
+	PeerId   string
+	Weight   uint64
+	MntCount uint32
 }
 
 func (m *Member) Bytes() []byte {

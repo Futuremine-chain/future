@@ -8,9 +8,11 @@ import (
 
 type IStatus interface {
 	InitRoots(actRoot, dPosRoot, tokenRoot arry.Hash) error
+	Commit() (arry.Hash, arry.Hash, arry.Hash, error)
 	SetConfirmed(confirmed uint64)
-	Account(address arry.Address) account.IAccount
 	CheckMsg(msg types.IMessage, strict bool) error
 	Change(msgs []types.IMessage, block types.IBlock) error
-	Commit() (arry.Hash, arry.Hash, arry.Hash, error)
+	Account(address arry.Address) account.IAccount
+	Candidates() types.ICandidates
+	CycleSupers(cycle uint64) types.ICandidates
 }

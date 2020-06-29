@@ -20,5 +20,6 @@ type IDPosStatus interface {
 	CancelCandidate(msg types.IMessage) error
 	Voter(msg types.IMessage) error
 	AddSuperBlockCount(cycle uint64, signer arry.Address)
+	SuperBlockCount(cycle uint64, signer arry.Address) uint32
 	Commit() (arry.Hash, error)
 }

@@ -233,11 +233,39 @@ func (r *Rpc) GetMsgPool(context.Context, *Request) (*Response, error) {
 	bytes, _ := json.Marshal(txPoolTxs)
 	return NewResponse(Success, bytes, ""), nil
 }
-func (r *Rpc) Candidates(context.Context, *Request) (*Response, error)     { return nil, nil }
-func (r *Rpc) GetCycleSupers(context.Context, *Request) (*Response, error) { return nil, nil }
-func (r *Rpc) Token(context.Context, *Request) (*Response, error)          { return nil, nil }
-func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error)      { return nil, nil }
-func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error)      { return nil, nil }
+
+func (r *Rpc) Candidates(context.Context, *Request) (*Response, error) {
+	candidates := r.status.Candidates()
+	if candidates == nil || candidates.Len() == 0 {
+		return NewResponse(Err_DPos, nil, "no candidates"), nil
+	}
+	bytes, _ := json.Marshal(rpctypes.CandidatesToRpcCandidates(candidates))
+	return NewResponse(Success, bytes, ""), nil
+}
+
+func (r *Rpc) GetCycleSupers(ctx context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) < 1 {
+		return NewResponse(Err_Params, nil, "no cycle"), nil
+	}
+	if cycle, ok := params[0].(float64); !ok {
+		return NewResponse(Err_Params, nil, "wrong cycle type"), nil
+	} else {
+		supers := r.status.CycleSupers(uint64(cycle))
+		if supers == nil {
+			return NewResponse(Err_DPos, nil, "no supers"), nil
+		}
+		bytes, _ := json.Marshal(rpctypes.SupersToRpcCandidates(supers))
+
+		return NewResponse(Success, bytes, ""), nil
+	}
+}
+func (r *Rpc) Token(context.Context, *Request) (*Response, error)     { return nil, nil }
+func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error) { return nil, nil }
+func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error) { return nil, nil }
 
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}

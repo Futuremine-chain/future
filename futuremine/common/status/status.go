@@ -119,3 +119,19 @@ func (f *FMCStatus) Commit() (arry.Hash, arry.Hash, arry.Hash, error) {
 	}
 	return actRoot, tokenRoot, dPosRoot, nil
 }
+
+func (f *FMCStatus) Candidates() types.ICandidates {
+	cans, _ := f.dPosStatus.Candidates()
+	return cans
+}
+
+func (f *FMCStatus) CycleSupers(cycle uint64) types.ICandidates {
+	supers, err := f.dPosStatus.CycleSupers(cycle)
+	if err != nil {
+		return fmctypes.NewSupers()
+	}
+	for i, s := range supers.Candidates {
+		supers.Candidates[i].MntCount = f.dPosStatus.SuperBlockCount(cycle, s.Signer)
+	}
+	return supers
+}
