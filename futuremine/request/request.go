@@ -37,6 +37,7 @@ type RequestHandler struct {
 	bytesPool      sync.Pool
 	receiveBlock   func(block types.IBlock) error
 	receiveMessage func(msg types.IMessage) error
+	getLocal       func() *types.Local
 }
 
 func NewRequestHandler(chain blockchain.IChain) *RequestHandler {
@@ -66,6 +67,14 @@ func (r *RequestHandler) Start() error {
 	return nil
 }
 
+func (r *RequestHandler) Info() map[string]interface{} {
+	return make(map[string]interface{}, 0)
+}
+
+func (r *RequestHandler) RegisterLocalInfo(f func() *types.Local) {
+	r.getLocal = f
+}
+
 func (r *RequestHandler) dealRequest() {
 	var h handler
 	for reqStream := range r.readyCh {
@@ -76,6 +85,8 @@ func (r *RequestHandler) dealRequest() {
 			h = r.respGetBlocks
 		case isEqual:
 			h = r.respIsEqual
+		case localInfo:
+			h = r.respLocalInfo
 		default:
 			reqStream.Close()
 			continue

@@ -65,6 +65,10 @@ func (p *Pool) Stop() error {
 	return nil
 }
 
+func (p *Pool) Info() map[string]interface{} {
+	return make(map[string]interface{}, 0)
+}
+
 func (p *Pool) worksRun() {
 	p.wg.Add(1)
 	defer p.wg.Done()

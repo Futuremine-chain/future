@@ -50,6 +50,10 @@ func (g *Generate) Stop() error {
 	return nil
 }
 
+func (g *Generate) Info() map[string]interface{} {
+	return make(map[string]interface{}, 0)
+}
+
 func (g *Generate) generate() {
 	ticker := time.NewTicker(time.Second).C
 	for {

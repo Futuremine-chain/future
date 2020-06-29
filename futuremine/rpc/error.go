@@ -6,4 +6,6 @@ const (
 	Err_MsgPool = 2
 	Err_Chain   = 3
 	Err_DPos    = 4
+	Err_Token   = 5
+	Err_Local   = 6
 )

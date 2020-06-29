@@ -12,7 +12,7 @@ type IStatus interface {
 	CheckMsg(msg types.IMessage, strict bool) error
 	Change(msgs []types.IMessage, block types.IBlock) error
 	Account(address arry.Address) types.IAccount
-	Token(address arry.Address) types.IToken
+	Token(address arry.Address) (types.IToken, error)
 	Candidates() types.ICandidates
 	CycleSupers(cycle uint64) types.ICandidates
 }

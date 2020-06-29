@@ -1,8 +1,10 @@
 package node
 
 import (
+	"encoding/json"
 	"github.com/Futuremine-chain/futuremine/server"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/futuremine/types"
 )
 
 const module = "fmc_node"
@@ -36,6 +38,26 @@ func (fmc *FMCNode) Stop() error {
 
 func (fmc *FMCNode) Register(s server.IService) {
 	fmc.services = append(fmc.services, s)
+}
+
+func (fmc *FMCNode) LocalInfo() *types.Local {
+	all := make(map[string]interface{})
+	for _, s := range fmc.services {
+		infoMap := s.Info()
+		for name, value := range infoMap {
+			all[name] = value
+		}
+	}
+	bytes, err := json.Marshal(all)
+	if err != nil {
+		return &types.Local{}
+	}
+	var rs *types.Local
+	err = json.Unmarshal(bytes, &rs)
+	if err != nil {
+		return &types.Local{}
+	}
+	return rs
 }
 
 func (fmc *FMCNode) startServices() error {

@@ -6,13 +6,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
-/*lastHeight = Method("lastHeight")
-sendTx     = Method("sendTx")
-sendBlock  = Method("sendBlock")
-getBlocks  = Method("getBlocks")
-getBlock   = Method("getBlock")
-isEqual    = Method("isEqual")*/
-
 const maxSyncCount = 1000
 
 func (r *RequestHandler) respLastHeight(req *ReqStream) (*Response, error) {
@@ -104,7 +97,7 @@ func (r *RequestHandler) respIsEqual(req *ReqStream) (*Response, error) {
 	code := Success
 	header, err := types.DecodeHeader(req.request.Body)
 	if err != nil {
-	code = Failed
+		code = Failed
 		return NewResponse(code, message, body), nil
 	}
 	localHeader, err := r.chain.GetHeaderHeight(header.Height)
@@ -113,6 +106,21 @@ func (r *RequestHandler) respIsEqual(req *ReqStream) (*Response, error) {
 		return NewResponse(code, message, body), nil
 	}
 	isEqual := localHeader.GetHash().IsEqual(header.Hash)
-	body, _ =rlp.EncodeToBytes(isEqual)
+	body, _ = rlp.EncodeToBytes(isEqual)
+	return NewResponse(code, message, body), nil
+}
+
+func (r *RequestHandler) respLocalInfo(req *ReqStream) (*Response, error) {
+	var message string
+	var body []byte
+	code := Success
+
+	if r.getLocal != nil {
+		local := r.getLocal()
+		body, _ = rlp.EncodeToBytes(local)
+	} else {
+		code = Failed
+		message = "no local info"
+	}
 	return NewResponse(code, message, body), nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
+	"github.com/Futuremine-chain/futuremine/types"
 	"github.com/libp2p/go-libp2p"
 	core "github.com/libp2p/go-libp2p-core"
 	crypto2 "github.com/libp2p/go-libp2p-core/crypto"
@@ -28,7 +29,7 @@ const module = "p2p"
 
 type P2p struct {
 	host       core.Host
-	local      *peers.Peer
+	local      *types.Peer
 	dht        *dht.IpfsDHT
 	peers      *peers.Peers
 	reqHandler request.IRequestHandler
@@ -58,7 +59,7 @@ func NewP2p(ps *peers.Peers, reqHandler request.IRequestHandler) (*P2p, error) {
 		return nil, err
 	}
 	ser.host = host
-	ser.local = peers.NewPeer(config.Param.IPrivate.PrivateKey(),
+	ser.local = types.NewPeer(config.Param.IPrivate.PrivateKey(),
 		&peer.AddrInfo{
 			ID:    host.ID(),
 			Addrs: host.Addrs()}, nil, nil)
@@ -121,6 +122,13 @@ func (p *P2p) Stop() error {
 	}
 	log.Info("Stop P2P server")
 	return nil
+}
+
+func (p *P2p) Info() map[string]interface{} {
+	return map[string]interface{}{
+		"peer":    p.local.Conn.PeerId.String(),
+		"address": p.local.Address.String(),
+	}
 }
 
 func (p *P2p) Addr() string {
@@ -213,7 +221,7 @@ func (p *P2p) readAddrInfo(addrCh <-chan peer.AddrInfo) {
 						p.peers.RemovePeer(addrInfo.ID.String())
 						continue
 					} else {
-						p.peers.AddPeer(peers.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream, stream))
+						p.peers.AddPeer(types.NewPeer(nil, cpAddrInfo(&addrInfo), p.newStream, stream))
 					}
 				}
 			} else {

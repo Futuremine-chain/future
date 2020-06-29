@@ -1,4 +1,4 @@
-package peers
+package types
 
 import (
 	"crypto"
@@ -13,7 +13,7 @@ type Peer struct {
 }
 
 func NewPeer(private crypto.PrivateKey, addr *peer.AddrInfo, createF CreateConnF, stream network.Stream) *Peer {
-	return &Peer{Private: private, Address: addr, Conn: &Conn{Stream:stream, PeerId: addr.ID, Create: createF}}
+	return &Peer{Private: private, Address: addr, Conn: &Conn{Stream: stream, PeerId: addr.ID, Create: createF}}
 }
 
 type CreateConnF func(peerId peer.ID) (network.Stream, error)
@@ -29,4 +29,3 @@ func (s *Conn) Close() {
 	s.Stream.Close()
 	s.Stream = nil
 }
-

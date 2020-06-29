@@ -92,16 +92,16 @@ func createFMCNode() (*node.FMCNode, error) {
 		return nil, err
 	}
 
-	dpos := fmcdpos.NewDPos(dPosStatus)
+	dPos := fmcdpos.NewDPos(dPosStatus)
 	status := fmcstatus.NewFMCStatus(actStatus, dPosStatus, tokenStatus)
-	peersSv := peers.NewPeers()
 	gPool := gorutinue.NewPool()
-	chain, err := blockchain.NewFMCChain(status, dpos)
+	chain, err := blockchain.NewFMCChain(status, dPos)
 	if err != nil {
 		return nil, err
 	}
-
 	reqHandler := request.NewRequestHandler(chain)
+	peersSv := peers.NewPeers(reqHandler)
+
 	p2pSv, err := p2p.NewP2p(peersSv, reqHandler)
 	if err != nil {
 		return nil, err
@@ -114,10 +114,13 @@ func createFMCNode() (*node.FMCNode, error) {
 	}
 	poolSv := pool.NewPool(horn, msgManage)
 
-	rpcSv := rpc.NewRpc(status, poolSv, chain)
+	rpcSv := rpc.NewRpc(status, poolSv, chain, peersSv)
 	syncSv := sync_service.NewSync(peersSv, dPosStatus, reqHandler, chain)
-	generateSv := generate.NewGenerate(chain, dpos, poolSv, horn)
+	generateSv := generate.NewGenerate(chain, dPos, poolSv, horn)
 	node := node.NewFMCNode()
+
+	rpcSv.RegisterLocalInfo(node.LocalInfo)
+	reqHandler.RegisterLocalInfo(node.LocalInfo)
 
 	chain.RegisterMsgPoolDeleteFunc(poolSv.Delete)
 

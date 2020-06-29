@@ -18,16 +18,15 @@ const chainDB = "chain_db"
 const module = "module"
 
 type FMCChain struct {
-	mutex      sync.RWMutex
-	status     status.IStatus
-	db         IChainDB
-	dPos       dpos.IDPos
-	actRoot    arry.Hash
-	dPosRoot   arry.Hash
-	tokenRoot  arry.Hash
-	lastHeight uint64
-	confirmed  uint64
-
+	mutex         sync.RWMutex
+	status        status.IStatus
+	db            IChainDB
+	dPos          dpos.IDPos
+	actRoot       arry.Hash
+	dPosRoot      arry.Hash
+	tokenRoot     arry.Hash
+	lastHeight    uint64
+	confirmed     uint64
 	poolDeleteMsg func(message types.IMessage)
 }
 

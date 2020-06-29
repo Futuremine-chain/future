@@ -19,7 +19,7 @@ type Sync struct {
 	chain   blockchain.IChain
 	request request.IRequestHandler
 	peers   *peers.Peers
-	curPeer *peers.Peer
+	curPeer *types.Peer
 	dPos    dpos.IDPosStatus
 	stop    chan bool
 	stopped chan bool
@@ -52,6 +52,13 @@ func (s *Sync) Stop() error {
 	<-s.stopped
 	log.Info("Stop sync block", "module", module)
 	return nil
+}
+
+func (s *Sync) Info() map[string]interface{} {
+	return map[string]interface{}{
+		"height":    s.chain.LastHeight(),
+		"confirmed": s.chain.LastConfirmed(),
+	}
 }
 
 // Start sync block

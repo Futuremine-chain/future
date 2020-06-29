@@ -12,11 +12,13 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/service/pool"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/certgen"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
+	"github.com/Futuremine-chain/futuremine/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -33,10 +35,12 @@ type Rpc struct {
 	status     status.IStatus
 	msgPool    *pool.Pool
 	chain      blockchain.IChain
+	peers      *peers.Peers
+	getLocal   func() *types.Local
 }
 
-func NewRpc(status status.IStatus, msgPool *pool.Pool, chain blockchain.IChain) *Rpc {
-	return &Rpc{status: status, msgPool: msgPool, chain: chain}
+func NewRpc(status status.IStatus, msgPool *pool.Pool, chain blockchain.IChain, peers *peers.Peers) *Rpc {
+	return &Rpc{status: status, msgPool: msgPool, chain: chain, peers: peers}
 }
 
 func (r *Rpc) Name() string {
@@ -77,6 +81,10 @@ func (r *Rpc) Stop() error {
 	return nil
 }
 
+func (r *Rpc) Info() map[string]interface{} {
+	return make(map[string]interface{}, 0)
+}
+
 func (r *Rpc) NewGRpcServer() (*grpc.Server, error) {
 	var opts []grpc.ServerOption
 	var interceptor grpc.UnaryServerInterceptor
@@ -100,6 +108,10 @@ func (r *Rpc) NewGRpcServer() (*grpc.Server, error) {
 	opts = append(opts, grpc.MaxRecvMsgSize(param.MaxReqBytes))
 	opts = append(opts, grpc.MaxSendMsgSize(param.MaxReqBytes))
 	return grpc.NewServer(opts...), nil
+}
+
+func (r *Rpc) RegisterLocalInfo(f func() *types.Local) {
+	r.getLocal = f
 }
 
 func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
@@ -265,7 +277,7 @@ func (r *Rpc) GetCycleSupers(ctx context.Context, req *Request) (*Response, erro
 }
 
 func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
-	/*params := make([]interface{}, 0)
+	params := make([]interface{}, 0)
 	if err := json.Unmarshal(req.Params, &params); err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
@@ -275,21 +287,28 @@ func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
 	if tokenStr, ok := params[0].(string); !ok {
 		return NewResponse(Err_Params, nil, "token type error"), nil
 	} else {
-		token := r.status.CheckMessage(arry.StringToAddress(tokenStr))
-		if token == nil {
-			return NewResponse(rpctypes.RpcErrContract, nil, fmt.Sprintf("contract address %s is not exist", string(req.Params))), nil
+		iToken, err := r.status.Token(arry.StringToAddress(tokenStr))
+		if err == nil {
+			return NewResponse(Err_Token, nil, fmt.Sprintf("token address %s is not exist", tokenStr)), nil
 		}
-		bytes, err := json.Marshal(rpctypes.TranslateContractToRpcContract(contract))
-		if err != nil {
-			return NewResponse(rpctypes.RpcErrMarshal, nil, err.Error()), nil
-		}
-		return NewResponse(rpctypes.RpcSuccess, bytes, ""), nil
-	}*/
-	return nil, nil
+		bytes, _ := json.Marshal(rpctypes.TokenToRpcToken(iToken.(*fmctypes.TokenRecord)))
+		return NewResponse(Success, bytes, ""), nil
+	}
 }
 
-func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error) { return nil, nil }
-func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error) { return nil, nil }
+func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error) {
+	peersInfo := r.peers.PeersInfo()
+	bytes, _ := json.Marshal(peersInfo)
+	return NewResponse(Success, bytes, ""), nil
+}
+func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error) {
+	if r.getLocal != nil {
+		local := r.getLocal()
+		bytes, _ := json.Marshal(local)
+		return NewResponse(Success, bytes, ""), nil
+	}
+	return NewResponse(Err_Local, nil, "no local info"), nil
+}
 
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}

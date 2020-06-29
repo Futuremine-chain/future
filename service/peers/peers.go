@@ -1,7 +1,9 @@
 package peers
 
 import (
+	request2 "github.com/Futuremine-chain/futuremine/service/request"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/futuremine/types"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"math/rand"
 	"sync"
@@ -15,15 +17,22 @@ const (
 )
 
 type Peers struct {
-	local  *Peer
-	cache  map[string]*Peer
-	idList []string
-	rwm    sync.RWMutex
-	close  chan bool
+	local      *types.Peer
+	cache      map[string]*types.Peer
+	idList     []string
+	rwm        sync.RWMutex
+	close      chan bool
+	peerInfo   map[string]*types.Local
+	infoWm     sync.RWMutex
+	reqHandler request2.IRequestHandler
 }
 
-func NewPeers() *Peers {
-	return &Peers{cache: make(map[string]*Peer, maxPeers), close: make(chan bool)}
+func NewPeers(reqHandler request2.IRequestHandler) *Peers {
+	return &Peers{
+		cache:      make(map[string]*types.Peer, maxPeers),
+		close:      make(chan bool),
+		reqHandler: reqHandler,
+	}
 }
 
 func (p *Peers) Name() string {
@@ -32,7 +41,8 @@ func (p *Peers) Name() string {
 
 func (p *Peers) Start() error {
 	log.Info("Peers started successfully", "module", module)
-	go p.Monitoring()
+	go p.monitoring()
+	go p.getPeerLocal()
 	return nil
 }
 
@@ -41,10 +51,15 @@ func (p *Peers) Stop() error {
 	return nil
 }
 
+func (p *Peers) Info() map[string]interface{} {
+	return map[string]interface{}{
+		"connections": p.Count(),
+	}
+}
+
 func (p *Peers) AddressExist(address *peer.AddrInfo) bool {
 	p.rwm.RLock()
 	defer p.rwm.RUnlock()
-
 
 	if _, ok := p.cache[address.ID.String()]; !ok {
 		return false
@@ -52,7 +67,7 @@ func (p *Peers) AddressExist(address *peer.AddrInfo) bool {
 	return true
 }
 
-func (p *Peers) AddPeer(peer *Peer) {
+func (p *Peers) AddPeer(peer *types.Peer) {
 	p.rwm.Lock()
 	defer p.rwm.Unlock()
 
@@ -78,7 +93,7 @@ func (p *Peers) RemovePeer(reId string) {
 	}
 }
 
-func (p *Peers) Monitoring() {
+func (p *Peers) monitoring() {
 	t := time.NewTicker(time.Second * monitoringInterval)
 	defer t.Stop()
 
@@ -93,7 +108,26 @@ func (p *Peers) Monitoring() {
 	}
 }
 
-func (p *Peers) isAlive(peer *Peer) bool {
+func (p *Peers) getPeerLocal() {
+	t := time.NewTicker(time.Second * 120)
+	defer t.Stop()
+
+	for range t.C {
+		peers := p.PeersMap()
+		for id, peer := range peers {
+			if id != p.local.Address.ID.String() {
+				local, err := p.reqHandler.LocalInfo(peer.Conn)
+				if err != nil {
+					p.infoWm.Lock()
+					p.peerInfo[id] = local
+					p.infoWm.Unlock()
+				}
+			}
+		}
+	}
+}
+
+func (p *Peers) isAlive(peer *types.Peer) bool {
 	stream, err := peer.Conn.Create(peer.Address.ID)
 	if err != nil {
 		return false
@@ -103,7 +137,7 @@ func (p *Peers) isAlive(peer *Peer) bool {
 	return true
 }
 
-func (p *Peers) RandomPeer() *Peer {
+func (p *Peers) RandomPeer() *types.Peer {
 	p.rwm.Lock()
 	defer p.rwm.Unlock()
 
@@ -115,20 +149,31 @@ func (p *Peers) RandomPeer() *Peer {
 	return p.cache[peerId]
 }
 
-func (p *Peers) Local() *Peer {
+func (p *Peers) Local() *types.Peer {
 	return p.local
 }
 
-func (p *Peers) SetLocal(local *Peer) {
+func (p *Peers) SetLocal(local *types.Peer) {
 	p.local = local
 }
 
-func (p *Peers) PeersMap() map[string]*Peer {
+func (p *Peers) PeersMap() map[string]*types.Peer {
 	p.rwm.RLock()
 	defer p.rwm.RUnlock()
 
-	re := make(map[string]*Peer)
+	re := make(map[string]*types.Peer)
 	for key, value := range p.cache {
+		re[key] = value
+	}
+	return re
+}
+
+func (p *Peers) PeersInfo() map[string]*types.Local {
+	p.infoWm.RLock()
+	defer p.infoWm.RUnlock()
+
+	re := make(map[string]*types.Local)
+	for key, value := range p.peerInfo {
 		re[key] = value
 	}
 	return re
@@ -142,7 +187,7 @@ func (p *Peers) Count() uint32 {
 	return count
 }
 
-func (p *Peers) Peer(id string) *Peer {
+func (p *Peers) Peer(id string) *types.Peer {
 	p.rwm.RLock()
 	defer p.rwm.RUnlock()
 

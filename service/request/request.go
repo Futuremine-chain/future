@@ -3,7 +3,6 @@ package request
 import (
 	"errors"
 	"github.com/Futuremine-chain/futuremine/server"
-	"github.com/Futuremine-chain/futuremine/service/peers"
 	"github.com/Futuremine-chain/futuremine/types"
 	"github.com/libp2p/go-libp2p-core/network"
 )
@@ -21,12 +20,13 @@ type IRequestHandler interface {
 }
 
 type ISend interface {
-	LastHeight(conn *peers.Conn) (uint64, error)
-	SendMsg(conn *peers.Conn, msg types.IMessage) error
-	SendBlock(conn *peers.Conn, block types.IBlock) error
-	GetBlocks(conn *peers.Conn, height uint64) ([]types.IBlock, error)
-	GetBlock(conn *peers.Conn, height uint64) (types.IBlock, error)
-	IsEqual(conn *peers.Conn, header types.IHeader) (bool, error)
+	LastHeight(conn *types.Conn) (uint64, error)
+	SendMsg(conn *types.Conn, msg types.IMessage) error
+	SendBlock(conn *types.Conn, block types.IBlock) error
+	GetBlocks(conn *types.Conn, height uint64) ([]types.IBlock, error)
+	GetBlock(conn *types.Conn, height uint64) (types.IBlock, error)
+	IsEqual(conn *types.Conn, header types.IHeader) (bool, error)
+	LocalInfo(conn *types.Conn) (*types.Local, error)
 }
 
 type IRegister interface {

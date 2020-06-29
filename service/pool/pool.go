@@ -57,6 +57,12 @@ func (p *Pool) Stop() error {
 	return nil
 }
 
+func (p *Pool) Info() map[string]interface{} {
+	return map[string]interface{}{
+		"messages": p.msgMgt.Count(),
+	}
+}
+
 // Verify adding messages to the message pool
 func (p *Pool) Put(msg types.IMessage, isPeer bool) error {
 	if err := p.msgMgt.Put(msg); err != nil {

@@ -3,7 +3,6 @@ package request
 import (
 	"fmt"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/service/peers"
 	request2 "github.com/Futuremine-chain/futuremine/service/request"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -18,9 +17,10 @@ var (
 	getBlocks  = Method("getBlocks")
 	getBlock   = Method("getBlock")
 	isEqual    = Method("isEqual")
+	localInfo  = Method("localInfo")
 )
 
-func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
+func (r *RequestHandler) LastHeight(conn *types.Conn) (uint64, error) {
 	var height uint64 = 0
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
@@ -50,7 +50,7 @@ func (r *RequestHandler) LastHeight(conn *peers.Conn) (uint64, error) {
 	return height, nil
 }
 
-func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
+func (r *RequestHandler) SendMsg(conn *types.Conn, msg types.IMessage) error {
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (r *RequestHandler) SendMsg(conn *peers.Conn, msg types.IMessage) error {
 	}
 }
 
-func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
+func (r *RequestHandler) SendBlock(conn *types.Conn, block types.IBlock) error {
 	s, err := conn.Create(conn.PeerId)
 	fmt.Println("send block", conn.PeerId)
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *RequestHandler) SendBlock(conn *peers.Conn, block types.IBlock) error {
 	}
 }
 
-func (r *RequestHandler) GetBlocks(conn *peers.Conn, height uint64) ([]types.IBlock, error) {
+func (r *RequestHandler) GetBlocks(conn *types.Conn, height uint64) ([]types.IBlock, error) {
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func (r *RequestHandler) GetBlocks(conn *peers.Conn, height uint64) ([]types.IBl
 	}
 }
 
-func (r *RequestHandler) GetBlock(conn *peers.Conn, height uint64) (types.IBlock, error) {
+func (r *RequestHandler) GetBlock(conn *types.Conn, height uint64) (types.IBlock, error) {
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return nil, err
@@ -172,7 +172,7 @@ func (r *RequestHandler) GetBlock(conn *peers.Conn, height uint64) (types.IBlock
 	}
 }
 
-func (r *RequestHandler) IsEqual(conn *peers.Conn, header types.IHeader) (bool, error) {
+func (r *RequestHandler) IsEqual(conn *types.Conn, header types.IHeader) (bool, error) {
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return false, err
@@ -196,6 +196,34 @@ func (r *RequestHandler) IsEqual(conn *peers.Conn, header types.IHeader) (bool, 
 		}
 	} else {
 		return false, fmt.Errorf("peer error: %v", err)
+	}
+	return rs, nil
+}
+
+func (r *RequestHandler) LocalInfo(conn *types.Conn) (*types.Local, error) {
+	s, err := conn.Create(conn.PeerId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		s.Reset()
+		s.Close()
+	}()
+
+	s.SetDeadline(time.Unix(time.Now().Unix()+timeOut, 0))
+
+	request := NewRequest(localInfo, nil)
+	err = requestStream(request, s)
+	response, err := r.UnmarshalResponse(s)
+	var rs *types.Local
+	if response != nil && response.Code == Success {
+		err := rlp.DecodeBytes(response.Body, &rs)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, fmt.Errorf("peer error: %v", err)
 	}
 	return rs, nil
 }

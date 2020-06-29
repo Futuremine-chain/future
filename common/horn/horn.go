@@ -13,7 +13,7 @@ const module = "horn"
 type Horn struct {
 	peers   *peers.Peers
 	request request.IRequestHandler
-	local   *peers.Peer
+	local   *types.Peer
 	gPool   *gorutinue.Pool
 }
 
