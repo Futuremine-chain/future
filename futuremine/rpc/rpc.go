@@ -162,7 +162,35 @@ func (r *Rpc) GetMessage(ctx context.Context, req *Request) (*Response, error) {
 		return NewResponse(Success, bytes, ""), nil
 	}
 }
-func (r *Rpc) GetBlockHash(context.Context, *Request) (*Response, error)   { return nil, nil }
+func (r *Rpc) GetBlockHash(ctx context.Context, req *Request) (*Response, error) {
+	params := make([]interface{}, 0)
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	if len(params) < 1 {
+		return NewResponse(Err_Params, nil, "no hash"), nil
+	}
+	if hashStr, ok := params[0].(string); !ok {
+		return NewResponse(Err_Params, nil, "only string hash is allowed"), nil
+	} else {
+		hash, err := arry.StringToHash(hashStr)
+		if err != nil {
+			return NewResponse(Err_Params, nil, "wrong hash"), nil
+		}
+		block, err := r.chain.GetBlockHash(hash)
+		if err != nil {
+			return NewResponse(Err_Chain, nil, err.Error()), nil
+		}
+		rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
+		if err != nil {
+			return NewResponse(Err_Chain, nil, err.Error()), nil
+		}
+		bytes, _ := json.Marshal(rpcBlock)
+		return NewResponse(Success, bytes, ""), nil
+	}
+	return nil, nil
+}
+
 func (r *Rpc) GetBlockHeight(context.Context, *Request) (*Response, error) { return nil, nil }
 func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error)     { return nil, nil }
 func (r *Rpc) Confirmed(context.Context, *Request) (*Response, error)      { return nil, nil }

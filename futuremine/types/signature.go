@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/hex"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
@@ -20,6 +21,14 @@ func (s *Signature) PubicKey() []byte {
 
 func (s *Signature) SignatureBytes() []byte {
 	return s.Bytes
+}
+
+func (s *Signature) SignatureString() string {
+	return hex.EncodeToString(s.Bytes)
+}
+
+func (s *Signature) PubKeyString() string {
+	return hex.EncodeToString(s.PubKey)
 }
 
 // Sign the hash with the private key
