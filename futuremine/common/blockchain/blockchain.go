@@ -41,7 +41,9 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	fmc.actRoot, _ = fmc.db.ActRoot()
 	fmc.dPosRoot, _ = fmc.db.DPosRoot()
 	fmc.tokenRoot, _ = fmc.db.TokenRoot()
-
+	fmt.Println(fmc.actRoot.String())
+	fmt.Println(fmc.dPosRoot.String())
+	fmt.Println(fmc.tokenRoot.String())
 	// Initializes the state root hash
 	if err := fmc.status.InitRoots(fmc.actRoot, fmc.dPosRoot, fmc.tokenRoot); err != nil {
 		return nil, fmt.Errorf("failed to init status root, %s", err.Error())
@@ -260,7 +262,6 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 }
 
 func (b *FMCChain) saveBlock(block types.IBlock) {
-
 	bk := block.(*fmctypes.Block)
 	rlpBlock := bk.ToRlpBlock().(*fmctypes.RlpBlock)
 	b.db.SaveHeader(bk.Header)
@@ -276,9 +277,9 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	fmt.Println(b.actRoot.String())
 	fmt.Println(b.dPosRoot.String())
 	fmt.Println(b.tokenRoot.String())
+
 	b.lastHeight = block.GetHeight()
 	b.db.SaveLastHeight(b.lastHeight)
-
 	log.Info("Save block", "module", "module",
 		"height", block.GetHeight(),
 		"hash", block.GetHash().String(),

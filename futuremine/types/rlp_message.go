@@ -43,6 +43,11 @@ func (r *RlpMessage) Bytes() []byte {
 	return bytes
 }
 
-func DecodeMessage([]byte) (*RlpMessage, error) {
-	return nil, nil
+func DecodeMessage(bytes []byte) (*RlpMessage, error) {
+	var msg *RlpMessage
+	err := rlp.DecodeBytes(bytes, &msg)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
 }

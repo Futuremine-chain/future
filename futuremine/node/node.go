@@ -20,7 +20,6 @@ func NewFMCNode() *FMCNode {
 }
 
 func (fmc *FMCNode) Start() error {
-
 	if err := fmc.startServices(); err != nil {
 		return err
 	}
@@ -33,6 +32,7 @@ func (fmc *FMCNode) Stop() error {
 			log.Error("Service failed to stop", "module", module, "service", s.Name(), "error", err.Error())
 		}
 	}
+
 	return nil
 }
 

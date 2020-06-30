@@ -144,6 +144,9 @@ func (d *DPos) SuperIds() []string {
 }
 
 func (d *DPos) Confirmed() uint64 {
+	if d.confirmed == 0 {
+		d.confirmed, _ = d.cycle.DPosStatus.Confirmed()
+	}
 	return d.confirmed
 }
 

@@ -2,6 +2,7 @@ package act_status
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/status/act_db"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
@@ -91,7 +92,7 @@ func (a *ActStatus) ToMessage(msg types.IMessage, height uint64) error {
 	defer a.mutex.Unlock()
 
 	var toAct types.IAccount
-
+	fmt.Println("a.confirmed=", a.confirmed)
 	toAct = a.db.Account(msg.MsgBody().MsgTo())
 	err := toAct.UpdateLocked(a.confirmed)
 	if err != nil {

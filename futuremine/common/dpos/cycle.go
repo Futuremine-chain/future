@@ -23,11 +23,11 @@ type Cycle struct {
 func (c *Cycle) CheckCycle(chain blockchain.IChain, preTime, time uint64) error {
 	currentTerm := time / param.CycleInterval
 
-	supers, _ := c.DPosStatus.CycleSupers(currentTerm)
-	if supers != nil && supers.Len() != 0 {
-		return Err_Elected
+	_, err := c.DPosStatus.CycleSupers(currentTerm)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return Err_Elected
 }
 
 func (c *Cycle) Elect(time uint64, preHash arry.Hash, chain blockchain.IChain) error {

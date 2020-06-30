@@ -35,8 +35,9 @@ func (r *RequestHandler) respSendMsg(req *ReqStream) (*Response, error) {
 	if err != nil {
 		code = Failed
 		message = err.Error()
+	} else {
+		r.receiveMessage(msg.ToMessage())
 	}
-	r.receiveMessage(msg.ToMessage())
 	response := NewResponse(code, message, body)
 	return response, nil
 }

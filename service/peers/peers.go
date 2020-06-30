@@ -31,6 +31,7 @@ func NewPeers(reqHandler request2.IRequestHandler) *Peers {
 	return &Peers{
 		cache:      make(map[string]*types.Peer, maxPeers),
 		close:      make(chan bool),
+		peerInfo:   make(map[string]*types.Local),
 		reqHandler: reqHandler,
 	}
 }

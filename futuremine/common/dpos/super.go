@@ -10,18 +10,18 @@ import (
 var genesisSuperList = types.Candidates{
 	Members: []*types.Member{
 		&types.Member{
-			Signer: arry.StringToAddress("xC8RqvGNhQ8sEpKrBHqnxJQh2rrtiJCXZrH"),
-			PeerId: "16Uiu2HAm2YzMYX2Uw3aWGkKxsv7uLsRD7nnMkr4JWeGh79Q8b7tn",
+			Signer: arry.StringToAddress("xCJkBm6ZZRMBEZiXbWbk8HCaR4mxz1oJxoH"),
+			PeerId: "16Uiu2HAm89g96hN3TYiKnY2Vyf6XVyxsJQRwQyep659AeFW2xYTT",
 			Weight: 0,
 		},
 		&types.Member{
-			Signer: arry.StringToAddress("xBx2VZpE5RdC7cVfMgPet7rtWcmvtfRu7vH"),
-			PeerId: "16Uiu2HAmBmDihnWL2XkrrQoGgHRfxWuACczXUWgL7o9FGwPQzF1q",
+			Signer: arry.StringToAddress("xCGEcommDH2N8Ev9pGxiWmyDVf9qkAHXqps"),
+			PeerId: "16Uiu2HAmPqPQg98uYn3PJbfARj4PUJBboWpg3jeTJSZA6teGvV1H",
 			Weight: 0,
 		},
 		&types.Member{
-			Signer: arry.StringToAddress("xC3iVTuN6uupTwTZa2mFfHLiYKvGiQubiQA"),
-			PeerId: "16Uiu2HAmNudiRRgeFcoN9nT2Q5YoHatrhTBiPiMGm5y9UGPjqYaU",
+			Signer: arry.StringToAddress("xCBV6JvhbpjBdbwDVvuA9C26iyVqY13TWeS"),
+			PeerId: "16Uiu2HAmBgafEgfCW4nqjLDg8eWjEFHhbpEFdM4j4jaj9nYDtrmr",
 			Weight: 0,
 		},
 	},
