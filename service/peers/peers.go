@@ -97,12 +97,14 @@ func (p *Peers) RemovePeer(reId string) {
 func (p *Peers) monitoring() {
 	t := time.NewTicker(time.Second * monitoringInterval)
 	defer t.Stop()
-
-	for range t.C {
-		for id, peer := range p.cache {
-			if id != p.local.Address.ID.String() {
-				if !p.isAlive(peer) {
-					p.RemovePeer(id)
+	for {
+		select {
+		case _ = <-t.C:
+			for id, peer := range p.cache {
+				if id != p.local.Address.ID.String() {
+					if !p.isAlive(peer) {
+						p.RemovePeer(id)
+					}
 				}
 			}
 		}
@@ -110,18 +112,21 @@ func (p *Peers) monitoring() {
 }
 
 func (p *Peers) getPeerLocal() {
-	t := time.NewTicker(time.Second * 120)
+	t := time.NewTicker(time.Second * 180)
 	defer t.Stop()
 
-	for range t.C {
-		peers := p.PeersMap()
-		for id, peer := range peers {
-			if id != p.local.Address.ID.String() {
-				local, err := p.reqHandler.LocalInfo(peer.Conn)
-				if err != nil {
-					p.infoWm.Lock()
-					p.peerInfo[id] = local
-					p.infoWm.Unlock()
+	for {
+		select {
+		case _ = <-t.C:
+			peers := p.PeersMap()
+			for id, peer := range peers {
+				if id != p.local.Address.ID.String() {
+					local, err := p.reqHandler.LocalInfo(peer.Conn)
+					if err == nil {
+						p.infoWm.Lock()
+						p.peerInfo[id] = local
+						p.infoWm.Unlock()
+					}
 				}
 			}
 		}
@@ -169,13 +174,15 @@ func (p *Peers) PeersMap() map[string]*types.Peer {
 	return re
 }
 
-func (p *Peers) PeersInfo() map[string]*types.Local {
+func (p *Peers) PeersInfo() []*types.Local {
 	p.infoWm.RLock()
 	defer p.infoWm.RUnlock()
 
-	re := make(map[string]*types.Local)
-	for key, value := range p.peerInfo {
-		re[key] = value
+	re := make([]*types.Local, len(p.peerInfo))
+	i := 0
+	for _, value := range p.peerInfo {
+		re[i] = value
+		i++
 	}
 	return re
 }

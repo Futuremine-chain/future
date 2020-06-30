@@ -2,6 +2,8 @@ package node
 
 import (
 	"encoding/json"
+	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/server"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -48,6 +50,8 @@ func (fmc *FMCNode) LocalInfo() *types.Local {
 			all[name] = value
 		}
 	}
+	all["version"] = param.Version
+	all["network"] = config.Param.Name
 	bytes, err := json.Marshal(all)
 	if err != nil {
 		return &types.Local{}

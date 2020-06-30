@@ -11,6 +11,8 @@ type Local struct {
 	Address string `json:"address"`
 	// Linked node
 	Connections uint32 `json:"connections"`
+	// Pool message
+	Messages uint32 `json:"messages"`
 	// Current block height
 	Height uint64 `json:"height"`
 	// Current effective block height
