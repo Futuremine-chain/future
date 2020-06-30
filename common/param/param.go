@@ -52,8 +52,8 @@ type Param struct {
 type TokenParam struct {
 	CoinBase     uint64
 	Proportion   uint64
-	MinCoinCount uint64
-	MaxCoinCount uint64
+	MinCoinCount float64
+	MaxCoinCount float64
 	MainToken    arry.Address
 }
 
@@ -111,7 +111,7 @@ var TestNetParam = &Param{
 		CoinBase:     10 * 1e8,
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 1 * 1e10 * 1e8,
+		MaxCoinCount: 1 * 1e10,
 		MainToken:    arry.StringToAddress("FMC"),
 	},
 	P2pParam: &P2pParam{
@@ -161,7 +161,7 @@ var MainNetParam = &Param{
 		CoinBase:     10 * 1e8,
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 1 * 1e10 * 1e8,
+		MaxCoinCount: 1 * 1e10,
 		MainToken:    arry.StringToAddress("FMC"),
 	},
 	P2pParam: &P2pParam{

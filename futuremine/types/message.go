@@ -78,7 +78,7 @@ func (m *Message) Check() error {
 		return err
 	}
 
-	if err := m.Body.CheckBody(); err != nil {
+	if err := m.Body.CheckBody(m.From()); err != nil {
 		return err
 	}
 	return nil

@@ -20,6 +20,11 @@ func CalConsumption(amount uint64, proportion uint64) uint64 {
 	return amount / proportion
 }
 
+func GenerateMainAddress(net string) arry.Address {
+	addr, _ := GenerateTokenAddress(net, arry.StringToAddress(""), "FMC")
+	return addr
+}
+
 func GenerateTokenAddress(net string, address arry.Address, shorthand string) (arry.Address, error) {
 	ver := []byte{}
 	switch net {
@@ -54,7 +59,7 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	return arry.StringToAddress(code58), nil
 }
 
-func CheckTokenAddress(net string, address arry.Address, shorthand string) bool {
+func CheckTokenAddress(net string, address arry.Address) bool {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:

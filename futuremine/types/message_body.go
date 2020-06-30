@@ -2,12 +2,17 @@ package types
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/math"
 )
 
-const PeerLength = 53
+const (
+	PeerLength = 53
+	MaxName    = 100
+)
 
 type Peer [PeerLength]byte
 
@@ -29,7 +34,15 @@ func (t *TransactionBody) MsgTo() arry.Address {
 	return t.Receiver
 }
 
-func (t *TransactionBody) CheckBody() error {
+func (t *TransactionBody) CheckBody(from arry.Address) error {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+		return errors.New("receive address verification failed")
+	}
+	if !t.TokenAddress.IsEqual(config.Param.MainToken) {
+		if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress) {
+			return errors.New("token address verification failed")
+		}
+	}
 	return nil
 }
 
@@ -53,8 +66,33 @@ func (t *TokenBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
 
-func (t *TokenBody) CheckBody() error {
-
+func (t *TokenBody) CheckBody(from arry.Address) error {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+		return errors.New("receive address verification failed")
+	}
+	if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress) {
+		return errors.New("token address verification failed")
+	}
+	toKenAddr, err := kit.GenerateTokenAddress(config.Param.Name, from, t.Shorthand)
+	if err != nil {
+		return errors.New("token address verification failed")
+	}
+	if !toKenAddr.IsEqual(t.TokenAddress) {
+		return errors.New("token address verification failed")
+	}
+	if err := kit.CheckShorthand(t.Shorthand); err != nil {
+		return fmt.Errorf("shorthand verification failed, %s", err.Error())
+	}
+	if len(t.Name) > MaxName {
+		return fmt.Errorf("the maximum length of the token name is %d", MaxName)
+	}
+	if t.Amount > math.MaxInt64 {
+		return fmt.Errorf("amount cannot be greater than %d", math.MaxInt64)
+	}
+	fAmount := Amount(t.Amount).ToCoin()
+	if fAmount < config.Param.MinCoinCount || fAmount > config.Param.MaxCoinCount {
+		return fmt.Errorf("the quantity of coins must be between %f and %f", config.Param.MinCoinCount, config.Param.MaxCoinCount)
+	}
 	return nil
 }
 
@@ -74,7 +112,7 @@ func (c *CandidateBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
 
-func (c *CandidateBody) CheckBody() error {
+func (c *CandidateBody) CheckBody(from arry.Address) error {
 	return nil
 }
 
@@ -93,7 +131,7 @@ func (c *CancelBody) MsgTo() arry.Address {
 	return arry.Address{}
 }
 
-func (c *CancelBody) CheckBody() error {
+func (c *CancelBody) CheckBody(from arry.Address) error {
 	return nil
 }
 
@@ -113,7 +151,7 @@ func (v *VoteBody) MsgTo() arry.Address {
 	return v.To
 }
 
-func (v *VoteBody) CheckBody() error {
+func (v *VoteBody) CheckBody(from arry.Address) error {
 	if !kit.CheckAddress(config.Param.Name, v.To) {
 		return errors.New("wrong to address")
 	}
