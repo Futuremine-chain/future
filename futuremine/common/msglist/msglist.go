@@ -39,15 +39,16 @@ func (t *MsgManagement) Read() error {
 	msgs := t.msgDB.Read()
 	if msgs != nil {
 		for _, msg := range msgs {
-			t.Put(msg)
+			if err := t.Put(msg); err != nil {
+				t.msgDB.Delete(msg)
+			}
 		}
 	}
 	return nil
 }
 
 func (t *MsgManagement) Close() error {
-	t.msgDB.Close()
-	return nil
+	return t.msgDB.Close()
 }
 
 func (t *MsgManagement) Count() int {
@@ -94,8 +95,9 @@ func (t *MsgManagement) put(msg types.IMessage) error {
 	} else if nonce >= msg.Nonce() {
 		return fmt.Errorf("the nonce value %d is repeated, increase the nonce value", msg.Nonce())
 	} else {
-		return t.cache.Put(msg)
+		t.cache.Put(msg)
 	}
+	t.msgDB.Save(msg)
 	return nil
 }
 
@@ -103,7 +105,7 @@ func (t *MsgManagement) Delete(msg types.IMessage) {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-	t.Remove(msg)
+	t.remove(msg)
 	t.update()
 }
 
@@ -174,10 +176,7 @@ func (t *MsgManagement) DeleteExpired(timeThreshold int64) {
 	}
 }
 
-func (t *MsgManagement) Remove(msg types.IMessage) {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-
+func (t *MsgManagement) remove(msg types.IMessage) {
 	t.cache.Remove(msg)
 	t.ready.Remove(msg)
 }

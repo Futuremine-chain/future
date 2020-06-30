@@ -10,7 +10,7 @@ type TxPool struct {
 	ReadyCount int           `json:"ready"`
 	CacheCount int           `json:"cache"`
 	ReadyMsgs  []*RpcMessage `json:"readymsgs"`
-	cacheMsgs  []*RpcMessage `json:"cachemsgs"`
+	CacheMsgs  []*RpcMessage `json:"cachemsgs"`
 }
 
 func MsgsToRpcMsgsPool(readyMsgs []types.IMessage, cacheMsgs []types.IMessage) *TxPool {
@@ -33,6 +33,6 @@ func MsgsToRpcMsgsPool(readyMsgs []types.IMessage, cacheMsgs []types.IMessage) *
 		ReadyCount: readyCount,
 		CacheCount: cacheCount,
 		ReadyMsgs:  readyRpcMsgs,
-		cacheMsgs:  cacheRpcMsgs,
+		CacheMsgs:  cacheRpcMsgs,
 	}
 }

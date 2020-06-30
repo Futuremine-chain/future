@@ -93,7 +93,7 @@ func (s *Sync) createSyncStream() {
 
 // Replace the new peer node
 func (s *Sync) findSyncPeer() {
-	t := time.NewTicker(time.Second * 10)
+	t := time.NewTicker(time.Microsecond)
 	defer t.Stop()
 
 	for {
@@ -228,7 +228,7 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 			log.Warn("Failed to insert received block", "err", err, "height", block.GetHeight(), "singer", block.GetSigner().String())
 			return err
 		}
-		log.Info("received block inset success", "module", module, "height", block.GetHeight(), "signer", block.GetSigner())
+		log.Info("received block insert success", "module", module, "height", block.GetHeight(), "signer", block.GetSigner())
 	} else if block.GetHeight() <= localHeight {
 		if localHeader, err := s.chain.GetBlockHeight(block.GetHeight()); err == nil {
 			if !localHeader.GetHash().IsEqual(block.GetHash()) {
