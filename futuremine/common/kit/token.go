@@ -1,5 +1,16 @@
 package kit
 
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
+	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
+	"unicode"
+)
+
 func CalConsumption(amount uint64, proportion uint64) uint64 {
 	if float64(amount)/float64(proportion) < 1 {
 		return 1
@@ -7,4 +18,85 @@ func CalConsumption(amount uint64, proportion uint64) uint64 {
 		return amount/proportion + 1
 	}
 	return amount / proportion
+}
+
+func GenerateTokenAddress(net string, address arry.Address, shorthand string) (arry.Address, error) {
+	ver := []byte{}
+	switch net {
+	case param.MainNet:
+		ver = append(ver, param.MainNetParam.PubKeyHashTokenID[0:]...)
+	case param.TestNet:
+		ver = append(ver, param.TestNetParam.PubKeyHashTokenID[0:]...)
+	default:
+		return arry.Address{}, errors.New("wrong network")
+	}
+	if err := CheckShorthand(shorthand); err != nil {
+		return arry.Address{}, err
+	}
+	if !CheckAddress(net, address) {
+		return arry.Address{}, errors.New("incorrect address")
+	}
+	addrBytes := base58.Decode(address.String())
+	buffBytes := append(addrBytes, []byte(shorthand)...)
+	hashed := hash.Hash(buffBytes)
+	hash160, err := hash.Hash160(hashed.Bytes())
+	if err != nil {
+		return arry.Address{}, err
+	}
+
+	addNet := append(ver, hash160...)
+	hashed1 := hash.Hash(addNet)
+	hashed2 := hash.Hash(hashed1.Bytes())
+	checkSum := hashed2[0:4]
+	hashedCheck1 := append(addNet, checkSum...)
+	code58 := base58.Encode(hashedCheck1)
+	fmt.Println(len(code58))
+	return arry.StringToAddress(code58), nil
+}
+
+func CheckTokenAddress(net string, address arry.Address, shorthand string) bool {
+	ver := []byte{}
+	switch net {
+	case param.MainNet:
+		ver = append(ver, param.MainNetParam.PubKeyHashTokenID[0:]...)
+	case param.TestNet:
+		ver = append(ver, param.TestNetParam.PubKeyHashTokenID[0:]...)
+	default:
+		return false
+	}
+	addr := address.String()
+	if len(addr) != addressLength {
+		return false
+	}
+	addrBytes := base58.Decode(addr)
+	if len(addrBytes) != addressBytesLength {
+		return false
+	}
+	checkSum := addrBytes[len(addrBytes)-4:]
+	checkBytes := addrBytes[0 : len(addrBytes)-4]
+	checkBytesHashed1 := hash.Hash(checkBytes)
+	checkBytesHashed2 := hash.Hash(checkBytesHashed1.Bytes())
+	netBytes := checkBytes[0:2]
+	if bytes.Compare(ver, netBytes) != 0 {
+		return false
+	}
+	return bytes.Compare(checkSum, checkBytesHashed2[0:4]) == 0
+}
+
+// Check the secondary account name, it must be letters,
+// all uppercase or all lowercase, no more than 10
+// characters and no less than 2.
+func CheckShorthand(shorthand string) error {
+	if len(shorthand) < 2 || len(shorthand) > 10 {
+		return errors.New("the shorthand length must be in the range of 2 and 10")
+	}
+	for _, c := range shorthand {
+		if !unicode.IsLetter(c) {
+			return errors.New("shorthand must be letter")
+		}
+		if !unicode.IsUpper(c) {
+			return errors.New("shorthand must be upper")
+		}
+	}
+	return nil
 }

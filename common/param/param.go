@@ -32,13 +32,14 @@ const (
 )
 
 type Param struct {
-	Name             string
-	Data             string
-	App              string
-	FallBack         int64
-	PubKeyHashAddrID [2]byte
-	Logging          bool
-	PeerRequestChan  uint32
+	Name              string
+	Data              string
+	App               string
+	FallBack          int64
+	PubKeyHashAddrID  [2]byte
+	PubKeyHashTokenID [2]byte
+	Logging           bool
+	PeerRequestChan   uint32
 	*PrivateParam
 	*TokenParam
 	*P2pParam
@@ -94,13 +95,14 @@ type PoolParam struct {
 }
 
 var TestNetParam = &Param{
-	Name:             TestNet,
-	Data:             "data",
-	App:              "future-mine-chain",
-	FallBack:         -1,
-	PubKeyHashAddrID: [2]byte{0x1f, 0x13},
-	Logging:          true,
-	PeerRequestChan:  1000,
+	Name:              TestNet,
+	Data:              "data",
+	App:               "future-mine-chain",
+	FallBack:          -1,
+	PubKeyHashAddrID:  [2]byte{0x1f, 0x13},
+	PubKeyHashTokenID: [2]byte{0x0f, 0x03},
+	Logging:           true,
+	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
 		PrivatePass: "fmc",
@@ -143,13 +145,14 @@ var TestNetParam = &Param{
 }
 
 var MainNetParam = &Param{
-	Name:             MainNet,
-	Data:             "data",
-	App:              "future-mine-chain",
-	FallBack:         -1,
-	PubKeyHashAddrID: [2]byte{0xd, 0x15},
-	Logging:          true,
-	PeerRequestChan:  1000,
+	Name:              MainNet,
+	Data:              "data",
+	App:               "future-mine-chain",
+	FallBack:          -1,
+	PubKeyHashAddrID:  [2]byte{0x1e, 0x12},
+	PubKeyHashTokenID: [2]byte{0x0e, 0x02},
+	Logging:           true,
+	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
 		PrivatePass: "fmc",

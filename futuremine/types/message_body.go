@@ -54,6 +54,7 @@ func (t *TokenBody) MsgTo() arry.Address {
 }
 
 func (t *TokenBody) CheckBody() error {
+
 	return nil
 }
 

@@ -30,7 +30,7 @@ func NewTransaction(from, to, token arry.Address, amount, fee, nonce uint64) *ty
 func NewCandidate(from arry.Address, peerStr string, fee, nonce uint64) *types.Message {
 	var peerID types.Peer
 	copy(peerID[:], peerStr)
-	tx := &types.Message{
+	can := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Candidate,
 			Hash:      arry.Hash{},
@@ -42,12 +42,12 @@ func NewCandidate(from arry.Address, peerStr string, fee, nonce uint64) *types.M
 		},
 		Body: &types.CandidateBody{peerID},
 	}
-	tx.SetHash()
-	return tx
+	can.SetHash()
+	return can
 }
 
 func NewCancel(from arry.Address, fee, nonce uint64) *types.Message {
-	tx := &types.Message{
+	cancel := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Cancel,
 			Hash:      arry.Hash{},
@@ -59,12 +59,12 @@ func NewCancel(from arry.Address, fee, nonce uint64) *types.Message {
 		},
 		Body: &types.CandidateBody{},
 	}
-	tx.SetHash()
-	return tx
+	cancel.SetHash()
+	return cancel
 }
 
 func NewVote(from, to arry.Address, fee, nonce uint64) *types.Message {
-	tx := &types.Message{
+	vote := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Vote,
 			Hash:      arry.Hash{},
@@ -76,6 +76,29 @@ func NewVote(from, to arry.Address, fee, nonce uint64) *types.Message {
 		},
 		Body: &types.VoteBody{to},
 	}
-	tx.SetHash()
-	return tx
+	vote.SetHash()
+	return vote
+}
+
+func NewToken(from, to, tokenAddr arry.Address, amount, fee, nonce uint64, name, shorthand string) *types.Message {
+	token := &types.Message{
+		Header: &types.MsgHeader{
+			Type:      types.Token,
+			Hash:      arry.Hash{},
+			From:      from,
+			Nonce:     nonce,
+			Fee:       fee,
+			Time:      uint64(time.Now().Unix()),
+			Signature: &types.Signature{},
+		},
+		Body: &types.TokenBody{
+			TokenAddress: tokenAddr,
+			Receiver:     to,
+			Name:         name,
+			Shorthand:    shorthand,
+			Amount:       amount,
+		},
+	}
+	token.SetHash()
+	return token
 }

@@ -79,12 +79,12 @@ func SendTransaction(cmd *cobra.Command, args []string) {
 	if tx.Header.Nonce == 0 {
 		tx.Header.Nonce = account.Nonce + 1
 	}
-	if !signMsg(cmd, tx, privKey.Private) {
+	if err := signMsg(tx, privKey.Private); err != nil {
 		log.Error(cmd.Use+" err: ", errors.New("signature failure"))
 		return
 	}
 
-	rs, err := sendMsg(cmd, tx)
+	rs, err := sendMsg(tx)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 	} else if rs.Code != 0 {
@@ -131,20 +131,19 @@ func parseTransaction(cmd *cobra.Command, args []string) (*types.Message, error)
 	return message.NewTransaction(from, to, token, amount, fee, nonce), nil
 }
 
-func signMsg(cmd *cobra.Command, tx *types.Message, key string) bool {
+func signMsg(msg *types.Message, key string) error {
+	msg.SetHash()
 	priv, err := secp256k1.ParseStringToPrivate(key)
 	if err != nil {
-		log.Error(cmd.Use+" err: ", errors.New("[key] wrong"))
-		return false
+		return errors.New("[key] wrong")
 	}
-	if err := tx.SignMessage(priv); err != nil {
-		log.Error(cmd.Use+" err: ", errors.New("sign failed"))
-		return false
+	if err := msg.SignMessage(priv); err != nil {
+		return errors.New("sign failed")
 	}
-	return true
+	return nil
 }
 
-func sendMsg(cmd *cobra.Command, msg *types.Message) (*rpc.Response, error) {
+func sendMsg(msg *types.Message) (*rpc.Response, error) {
 	rpcMsg, err := rpctypes.MsgToRpcMsg(msg)
 	if err != nil {
 		return nil, err
@@ -224,12 +223,12 @@ func SendCandidate(cmd *cobra.Command, args []string) {
 	if candidateMsg.Header.Nonce == 0 {
 		candidateMsg.Header.Nonce = account.Nonce + 1
 	}
-	if !signMsg(cmd, candidateMsg, privKey.String()) {
+	if err := signMsg(candidateMsg, privKey.String()); err != nil {
 		log.Error(cmd.Use+" err: ", errors.New("signature failure"))
 		return
 	}
 
-	rs, err := sendMsg(cmd, candidateMsg)
+	rs, err := sendMsg(candidateMsg)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 	} else if rs.Code != 0 {
@@ -301,7 +300,7 @@ func CancelCandidate(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	cancel, err := parseCancel(cmd, args)
+	cancel, err := parseCancel(args)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -314,12 +313,12 @@ func CancelCandidate(cmd *cobra.Command, args []string) {
 	if cancel.Header.Nonce == 0 {
 		cancel.Header.Nonce = account.Nonce + 1
 	}
-	if !signMsg(cmd, cancel, privKey.Private) {
+	if err := signMsg(cancel, privKey.Private); err != nil {
 		log.Error(cmd.Use+" err: ", errors.New("signature failure"))
 		return
 	}
 
-	rs, err := sendMsg(cmd, cancel)
+	rs, err := sendMsg(cancel)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 	} else if rs.Code != 0 {
@@ -330,7 +329,7 @@ func CancelCandidate(cmd *cobra.Command, args []string) {
 	}
 }
 
-func parseCancel(cmd *cobra.Command, args []string) (*types.Message, error) {
+func parseCancel(args []string) (*types.Message, error) {
 	var err error
 	var from arry.Address
 	var fee, nonce uint64
@@ -402,12 +401,12 @@ func Vote(cmd *cobra.Command, args []string) {
 	if vote.Header.Nonce == 0 {
 		vote.Header.Nonce = account.Nonce + 1
 	}
-	if !signMsg(cmd, vote, privKey.Private) {
+	if err := signMsg(vote, privKey.Private); err != nil {
 		log.Error(cmd.Use+" err: ", errors.New("signature failure"))
 		return
 	}
 
-	rs, err := sendMsg(cmd, vote)
+	rs, err := sendMsg(vote)
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 	} else if rs.Code != 0 {
