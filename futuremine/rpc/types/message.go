@@ -107,7 +107,7 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 		}
 		rpcMsg.TokenBody = &RpcTokenBody{
 			Address:   msg.Body.MsgToken().String(),
-			To:        msg.Body.MsgTo().String(),
+			Receiver:  msg.Body.MsgTo().String(),
 			Name:      body.Name,
 			Shorthand: body.Shorthand,
 			Amount:    msg.Body.MsgAmount(),
@@ -170,7 +170,7 @@ func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*fmctypes.TokenBody, error) {
 
 	return &fmctypes.TokenBody{
 		TokenAddress: arry.StringToAddress(rpcBody.Address),
-		Receiver:     arry.StringToAddress(rpcBody.To),
+		Receiver:     arry.StringToAddress(rpcBody.Receiver),
 		Name:         rpcBody.Name,
 		Shorthand:    rpcBody.Shorthand,
 		Amount:       rpcBody.Amount,

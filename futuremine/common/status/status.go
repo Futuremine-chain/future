@@ -136,5 +136,5 @@ func (f *FMCStatus) CycleSupers(cycle uint64) types.ICandidates {
 }
 
 func (f *FMCStatus) Token(address arry.Address) (types.IToken, error) {
-	return make([]types.IToken, 0)[0], nil
+	return f.tokenStatus.Token(address)
 }

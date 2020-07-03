@@ -288,7 +288,7 @@ func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
 		return NewResponse(Err_Params, nil, "token type error"), nil
 	} else {
 		iToken, err := r.status.Token(arry.StringToAddress(tokenStr))
-		if err == nil {
+		if err != nil {
 			return NewResponse(Err_Token, nil, fmt.Sprintf("token address %s is not exist", tokenStr)), nil
 		}
 		bytes, _ := json.Marshal(rpctypes.TokenToRpcToken(iToken.(*fmctypes.TokenRecord)))

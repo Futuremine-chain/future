@@ -44,11 +44,11 @@ func output(dataStr string) {
 }
 
 func outputRespError(cmdUser string, resp *rpc.Response) {
-	logrus.Error(cmdUser+" err code :%d, message :%s", resp.Code, resp.Err)
+	logrus.Errorf(cmdUser+" err code :%d, message :%s", resp.Code, resp.Err)
 }
 
 func outputError(cmdUser string, err error) {
-	logrus.Error(cmdUser+" %s", err.Error())
+	logrus.Errorf(cmdUser+" %s", err.Error())
 }
 
 func NewRpcClient() (*rpc.Client, error) {

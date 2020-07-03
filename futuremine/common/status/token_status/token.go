@@ -65,18 +65,21 @@ func (t *TokenStatus) UpdateToken(msg types.IMessage, height uint64) error {
 		return errors.New("wrong message type")
 	}
 	record := &fmctypes.Record{
-		Height:  height,
-		MsgHash: msg.Hash(),
-		Time:    msg.Time(),
-		Amount:  msgBody.MsgAmount(),
+		Height:   height,
+		MsgHash:  msg.Hash(),
+		Receiver: msgBody.Receiver,
+		Time:     msg.Time(),
+		Amount:   msgBody.MsgAmount(),
 	}
 	tokenAddr := msgBody.TokenAddress
 	token := t.db.Token(tokenAddr)
 	if token != nil {
 		token.AddContract(record)
+		token.Name = msgBody.Name
 	} else {
 		token = &fmctypes.TokenRecord{
 			Address:   tokenAddr,
+			Sender:    msg.From(),
 			Name:      msgBody.Name,
 			Shorthand: msgBody.Shorthand,
 			Records: &fmctypes.RecordList{
@@ -86,4 +89,12 @@ func (t *TokenStatus) UpdateToken(msg types.IMessage, height uint64) error {
 	}
 	t.db.SetToken(token)
 	return nil
+}
+
+func (t *TokenStatus) Token(address arry.Address) (types.IToken, error) {
+	token := t.db.Token(address)
+	if token == nil {
+		return nil, errors.New("not found")
+	}
+	return token, nil
 }

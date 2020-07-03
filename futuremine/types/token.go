@@ -15,6 +15,7 @@ const MaxTokenCount = math.MaxInt64
 // name is equivalent to reissuing the pass
 type TokenRecord struct {
 	Address   arry.Address
+	Sender    arry.Address
 	Name      string
 	Shorthand string
 	Records   *RecordList
@@ -26,7 +27,7 @@ func NewToken() *TokenRecord {
 
 func DecodeToken(bytes []byte) (*TokenRecord, error) {
 	var token *TokenRecord
-	if err := rlp.DecodeBytes(bytes, token); err != nil {
+	if err := rlp.DecodeBytes(bytes, &token); err != nil {
 		return nil, err
 	}
 	return token, nil
@@ -48,8 +49,8 @@ func (t *TokenRecord) IsExist(msgHash arry.Hash) bool {
 
 func (t *TokenRecord) Check(msg types.IMessage) error {
 	body := msg.MsgBody().(*TokenBody)
-	if t.Name != body.Name {
-		return errors.New("token name is not consistent")
+	if t.Shorthand != body.Shorthand {
+		return errors.New("token shorthand is not consistent")
 	}
 	if !t.Address.IsEqual(body.TokenAddress) {
 		return errors.New("token address is not consistent")
@@ -85,10 +86,11 @@ func (t *TokenRecord) amount() uint64 {
 }
 
 type Record struct {
-	Height  uint64
-	MsgHash arry.Hash
-	Time    uint64
-	Amount  uint64
+	Height   uint64
+	MsgHash  arry.Hash
+	Receiver arry.Address
+	Time     uint64
+	Amount   uint64
 }
 
 type RecordList []*Record

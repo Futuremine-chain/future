@@ -13,7 +13,7 @@ type RpcBlock struct {
 func BlockToRpcBlock(block *fmctypes.Block, confirmed uint64) (*RpcBlock, error) {
 	rpcHeader := HeaderToRpcHeader(block.Header)
 	rpcBody, err := BodyToRpcBody(block.Body)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	return &RpcBlock{
