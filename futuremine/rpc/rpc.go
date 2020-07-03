@@ -251,7 +251,11 @@ func (r *Rpc) Candidates(context.Context, *Request) (*Response, error) {
 	if candidates == nil || candidates.Len() == 0 {
 		return NewResponse(Err_DPos, nil, "no candidates"), nil
 	}
-	bytes, _ := json.Marshal(rpctypes.CandidatesToRpcCandidates(candidates))
+	cas := candidates.(*fmctypes.Candidates)
+	for i, can := range cas.Members {
+		cas.Members[i].Weight = r.chain.Vote(can.Signer)
+	}
+	bytes, _ := json.Marshal(rpctypes.CandidatesToRpcCandidates(cas))
 	return NewResponse(Success, bytes, ""), nil
 }
 

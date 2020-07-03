@@ -86,12 +86,7 @@ func (d *DPosStatus) AddCandidate(msg types.IMessage) error {
 }
 
 func (d *DPosStatus) CancelCandidate(msg types.IMessage) error {
-	candidate := &fmctypes.Member{
-		Signer: msg.From(),
-		PeerId: "",
-		Weight: 0,
-	}
-	d.db.AddCandidate(candidate)
+	d.db.CancelCandidate(msg.From())
 	return nil
 }
 

@@ -57,7 +57,7 @@ func NewCancel(from arry.Address, fee, nonce uint64) *types.Message {
 			Time:      uint64(time.Now().Unix()),
 			Signature: &types.Signature{},
 		},
-		Body: &types.CandidateBody{},
+		Body: &types.CancelBody{},
 	}
 	cancel.SetHash()
 	return cancel

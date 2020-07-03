@@ -10,7 +10,7 @@ const (
 	// Block interval period
 	BlockInterval = uint64(5)
 	// Re-election interval
-	CycleInterval = 60 * 60 * 24
+	CycleInterval = 60 * 5
 	// Maximum number of super nodes
 	SuperSize = 3
 
