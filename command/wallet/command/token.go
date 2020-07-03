@@ -112,6 +112,7 @@ func parseToken(args []string) (*types.Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(kit.CheckTokenAddress(Net, tokenAddr))
 	fmt.Println("token address is ", tokenAddr.String())
 
 	if fFees, err := strconv.ParseFloat(args[5], 64); err != nil {

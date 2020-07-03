@@ -3,7 +3,6 @@ package kit
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
@@ -55,7 +54,6 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	checkSum := hashed2[0:4]
 	hashedCheck1 := append(addNet, checkSum...)
 	code58 := base58.Encode(hashedCheck1)
-	fmt.Println(len(code58))
 	return arry.StringToAddress(code58), nil
 }
 

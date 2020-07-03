@@ -84,14 +84,6 @@ func (m *Message) Check() error {
 	return nil
 }
 
-func (m *Message) CheckBody() error {
-	if m.Header == nil || m.Body == nil {
-		return errors.New("incomplete message")
-	}
-
-	return m.CheckBody()
-}
-
 func (m *Message) CheckCoinBase(fee uint64) error {
 	nTx := m.Body.(*TransactionBody)
 	sumAmount := config.Param.CoinBase + fee

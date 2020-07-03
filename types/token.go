@@ -10,5 +10,6 @@ type ITokenStatus interface {
 	TrieRoot() arry.Hash
 	CheckMessage(msg IMessage) error
 	UpdateToken(msg IMessage, height uint64) error
+
 	Commit() (arry.Hash, error)
 }

@@ -63,7 +63,7 @@ type TokenBody struct {
 }
 
 func (t *TokenBody) MsgTo() arry.Address {
-	return arry.Address{}
+	return t.Receiver
 }
 
 func (t *TokenBody) CheckBody(from arry.Address) error {

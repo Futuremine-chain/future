@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+const endFlag = "REQ%$#%END*&^FLAG"
+const endLength = len(endFlag)
+
 const module = "request"
 
 type request func(*ReqStream) (*Response, error)
@@ -139,10 +142,9 @@ func (r *RequestHandler) SendToReady(stream network.Stream) {
 
 // Read from request
 func (r *RequestHandler) UnmarshalRequest(stream network.Stream) (*Request, error) {
-	reBytes, err := r.read(stream)
+	reBytes, _ := r.read(stream)
 	request := &Request{}
-
-	err = json.Unmarshal(reBytes, request)
+	err := json.Unmarshal(reBytes, request)
 	if err != nil {
 		return nil, err
 	}
@@ -151,14 +153,10 @@ func (r *RequestHandler) UnmarshalRequest(stream network.Stream) (*Request, erro
 
 // Read from response
 func (r *RequestHandler) UnmarshalResponse(stream network.Stream) (*Response, error) {
-	reBytes, err := r.read(stream)
-	if err != nil {
-		fmt.Println("UnmarshalResponse", err)
-		return nil, err
-	}
-	resp := &Response{}
+	reBytes, _ := r.read(stream)
 
-	err = json.Unmarshal(reBytes, resp)
+	resp := &Response{}
+	err := json.Unmarshal(reBytes, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -167,28 +165,33 @@ func (r *RequestHandler) UnmarshalResponse(stream network.Stream) (*Response, er
 
 // Read message bytes
 func (rm *RequestHandler) read(stream network.Stream) ([]byte, error) {
+	arry := rm.bytesPool.Get().([]byte)
+	defer rm.bytesPool.Put(arry)
 	var rs []byte
 	var err error
 	var n int
 	len := 0
-	arry := rm.bytesPool.Get().([]byte)
 	for len < param.MaxReqBytes {
 		reset(arry)
 		n, err = stream.Read(arry)
 		if err != nil {
 			break
 		}
-		rs = append(rs, arry...)
+		rs = append(rs, arry[0:n]...)
 		len += n
-		if n < param.MaxReadBytes {
+		if string(rs[len-endLength:]) == endFlag {
 			break
 		}
 	}
-	rm.bytesPool.Put(arry)
 	if len > param.MaxReqBytes {
 		return nil, fmt.Errorf("request data must be less than %d", param.MaxReqBytes)
 	}
-	return rs[0:len], err
+	if len > endLength {
+		return rs[0 : len-endLength], err
+	} else {
+		return rs[0:len], err
+	}
+
 }
 
 type handler func(*ReqStream) (*Response, error)
@@ -204,6 +207,7 @@ func responseStream(response *Response, stream network.Stream) error {
 	if err != nil {
 		return err
 	}
+	bytes = append(bytes, []byte(endFlag)...)
 	_, err = stream.Write(bytes)
 	if err != nil {
 		return err
@@ -216,6 +220,7 @@ func requestStream(request *Request, stream network.Stream) error {
 	if err != nil {
 		return err
 	}
+	bytes = append(bytes, []byte(endFlag)...)
 	_, err = stream.Write(bytes)
 	if err != nil {
 		return err
