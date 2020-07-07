@@ -43,7 +43,7 @@ func (p *Peers) Name() string {
 func (p *Peers) Start() error {
 	log.Info("Peers started successfully", "module", module)
 	go p.monitoring()
-	go p.getPeerLocal()
+	go p.peerLocal()
 	return nil
 }
 
@@ -111,23 +111,27 @@ func (p *Peers) monitoring() {
 	}
 }
 
-func (p *Peers) getPeerLocal() {
+func (p *Peers) peerLocal() {
 	t := time.NewTicker(time.Second * 180)
 	defer t.Stop()
 
 	for {
 		select {
 		case _ = <-t.C:
-			peers := p.PeersMap()
-			for id, peer := range peers {
-				if id != p.local.Address.ID.String() {
-					local, err := p.reqHandler.LocalInfo(peer.Conn)
-					if err == nil {
-						p.infoWm.Lock()
-						p.peerInfo[id] = local
-						p.infoWm.Unlock()
-					}
-				}
+			p.requestPeerLocal()
+		}
+	}
+}
+
+func (p *Peers) requestPeerLocal() {
+	peers := p.PeersMap()
+	for id, peer := range peers {
+		if id != p.local.Address.ID.String() {
+			local, err := p.reqHandler.LocalInfo(peer.Conn)
+			if err == nil {
+				p.infoWm.Lock()
+				p.peerInfo[id] = local
+				p.infoWm.Unlock()
 			}
 		}
 	}

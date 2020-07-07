@@ -77,10 +77,10 @@ func (m *MsgHeader) checkFrom() error {
 
 func (m *MsgHeader) checkFee() error {
 	if m.Fee < minFees {
-		return fmt.Errorf("fee %d is less than the minimum poundage allowed %d", m.Fee, minFees)
+		return fmt.Errorf("fee %.8f is less than the minimum poundage allowed %.8f", Amount(m.Fee).ToCoin(), Amount(minFees).ToCoin())
 	}
 	if m.Fee > maxFees {
-		return fmt.Errorf("fee %d greater is greater than the maximum poundage allowed %d", m.Fee, maxFees)
+		return fmt.Errorf("fee %.8f greater is greater than the maximum poundage allowed %.8f", Amount(m.Fee).ToCoin(), Amount(maxFees).ToCoin())
 	}
 	return nil
 }
