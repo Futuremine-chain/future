@@ -87,11 +87,11 @@ func (t *TokenBody) CheckBody(from arry.Address) error {
 		return fmt.Errorf("the maximum length of the token name is %d", MaxName)
 	}
 	if t.Amount > math.MaxInt64 {
-		return fmt.Errorf("amount cannot be greater than %d", math.MaxInt64)
+		return fmt.Errorf("amount cannot be greater than %.8f", Amount(math.MaxInt64).ToCoin())
 	}
 	fAmount := Amount(t.Amount).ToCoin()
 	if fAmount < config.Param.MinCoinCount || fAmount > config.Param.MaxCoinCount {
-		return fmt.Errorf("the quantity of coins must be between %f and %f", config.Param.MinCoinCount, config.Param.MaxCoinCount)
+		return fmt.Errorf("the quantity of coins must be between %.8f and %.8f", config.Param.MinCoinCount, config.Param.MaxCoinCount)
 	}
 	return nil
 }
