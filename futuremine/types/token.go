@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/math"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
@@ -58,8 +59,12 @@ func (t *TokenRecord) Check(msg types.IMessage) error {
 	if t.IsExist(msg.Hash()) {
 		return errors.New("duplicate message hash")
 	}
-	if t.amount()+body.Amount > MaxTokenCount {
-		return fmt.Errorf("the total number of coins must not exceed %d", MaxTokenCount)
+	fAmount := Amount(t.amount() + body.Amount).ToCoin()
+	if fAmount < 0 {
+		return fmt.Errorf("the total number of coins must not exceed %.8f", config.Param.MaxCoinCount)
+	}
+	if fAmount > config.Param.MaxCoinCount {
+		return fmt.Errorf("the total number of coins must not exceed %.8f", config.Param.MaxCoinCount)
 	}
 	return nil
 }
