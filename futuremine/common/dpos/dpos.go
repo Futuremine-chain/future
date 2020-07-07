@@ -13,10 +13,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const (
-	SuperCount = 3
-)
-
 type DPos struct {
 	cycle     *Cycle
 	confirmed uint64

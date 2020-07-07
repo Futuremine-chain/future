@@ -33,7 +33,7 @@ type Config struct {
 	TestNet    bool   `long:"testnet" description:"Use the test network"`
 	KeyFile    string `long:"keyfile" description:"If you participate in mining, you need to configure the mining address key file"`
 	KeyPass    string `long:"keypass" description:"The decryption password for key file"`
-	FallBackTo int64  `long:"fallbackto" description:"Force back to a height"`
+	RollBack   uint64  `long:"rollback" description:"Rool back to a height"`
 	Private    private.IPrivate
 }
 
@@ -105,8 +105,8 @@ func LoadParam(private private.IPrivate) error {
 	if cfg.KeyPass != "" {
 		Param.PrivatePass = cfg.KeyPass
 	}
-	if cfg.FallBackTo != -1 {
-		Param.FallBack = cfg.FallBackTo
+	if cfg.RollBack != 0 {
+		Param.RollBack = cfg.RollBack
 	}
 
 	if !utils.Exist(Param.Data) {

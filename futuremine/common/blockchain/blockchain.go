@@ -8,6 +8,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/status"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	servicesync "github.com/Futuremine-chain/futuremine/service/sync"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -16,6 +17,7 @@ import (
 
 const chainDB = "chain_db"
 const module = "module"
+
 
 type FMCChain struct {
 	mutex         sync.RWMutex
@@ -54,6 +56,12 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 		fmc.saveGenesisBlock(fmc.dPos.GenesisBlock())
 	}
 	fmc.UpdateConfirmed(fmc.dPos.Confirmed())
+
+	if config.Param.RollBack != 0{
+		if err := fmc.RollbackTo(uint64(config.Param.RollBack));err != nil{
+			return nil, err
+		}
+	}
 	return fmc, nil
 }
 
@@ -327,6 +335,13 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 func (b *FMCChain) checkBlock(block types.IBlock) error {
 	lastHeight := b.LastHeight()
 
+	if block.GetHeight() == lastHeight{
+		lastHeader, err := b.GetHeaderHeight(lastHeight)
+		if err == nil && lastHeader.GetHash().IsEqual(block.GetHash()){
+			return servicesync.Err_RepeatBlock
+		}
+	}
+
 	if lastHeight != block.GetHeight()-1 {
 		return fmt.Errorf("last height is %d, the current block height is %d", lastHeight, block.GetHeight())
 	}
@@ -344,12 +359,12 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 	if !block.GetDPosRoot().IsEqual(b.dPosRoot) {
 		log.Warn("the dpos status root hash verification failed", "module", module,
 			"height", block.GetHeight(), "dposroot", block.GetDPosRoot().String())
-		return errors.New("wrong contract root")
+		return errors.New("wrong dpos root")
 	}
 	if !block.GetTokenRoot().IsEqual(b.tokenRoot) {
 		log.Warn("the token status root hash verification failed", "module", module,
 			"height", block.GetHeight(), "tokenroot", block.GetTokenRoot().String())
-		return errors.New("wrong consensus root")
+		return errors.New("wrong token root")
 	}
 	preHeader, err := b.GetHeaderHash(block.GetPreHash())
 	if err != nil {
@@ -442,8 +457,8 @@ func (b *FMCChain) Roll() error {
 func (b *FMCChain) RollbackTo(height uint64) error {
 	confirmedHeight := b.confirmed
 	if height >= confirmedHeight && height != 0 {
-		err := fmt.Sprintf("the height of the fallback must be less than %d and greater than %d", confirmedHeight, 0)
-		log.Error("Fall back to block height", "height", height, "error", err)
+		err := fmt.Sprintf("the height of the roolback must be less than %d and greater than %d", confirmedHeight, 0)
+		log.Error("Roll back to block height", "height", height, "error", err)
 		return errors.New(err)
 	}
 
@@ -488,6 +503,9 @@ func (b *FMCChain) RollbackTo(height uint64) error {
 	b.actRoot = curActRoot
 	b.tokenRoot = curTokenRoot
 	b.dPosRoot = curDPosRoot
+	b.db.SaveActRoot(b.actRoot)
+	b.db.SaveTokenRoot(b.tokenRoot)
+	b.db.SaveDPosRoot(b.dPosRoot)
 
 	b.lastHeight = curBlockHeight
 	b.db.SaveLastHeight(curBlockHeight)

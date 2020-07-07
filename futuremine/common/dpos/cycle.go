@@ -46,8 +46,8 @@ func (c *Cycle) Elect(time uint64, preHash arry.Hash, chain blockchain.IChain) e
 
 	sort.Sort(candidates)
 
-	if len(candidates) > SuperCount {
-		candidates = candidates[:SuperCount]
+	if len(candidates) > config.Param.SuperSize {
+		candidates = candidates[:config.Param.SuperSize]
 	}
 
 	// Use the last block hash of the last cycle as a random number seed
@@ -69,7 +69,7 @@ func (c *Cycle) calVotes(chain blockchain.IChain) ([]*types.Member, error) {
 	if err != nil {
 		return nil, errors.New("no candidate")
 	}
-	if iCans.Len() < SuperCount {
+	if iCans.Len() < config.Param.SuperSize {
 		return nil, errors.New("not enough candidates")
 	}
 	cans := iCans.(*types.Candidates)

@@ -3,7 +3,6 @@ package dpos_status
 import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/status/dpos_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
@@ -41,7 +40,7 @@ func (d *DPosStatus) Commit() (arry.Hash, error) {
 func (d *DPosStatus) CheckMessage(msg types.IMessage) error {
 	switch fmctypes.MessageType(msg.Type()) {
 	case fmctypes.Cancel:
-		if d.db.CandidatesCount() <= dpos.SuperCount {
+		if d.db.CandidatesCount() <= config.Param.SuperSize {
 			return fmt.Errorf("candidate nodes are already in the minimum number. Cannot cancel the candidate status now, please wait")
 		}
 	}

@@ -18,7 +18,7 @@ var CustomBootPeers []multiaddr.Multiaddr
 
 func init() {
 	for _, s := range []string{
-		"/ip4/127.0.0.1/tcp/19100/ipfs/16Uiu2HAm3fmt6huCaKYB55q5XLxzZKaEDeRBtpMoMp2TZauXZMUS",
+		"/ip4/117.34.92.9/tcp/19100/ipfs/16Uiu2HAmKxgLc1zsbbGP4CobP2mvjeqzLzBgXQNtHcHcRese6Jtv",
 	} {
 		ma, err := multiaddr.NewMultiaddr(s)
 		if err != nil {

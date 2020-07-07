@@ -3,7 +3,7 @@ package types
 import "github.com/Futuremine-chain/futuremine/futuremine/types"
 
 type RpcBody struct {
-	Transactions []*RpcMessage `json:"transactions"`
+	Messages []*RpcMessage `json:"transactions"`
 }
 
 func BodyToRpcBody(body *types.Body) (*RpcBody, error) {

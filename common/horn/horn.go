@@ -30,9 +30,10 @@ func (h *Horn) BroadcastMsg(message types.IMessage) {
 	peers := h.peers.PeersMap()
 	for id, peer := range peers {
 		if h.local == nil || id != h.local.Address.ID.String() {
+			conn := peer.Conn
 			if err := h.gPool.AddTask(gorutinue.NewTask(
 				func() error {
-					return h.request.SendMsg(peer.Conn, message)
+					return h.request.SendMsg(conn, message)
 				})); err != nil {
 				log.Warn("Adding the task to send the message failed", "module", module,
 					"hash", message.Hash().String(), "target", peer.Address.String())

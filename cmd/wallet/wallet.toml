@@ -1,0 +1,27 @@
+#Format switch
+Format = true
+
+#testnet or mainnet
+TestNet = true
+
+#Directory for managing private key json files（default = "keystore/"）
+KeystoreDir = ""
+
+#RPC address
+RpcIp = "127.0.0.1"
+#RpcIp = "117.34.92.9"
+
+#RPC port
+#RpcPort = "20018"
+RpcPort = "18910"
+
+#RPC TLS switch
+RpcTLS = false
+
+#If RpcTLS is on, you need to configure RpcCert
+RpcCert = ""
+
+#RPC password
+RpcPass = ""
+
+

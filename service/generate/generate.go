@@ -82,9 +82,7 @@ func (g *Generate) generateBlock(now time.Time) {
 		//.Warn("check winner failed!", "height", header.Height, "error", err)
 		return
 	}
-	log.Info("pool")
 	txs := g.pool.NeedPackaged(maxPackedTxCount)
-	log.Info("next block")
 	nextBlock, err := g.chain.NextBlock(txs, uint64(now.Unix()))
 	if err != nil {
 		log.Error("Failed to generate block", "module", module, "error", err)
@@ -97,7 +95,5 @@ func (g *Generate) generateBlock(now time.Time) {
 		"hash", nextBlock.GetHash().String(),
 		"signer", nextBlock.GetSigner().String(),
 	)
-	log.Info("horn")
 	g.horn.BroadcastBlock(nextBlock)
-	log.Info("horn end")
 }

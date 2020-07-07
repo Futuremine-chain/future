@@ -116,7 +116,7 @@ func (p *P2p) Start() error {
 }
 
 func (p *P2p) Stop() error {
-	p.close <- true
+	close(p.close)
 	if err := p.host.Close(); err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (p *P2p) peerDiscovery() {
 
 	for {
 		select {
-		case _ = <-p.close:
+		case _, _ = <-p.close:
 			return
 		default:
 			log.Info("Look for other peers...", "module", module)

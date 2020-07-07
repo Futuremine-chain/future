@@ -2,7 +2,6 @@ package sync
 
 import (
 	"errors"
-	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/blockchain"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/param"
@@ -14,6 +13,10 @@ import (
 )
 
 const module = "sync"
+
+var(
+	Err_RepeatBlock = errors.New("repeat the block")
+)
 
 type Sync struct {
 	chain   blockchain.IChain
@@ -132,7 +135,6 @@ func (s *Sync) syncFromConn() error {
 			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1)
 			if err != nil {
 				if err == request.Err_PeerClosed {
-					fmt.Println("sync remove peer")
 					s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				}
 				return err
@@ -156,11 +158,13 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 					"error", err, "height",
 					block.GetHeight(),
 					"signer", block.GetSigner())
-				if s.headerValidation(block.BlockHeader()) {
-					s.fallBack()
-					return err
+				if s.NeedValidation(err){
+					if s.headerValidation(block.BlockHeader()) {
+						s.fallBack()
+						return err
+					}
+					s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				}
-				s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				return err
 			}
 		}
@@ -248,4 +252,8 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 		}
 	}
 	return nil
+}
+
+func (s *Sync)NeedValidation(err error)bool{
+	return err != Err_RepeatBlock
 }

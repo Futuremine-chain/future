@@ -10,9 +10,9 @@ const (
 	// Block interval period
 	BlockInterval = uint64(5)
 	// Re-election interval
-	CycleInterval = 60 * 5
+	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
-	SuperSize = 3
+	SuperSize = 9
 
 	DPosSize = SuperSize*2/3 + 1
 )
@@ -35,7 +35,7 @@ type Param struct {
 	Name              string
 	Data              string
 	App               string
-	FallBack          int64
+	RollBack          uint64
 	PubKeyHashAddrID  [2]byte
 	PubKeyHashTokenID [2]byte
 	Logging           bool
@@ -98,7 +98,7 @@ var TestNetParam = &Param{
 	Name:              TestNet,
 	Data:              "data",
 	App:               "future-mine-chain",
-	FallBack:          -1,
+	RollBack:          0,
 	PubKeyHashAddrID:  [2]byte{0x1f, 0x13},
 	PubKeyHashTokenID: [2]byte{0x0f, 0x03},
 	Logging:           true,
@@ -131,7 +131,7 @@ var TestNetParam = &Param{
 	DPosParam: &DPosParam{
 		BlockInterval: BlockInterval,
 		CycleInterval: CycleInterval,
-		SuperSize:     CycleInterval,
+		SuperSize:     SuperSize,
 		DPosSize:      DPosSize,
 		GenesisTime:   1592268410,
 		GenesisCycle:  1592268410 / CycleInterval,
@@ -148,7 +148,7 @@ var MainNetParam = &Param{
 	Name:              MainNet,
 	Data:              "data",
 	App:               "future-mine-chain",
-	FallBack:          -1,
+	RollBack:          0,
 	PubKeyHashAddrID:  [2]byte{0x1e, 0x12},
 	PubKeyHashTokenID: [2]byte{0x0e, 0x02},
 	Logging:           true,
@@ -181,7 +181,7 @@ var MainNetParam = &Param{
 	DPosParam: &DPosParam{
 		BlockInterval: BlockInterval,
 		CycleInterval: CycleInterval,
-		SuperSize:     CycleInterval,
+		SuperSize:     SuperSize,
 		DPosSize:      DPosSize,
 		GenesisTime:   1592268410,
 		GenesisCycle:  1592268410 / CycleInterval,
