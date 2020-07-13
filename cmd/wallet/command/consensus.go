@@ -219,11 +219,11 @@ var SendVoteCmd = &cobra.Command{
 	Aliases: []string{"sendvote", "SV", "sv"},
 	Short:   "SendVote {from} {to} {fees} {password} {nonce}; Vote for a candidate;",
 	Example: `
-	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001
+	SendVote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001
 		OR
-	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456
+	SendVote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456
 		OR
-	Vote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456 1
+	SendVote xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 0.001 123456 1
 `,
 	Args: cobra.MinimumNArgs(3),
 	Run:  Vote,

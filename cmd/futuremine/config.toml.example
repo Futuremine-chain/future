@@ -1,9 +1,6 @@
 # testnet or mainnet
 TestNet = true
 
-# Program home directory
-Home = ""
-
 # chain data directory
 Data = ""
 
@@ -17,12 +14,12 @@ ExternalIp = "0.0.0.0"
 # Custom boot
 Boot = ""
 
-# P2P port (default = "33330")
-P2PPort="33330"
+# P2P port (default = "19160")
+P2PPort="19160"
 
 
-# RPC configuration, (default = 33331)
-RpcPort = "33331"
+# RPC configuration, (default = 19161)
+RpcPort = "19161"
 # RPC password
 RpcPass = ""
 

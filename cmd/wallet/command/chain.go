@@ -139,15 +139,15 @@ func GetBlockByHash(cmd *cobra.Command, args []string) {
 }
 
 var SendMessageCmd = &cobra.Command{
-	Use:     "SendTransction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
-	Aliases: []string{"sendtransction", "ST", "st"},
-	Short:   "SendTransction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
+	Use:     "SendTransaction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
+	Aliases: []string{"sendtransaction", "ST", "st"},
+	Short:   "SendTransaction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
 	Example: `
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1
 		OR
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1 123456
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1 123456
 		OR
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 UB 10 0.1 123456 1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1 123456 1
 	`,
 	Args: cobra.MinimumNArgs(5),
 	Run:  SendTransaction,
