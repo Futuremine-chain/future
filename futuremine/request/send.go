@@ -77,7 +77,6 @@ func (r *RequestHandler) SendMsg(conn *types.Conn, msg types.IMessage) error {
 
 func (r *RequestHandler) SendBlock(conn *types.Conn, block types.IBlock) error {
 	s, err := conn.Create(conn.PeerId)
-	fmt.Println("send block", conn.PeerId)
 	if err != nil {
 		return err
 	}

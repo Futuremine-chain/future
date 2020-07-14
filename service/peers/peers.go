@@ -19,6 +19,7 @@ const (
 type Peers struct {
 	local      *types.Peer
 	cache      map[string]*types.Peer
+	remove     map[string]*types.Peer
 	idList     []string
 	rwm        sync.RWMutex
 	close      chan bool
@@ -30,6 +31,7 @@ type Peers struct {
 func NewPeers(reqHandler request2.IRequestHandler) *Peers {
 	return &Peers{
 		cache:      make(map[string]*types.Peer, maxPeers),
+		remove:     make(map[string]*types.Peer, maxPeers),
 		close:      make(chan bool),
 		peerInfo:   make(map[string]*types.Local),
 		reqHandler: reqHandler,
@@ -87,8 +89,11 @@ func (p *Peers) RemovePeer(reId string) {
 	for index, id := range p.idList {
 		if id == reId {
 			p.idList = append(p.idList[0:index], p.idList[index+1:]...)
-			delete(p.cache, reId)
-			log.Info("Delete a peer", "id", reId)
+			if peer, ok := p.cache[reId]; ok {
+				delete(p.cache, reId)
+				p.remove[reId] = peer
+				log.Info("Delete a peer", "id", reId)
+			}
 			break
 		}
 	}
@@ -100,6 +105,13 @@ func (p *Peers) monitoring() {
 	for {
 		select {
 		case _ = <-t.C:
+			for id, peer := range p.remove {
+				if id != p.local.Address.ID.String() {
+					if p.isAlive(peer) && !p.AddressExist(peer.Address) {
+						p.AddPeer(peer)
+					}
+				}
+			}
 			for id, peer := range p.cache {
 				if id != p.local.Address.ID.String() {
 					if !p.isAlive(peer) {
