@@ -13,7 +13,7 @@ import (
 const (
 	module             = "peers"
 	maxPeers           = 1000000
-	monitoringInterval = 10
+	monitoringInterval = 60 * 30
 )
 
 type Peers struct {
