@@ -55,11 +55,12 @@ func (t *TransactionBody) MsgToken() arry.Address {
 }
 
 type TokenBody struct {
-	TokenAddress arry.Address
-	Receiver     arry.Address
-	Name         string
-	Shorthand    string
-	Amount       uint64
+	TokenAddress   arry.Address
+	Receiver       arry.Address
+	Name           string
+	Shorthand      string
+	IncreaseIssues bool
+	Amount         uint64
 }
 
 func (t *TokenBody) MsgTo() arry.Address {
