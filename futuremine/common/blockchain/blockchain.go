@@ -18,7 +18,6 @@ import (
 const chainDB = "chain_db"
 const module = "module"
 
-
 type FMCChain struct {
 	mutex         sync.RWMutex
 	status        status.IStatus
@@ -43,9 +42,6 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	fmc.actRoot, _ = fmc.db.ActRoot()
 	fmc.dPosRoot, _ = fmc.db.DPosRoot()
 	fmc.tokenRoot, _ = fmc.db.TokenRoot()
-	fmt.Println(fmc.actRoot.String())
-	fmt.Println(fmc.dPosRoot.String())
-	fmt.Println(fmc.tokenRoot.String())
 	// Initializes the state root hash
 	if err := fmc.status.InitRoots(fmc.actRoot, fmc.dPosRoot, fmc.tokenRoot); err != nil {
 		return nil, fmt.Errorf("failed to init status root, %s", err.Error())
@@ -57,8 +53,8 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	}
 	fmc.UpdateConfirmed(fmc.dPos.Confirmed())
 
-	if config.Param.RollBack != 0{
-		if err := fmc.RollbackTo(uint64(config.Param.RollBack));err != nil{
+	if config.Param.RollBack != 0 {
+		if err := fmc.RollbackTo(uint64(config.Param.RollBack)); err != nil {
 			return nil, err
 		}
 	}
@@ -335,9 +331,9 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 func (b *FMCChain) checkBlock(block types.IBlock) error {
 	lastHeight := b.LastHeight()
 
-	if block.GetHeight() == lastHeight{
+	if block.GetHeight() == lastHeight {
 		lastHeader, err := b.GetHeaderHeight(lastHeight)
-		if err == nil && lastHeader.GetHash().IsEqual(block.GetHash()){
+		if err == nil && lastHeader.GetHash().IsEqual(block.GetHash()) {
 			return servicesync.Err_RepeatBlock
 		}
 	}

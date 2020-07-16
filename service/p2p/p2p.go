@@ -174,7 +174,9 @@ func (p *P2p) connectBootNode() error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := p.host.Connect(context.Background(), *addrInfo); err != nil {
+			ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
+			defer cancel()
+			if err := p.host.Connect(ctx, *addrInfo); err != nil {
 				log.Warn("Failed to connection established with boot node", "module", module, "error", err)
 			} else {
 				log.Info("Connection established with boot node", "module", module, "peer", *addrInfo)

@@ -129,13 +129,13 @@ func createFMCNode() (*node.FMCNode, error) {
 	reqHandler.RegisterReceiveMessage(poolSv.ReceiveMsgFromPeer)
 	reqHandler.RegisterReceiveBlock(syncSv.ReceivedBlockFromPeer)
 
+	node.Register(syncSv)
 	node.Register(peersSv)
 	node.Register(p2pSv)
 	node.Register(rpcSv)
 	node.Register(reqHandler)
 	node.Register(gPool)
 	node.Register(poolSv)
-	node.Register(syncSv)
 	node.Register(generateSv)
 	return node, nil
 }

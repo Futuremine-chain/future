@@ -14,7 +14,7 @@ import (
 
 const module = "sync"
 
-var(
+var (
 	Err_RepeatBlock = errors.New("repeat the block")
 )
 
@@ -148,6 +148,7 @@ func (s *Sync) syncFromConn() error {
 }
 
 func (s *Sync) insert(blocks []types.IBlock) error {
+	log.Info("Start Save blocks", "module", module, "count", len(blocks))
 	for _, block := range blocks {
 		select {
 		case _, _ = <-s.stop:
@@ -158,7 +159,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 					"error", err, "height",
 					block.GetHeight(),
 					"signer", block.GetSigner())
-				if s.NeedValidation(err){
+				if s.NeedValidation(err) {
 					if s.headerValidation(block.BlockHeader()) {
 						s.fallBack()
 						return err
@@ -169,6 +170,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			}
 		}
 	}
+	log.Info("Save blocks complete", "module", module)
 	return nil
 }
 
@@ -254,6 +256,6 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 	return nil
 }
 
-func (s *Sync)NeedValidation(err error)bool{
+func (s *Sync) NeedValidation(err error) bool {
 	return err != Err_RepeatBlock
 }

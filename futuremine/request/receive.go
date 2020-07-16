@@ -6,7 +6,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
-const maxSyncCount = 1000
+const maxSyncCount = 50
 
 func (r *RequestHandler) respLastHeight(req *ReqStream) (*Response, error) {
 	var message string
