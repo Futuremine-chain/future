@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 )
 
 type RpcTokenBody struct {
@@ -45,7 +46,7 @@ func TokenToRpcToken(token *types.TokenRecord) *RpcToken {
 			MsgHash:  record.MsgHash.String(),
 			Receiver: record.Receiver.String(),
 			Time:     record.Time,
-			Amount:   types.Amount(record.Amount).ToCoin(),
+			Amount:   amount.Amount(record.Amount).ToCoin(),
 		}
 	}
 	return rpcToken

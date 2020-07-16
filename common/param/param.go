@@ -109,7 +109,7 @@ var TestNetParam = &Param{
 		PrivatePass: "fmc",
 	},
 	TokenParam: &TokenParam{
-		Circulation:  1 * 1e10,
+		Circulation:  10000000009,
 		CoinBase:     10 * 1e8,
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,

@@ -9,6 +9,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit/message"
 	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -109,7 +110,7 @@ func parseToken(args []string) (*types.Message, error) {
 		if fAmount < 0 {
 			return nil, errors.New("[amount] wrong")
 		}
-		if amount, err = types.NewAmount(fAmount); err != nil {
+		if amount, err = amount2.NewAmount(fAmount); err != nil {
 			return nil, errors.New("[amount] wrong")
 		}
 	}
@@ -126,7 +127,7 @@ func parseToken(args []string) (*types.Message, error) {
 		if fFees < 0 {
 			return nil, errors.New("[fees] wrong")
 		}
-		if fee, err = types.NewAmount(fFees); err != nil {
+		if fee, err = amount2.NewAmount(fFees); err != nil {
 			return nil, errors.New("[fees] wrong")
 		}
 	}
