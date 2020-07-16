@@ -12,6 +12,7 @@ type IMsgList interface {
 	Exist(types.IMessage) bool
 	Put(types.IMessage) error
 	NeedPackaged(count int) []types.IMessage
+	StagnantMsgs() []types.IMessage
 	GetAll() ([]types.IMessage, []types.IMessage)
 	Count() int
 }

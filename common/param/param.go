@@ -50,6 +50,7 @@ type Param struct {
 }
 
 type TokenParam struct {
+	Circulation  float64
 	CoinBase     uint64
 	Proportion   uint64
 	MinCoinCount float64
@@ -108,6 +109,7 @@ var TestNetParam = &Param{
 		PrivatePass: "fmc",
 	},
 	TokenParam: &TokenParam{
+		Circulation:  1 * 1e10,
 		CoinBase:     10 * 1e8,
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
@@ -139,7 +141,7 @@ var TestNetParam = &Param{
 	PoolParam: &PoolParam{
 		MaxPoolMsg:         100000,
 		MsgExpiredTime:     60 * 60 * 3,
-		MonitorMsgInterval: 2,
+		MonitorMsgInterval: 10,
 		MaxAddressMsg:      1000,
 	},
 }
@@ -158,6 +160,7 @@ var MainNetParam = &Param{
 		PrivatePass: "fmc",
 	},
 	TokenParam: &TokenParam{
+		Circulation:  1 * 1e10,
 		CoinBase:     10 * 1e8,
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
@@ -189,7 +192,7 @@ var MainNetParam = &Param{
 	PoolParam: &PoolParam{
 		MaxPoolMsg:         100000,
 		MsgExpiredTime:     60 * 60 * 3,
-		MonitorMsgInterval: 2,
+		MonitorMsgInterval: 10,
 		MaxAddressMsg:      1000,
 	},
 }

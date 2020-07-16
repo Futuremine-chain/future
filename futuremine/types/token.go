@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/math"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const MaxTokenCount = math.MaxInt64
-
-// Contract structure, issuing a contract with the same
+// token structure, issuing a contract with the same
 // name is equivalent to reissuing the pass
 type TokenRecord struct {
 	Address        arry.Address
