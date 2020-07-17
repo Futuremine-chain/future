@@ -10,7 +10,6 @@ import (
 	edwards "github.com/Futuremine-chain/futuremine/tools/crypto/ecc/ed25519"
 	"io"
 	"math/big"
-
 )
 
 type edwardsDSA struct {

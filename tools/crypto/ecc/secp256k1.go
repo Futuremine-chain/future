@@ -11,7 +11,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	"io"
 	"math/big"
-
 )
 
 type secp256k1DSA struct {

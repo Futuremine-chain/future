@@ -3,7 +3,6 @@ package bip39_test
 import (
 	"encoding/hex"
 	"fmt"
-
 )
 
 func ExampleNewMnemonic() {

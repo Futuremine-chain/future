@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-
 )
 
 // This example demonstrates signing a message with a secp256k1 private key that

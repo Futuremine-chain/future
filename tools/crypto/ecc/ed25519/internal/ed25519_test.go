@@ -14,7 +14,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-
 )
 
 type zeroReader struct{}
