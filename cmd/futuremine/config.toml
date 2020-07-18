@@ -1,0 +1,38 @@
+# testnet or mainnet
+TestNet = true
+
+# chain data directory
+Data = ""
+
+# Logging switch
+Logging = true
+
+# P2P configuration
+#Externale ip (default = "0.0.0.0")
+ExternalIp = "0.0.0.0"
+
+# Custom boot
+Boot = ""
+
+# P2P port (default = "19160")
+P2PPort="19160"
+
+
+# RPC configuration, (default = 19161)
+RpcPort = "19161"
+# RPC password
+RpcPass = ""
+
+# TLS switch
+RpcTLS = false
+
+# Roll back the node chain to a certain height, 0 means not roll back
+RollBack = 0
+
+
+# If it is a block generating node, it needs to be configured
+# Json file address of the address private key
+KeyFile = ""
+# Password to decrypt the private key json file
+KeyPass = ""
+
