@@ -1,5 +1,11 @@
 # future mine chain
 
+### Start the testing
+
+- Test with the command line wallet.
+- Or you can test it by downloading the wallet APP, [DOWNLOAD](https://wallet.futuremine.io).
+- Test COINS can be applied through APP wallet.
+
 ### How to build
 
 ####  Prerequisites
