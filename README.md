@@ -10,7 +10,7 @@
 
 ####  Prerequisites
 
-- Update Go to version at least 1.13 (required >= **1.13**)
+- Update Go to version at least 1.13  (required >= **1.13**)
 
 Check your golang version
 
