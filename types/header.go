@@ -17,5 +17,5 @@ type IHeader interface {
 	GetTime() uint64
 	GetCycle() uint64
 	ToRlpHeader() IRlpHeader
-	Bytes()[]byte
+	Bytes() []byte
 }

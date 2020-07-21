@@ -33,4 +33,3 @@ func CalculateFee(msgs []types.IMessage) uint64 {
 	}
 	return sum
 }
-

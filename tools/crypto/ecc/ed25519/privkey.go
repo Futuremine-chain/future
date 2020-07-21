@@ -13,7 +13,6 @@ import (
 	"crypto/sha512"
 	"fmt"
 	"math/big"
-
 )
 
 // These constants define the lengths of serialized private keys.

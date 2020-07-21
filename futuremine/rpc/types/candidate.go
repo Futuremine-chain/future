@@ -7,4 +7,3 @@ type RpcCandidateBody struct {
 func (r *RpcCandidateBody) PeerIdBytes() []byte {
 	return []byte(r.PeerId)
 }
-
