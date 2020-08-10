@@ -116,7 +116,7 @@ func (r *RequestHandler) GetBlocks(conn *types.Conn, height uint64) ([]types.IBl
 	if err != nil {
 		return nil, err
 	}
-	s.SetDeadline(time.Unix(utils.NowUnix()+60, 0))
+	s.SetDeadline(time.Unix(utils.NowUnix()+120, 0))
 	request := NewRequest(getBlocks, bytes)
 	err = requestStream(request, s)
 	if err != nil {

@@ -163,6 +163,12 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 					if s.headerValidation(block.BlockHeader()) {
 						s.fallBack()
 						return err
+					} else {
+						localPreHeader, _ := s.chain.GetHeaderHeight(block.GetHeight() - 1)
+						if !s.headerValidation(localPreHeader) {
+							s.fallBack()
+							return err
+						}
 					}
 					s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				}
@@ -170,7 +176,7 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			}
 		}
 	}
-	log.Info("Save blocks complete", "module", module)
+	log.Info("Save blocks complete", "module", module, "count", blocks, "peer", s.curPeer.Address.String())
 	return nil
 }
 
@@ -242,8 +248,13 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 					s.fallBack()
 					return err
 				} else {
-					log.Warn("Remote validation failed!", "height", block.GetHeight(), "signer", block.GetSigner().String())
-					return err
+					if !s.headerValidation(localHeader) {
+						s.fallBack()
+						return err
+					} else {
+						log.Warn("Remote validation failed!", "height", block.GetHeight(), "signer", block.GetSigner().String())
+						return err
+					}
 				}
 			}
 		} else {
