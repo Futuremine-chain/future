@@ -12,7 +12,7 @@ Logging = true
 ExternalIp = "0.0.0.0"
 
 # Custom boot
-Boot = ""
+Boot = "/ip4/8.210.100.179/tcp/19100/ipfs/16Uiu2HAkv33SisCHpXE5ub4gxyRU5jCagAXCNoCPMUkQ82GYhC4i"
 
 # P2P port (default = "19160")
 P2PPort="19160"
