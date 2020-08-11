@@ -78,7 +78,7 @@ func (p *Peers) AddPeer(peer *types.Peer) {
 		return
 	}
 	if peer.Speed == 0 {
-		peer.Speed = 50
+		peer.Speed = 500
 	}
 	p.cache[peer.Address.ID.String()] = peer
 	p.idList = append(p.idList, peer.Address.ID.String())

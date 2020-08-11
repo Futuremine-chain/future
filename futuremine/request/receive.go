@@ -77,8 +77,8 @@ func (r *RequestHandler) respGetBlocks(req *ReqStream) (*Response, error) {
 		count = params[1]
 		if count < minSyncCount {
 			count = minSyncCount
-		} else if count > minSyncCount {
-			count = minSyncCount
+		} else if count > maxSyncCount {
+			count = maxSyncCount
 		}
 		if lastHeight >= height {
 			for lastHeight >= height && index < count {
