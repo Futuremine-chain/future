@@ -19,23 +19,25 @@ var (
 )
 
 type Sync struct {
-	chain   blockchain.IChain
-	request request.IRequestHandler
-	peers   *peers.Peers
-	curPeer *types.Peer
-	dPos    dpos.IDPosStatus
-	stop    chan bool
-	stopped chan bool
+	chain     blockchain.IChain
+	request   request.IRequestHandler
+	peers     *peers.Peers
+	curPeer   *types.Peer
+	dPos      dpos.IDPosStatus
+	stop      chan bool
+	stopped   chan bool
+	syncCount uint64
 }
 
 func NewSync(peers *peers.Peers, dPos dpos.IDPosStatus, request request.IRequestHandler, chain blockchain.IChain) *Sync {
 	s := &Sync{
-		chain:   chain,
-		peers:   peers,
-		dPos:    dPos,
-		request: request,
-		stop:    make(chan bool),
-		stopped: make(chan bool),
+		chain:     chain,
+		peers:     peers,
+		dPos:      dPos,
+		request:   request,
+		stop:      make(chan bool),
+		stopped:   make(chan bool),
+		syncCount: 50,
 	}
 	return s
 }
@@ -132,10 +134,11 @@ func (s *Sync) syncFromConn() error {
 			// If the storage fails locally, the remote block verification
 			// is performed, the verification proves that the local block
 			// is wrong, and the local chain is rolled back to the valid block.
-			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1)
+			log.Info("Sync blocks", "module", module, "peer", s.curPeer.Address.ID.String(), "speed", s.curPeer.Speed)
+			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1, s.curPeer.Speed)
 			if err != nil {
 				if err == request.Err_PeerClosed {
-					s.peers.RemovePeer(s.curPeer.Address.ID.String())
+					s.reducePeerSpeed()
 				}
 				return err
 			}
@@ -147,8 +150,17 @@ func (s *Sync) syncFromConn() error {
 	return nil
 }
 
+func (s *Sync) reducePeerSpeed() {
+	if s.curPeer.Speed == 1 {
+		s.peers.RemovePeer(s.curPeer.Address.ID.String())
+		return
+	}
+	speed := s.curPeer.Speed - 1
+	s.peers.SetSpeed(s.curPeer.Address.ID.String(), speed)
+}
+
 func (s *Sync) insert(blocks []types.IBlock) error {
-	log.Info("Start Save blocks", "module", module, "count", len(blocks))
+	//log.Info("Start Save blocks", "module", module, "count", len(blocks))
 	for _, block := range blocks {
 		select {
 		case _, _ = <-s.stop:
@@ -176,7 +188,11 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			}
 		}
 	}
-	log.Info("Save blocks complete", "module", module, "count", blocks, "peer", s.curPeer.Address.String())
+	if len(blocks) > 0 {
+		log.Info("Save blocks complete", "module", module, "count", len(blocks), "start", blocks[0].GetHeight(),
+			"end", blocks[len(blocks)-1].GetHeight(), "peer", s.curPeer.Address.String())
+	}
+
 	return nil
 }
 

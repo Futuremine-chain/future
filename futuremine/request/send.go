@@ -101,7 +101,7 @@ func (r *RequestHandler) SendBlock(conn *types.Conn, block types.IBlock) error {
 	}
 }
 
-func (r *RequestHandler) GetBlocks(conn *types.Conn, height uint64) ([]types.IBlock, error) {
+func (r *RequestHandler) GetBlocks(conn *types.Conn, height, count uint64) ([]types.IBlock, error) {
 	s, err := conn.Create(conn.PeerId)
 	if err != nil {
 		return nil, err
@@ -112,11 +112,12 @@ func (r *RequestHandler) GetBlocks(conn *types.Conn, height uint64) ([]types.IBl
 		s.Close()
 	}()
 
-	bytes, err := rlp.EncodeToBytes(height)
+	params := []uint64{height, count}
+	bytes, err := rlp.EncodeToBytes(params)
 	if err != nil {
 		return nil, err
 	}
-	s.SetDeadline(time.Unix(utils.NowUnix()+120, 0))
+	s.SetDeadline(time.Unix(utils.NowUnix()+60, 0))
 	request := NewRequest(getBlocks, bytes)
 	err = requestStream(request, s)
 	if err != nil {

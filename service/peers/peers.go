@@ -77,6 +77,9 @@ func (p *Peers) AddPeer(peer *types.Peer) {
 	if len(p.cache) >= maxPeers {
 		return
 	}
+	if peer.Speed == 0 {
+		peer.Speed = 50
+	}
 	p.cache[peer.Address.ID.String()] = peer
 	p.idList = append(p.idList, peer.Address.ID.String())
 	log.Info("Add a peer", "module", module, "id", peer.Address.ID.String(), "address", peer.Address.String())
@@ -96,6 +99,15 @@ func (p *Peers) RemovePeer(reId string) {
 			}
 			break
 		}
+	}
+}
+
+func (p *Peers) SetSpeed(id string, speed uint64) {
+	p.rwm.Lock()
+	defer p.rwm.Unlock()
+
+	if peer, ok := p.cache[id]; ok {
+		p.cache[peer.Address.ID.String()].Speed = speed
 	}
 }
 
