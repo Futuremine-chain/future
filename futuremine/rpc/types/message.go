@@ -40,6 +40,9 @@ type RpcSignature struct {
 
 func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	var err error
+	if rpcMsg.MsgHeader == nil {
+		return nil, errors.New("message header is nil")
+	}
 	signScript, err := RpcSignatureToSignature(rpcMsg.MsgHeader.Signature)
 	if err != nil {
 		return nil, err
