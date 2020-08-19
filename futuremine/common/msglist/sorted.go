@@ -3,8 +3,11 @@ package msglist
 import (
 	"container/heap"
 	"github.com/Futuremine-chain/futuremine/common/validator"
+	"github.com/Futuremine-chain/futuremine/tools/utils"
 	"github.com/Futuremine-chain/futuremine/types"
 )
+
+const maxStagnantTime uint64 = 60
 
 type Sorted struct {
 	msgs  map[string]types.IMessage
@@ -52,6 +55,21 @@ func (t *Sorted) NeedPackaged(count int) []types.IMessage {
 		msg := t.msgs[ti.address]
 		msgs = append(msgs, msg)
 		count--
+	}
+	return msgs
+}
+
+func (t *Sorted) StagnantMsgs() []types.IMessage {
+	msgs := make([]types.IMessage, 0)
+	rIndex := t.index.CopySelf()
+
+	for rIndex.Len() > 0 {
+		ti := heap.Pop(rIndex).(*msgInfo)
+		msg := t.msgs[ti.address]
+		if msg.Time()+maxStagnantTime > uint64(utils.NowUnix()) {
+			msgs = append(msgs, msg)
+		}
+
 	}
 	return msgs
 }

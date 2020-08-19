@@ -73,15 +73,16 @@ func (t *TokenStatus) UpdateToken(msg types.IMessage, height uint64) error {
 	}
 	tokenAddr := msgBody.TokenAddress
 	token := t.db.Token(tokenAddr)
-	if token != nil {
-		token.AddContract(record)
+	if token != nil && token.IncreaseIssues {
+		token.IncreaseRecord(record)
 		token.Name = msgBody.Name
 	} else {
 		token = &fmctypes.TokenRecord{
-			Address:   tokenAddr,
-			Sender:    msg.From(),
-			Name:      msgBody.Name,
-			Shorthand: msgBody.Shorthand,
+			Address:        tokenAddr,
+			Sender:         msg.From(),
+			Name:           msgBody.Name,
+			Shorthand:      msgBody.Shorthand,
+			IncreaseIssues: msgBody.IncreaseIssues,
 			Records: &fmctypes.RecordList{
 				record,
 			},

@@ -6,7 +6,10 @@ import (
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 )
 
-const maxSyncCount = 50
+const (
+	maxSyncCount = 1000
+	minSyncCount = 1
+)
 
 func (r *RequestHandler) respLastHeight(req *ReqStream) (*Response, error) {
 	var message string
@@ -59,33 +62,46 @@ func (r *RequestHandler) respSendBlock(req *ReqStream) (*Response, error) {
 func (r *RequestHandler) respGetBlocks(req *ReqStream) (*Response, error) {
 	var message string
 	var body []byte
-	var height uint64
-	var count uint64
+	var params []uint64
+	var height, count uint64
+	var index uint64
 	code := Success
 	rlpBlocks := make([]*types.RlpBlock, 0)
 	lastHeight := r.chain.LastHeight()
-	err := rlp.DecodeBytes(req.request.Body, &height)
+	err := rlp.DecodeBytes(req.request.Body, &params)
 	if err != nil {
 		code = Failed
 		message = err.Error()
-	} else if lastHeight >= height {
-		for lastHeight >= height && count < maxSyncCount {
-			block, err := r.chain.GetRlpBlockHeight(height)
-			if err != nil {
-				code = Failed
-				message = err.Error()
-				response := NewResponse(code, message, body)
-				return response, nil
-			} else {
-				rlpBlocks = append(rlpBlocks, block.(*types.RlpBlock))
-				height++
-				count++
-			}
+	} else if len(params) == 2 {
+		height = params[0]
+		count = params[1]
+		if count < minSyncCount {
+			count = minSyncCount
+		} else if count > maxSyncCount {
+			count = maxSyncCount
 		}
-		body, _ = types.EncodeRlpBlocks(rlpBlocks)
+		if lastHeight >= height {
+			for lastHeight >= height && index < count {
+				block, err := r.chain.GetRlpBlockHeight(height)
+				if err != nil {
+					code = Failed
+					message = err.Error()
+					response := NewResponse(code, message, body)
+					return response, nil
+				} else {
+					rlpBlocks = append(rlpBlocks, block.(*types.RlpBlock))
+					height++
+					index++
+				}
+			}
+			body, _ = types.EncodeRlpBlocks(rlpBlocks)
+		} else {
+			code = Failed
+			message = request2.Err_BlockNotFound.Error()
+		}
 	} else {
 		code = Failed
-		message = request2.Err_BlockNotFound.Error()
+		message = "wrong params"
 	}
 
 	response := NewResponse(code, message, body)

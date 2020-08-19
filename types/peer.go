@@ -10,6 +10,7 @@ type Peer struct {
 	Private crypto.PrivateKey
 	Address *peer.AddrInfo
 	Conn    *Conn
+	Speed   uint64
 }
 
 func NewPeer(private crypto.PrivateKey, addr *peer.AddrInfo, createF CreateConnF, stream network.Stream) *Peer {

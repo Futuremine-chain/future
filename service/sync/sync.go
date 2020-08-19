@@ -132,10 +132,11 @@ func (s *Sync) syncFromConn() error {
 			// If the storage fails locally, the remote block verification
 			// is performed, the verification proves that the local block
 			// is wrong, and the local chain is rolled back to the valid block.
-			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1)
+
+			blocks, err := s.request.GetBlocks(s.curPeer.Conn, localHeight+1, s.curPeer.Speed)
 			if err != nil {
 				if err == request.Err_PeerClosed {
-					s.peers.RemovePeer(s.curPeer.Address.ID.String())
+					s.reducePeerSpeed()
 				}
 				return err
 			}
@@ -147,8 +148,16 @@ func (s *Sync) syncFromConn() error {
 	return nil
 }
 
+func (s *Sync) reducePeerSpeed() {
+	if s.curPeer.Speed == 1 {
+		s.peers.RemovePeer(s.curPeer.Address.ID.String())
+		return
+	}
+	speed := s.curPeer.Speed - 1
+	s.peers.SetSpeed(s.curPeer.Address.ID.String(), speed)
+}
+
 func (s *Sync) insert(blocks []types.IBlock) error {
-	log.Info("Start Save blocks", "module", module, "count", len(blocks))
 	for _, block := range blocks {
 		select {
 		case _, _ = <-s.stop:
@@ -163,6 +172,12 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 					if s.headerValidation(block.BlockHeader()) {
 						s.fallBack()
 						return err
+					} else {
+						localPreHeader, _ := s.chain.GetHeaderHeight(block.GetHeight() - 1)
+						if !s.headerValidation(localPreHeader) {
+							s.fallBack()
+							return err
+						}
 					}
 					s.peers.RemovePeer(s.curPeer.Address.ID.String())
 				}
@@ -170,7 +185,11 @@ func (s *Sync) insert(blocks []types.IBlock) error {
 			}
 		}
 	}
-	log.Info("Save blocks complete", "module", module)
+	if len(blocks) > 0 {
+		log.Info("Sync blocks complete", "module", module, "start", blocks[0].GetHeight(),
+			"end", blocks[len(blocks)-1].GetHeight(), "peer", s.curPeer.Address.String(), "speed", s.curPeer.Speed)
+	}
+
 	return nil
 }
 
@@ -234,7 +253,7 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 			log.Warn("Failed to insert received block", "err", err, "height", block.GetHeight(), "singer", block.GetSigner().String())
 			return err
 		}
-		log.Info("received block insert success", "module", module, "height", block.GetHeight(), "signer", block.GetSigner())
+		log.Info("Received block insert success", "module", module, "height", block.GetHeight(), "signer", block.GetSigner())
 	} else if block.GetHeight() <= localHeight {
 		if localHeader, err := s.chain.GetBlockHeight(block.GetHeight()); err == nil {
 			if !localHeader.GetHash().IsEqual(block.GetHash()) {
@@ -242,8 +261,13 @@ func (s *Sync) ReceivedBlockFromPeer(block types.IBlock) error {
 					s.fallBack()
 					return err
 				} else {
-					log.Warn("Remote validation failed!", "height", block.GetHeight(), "signer", block.GetSigner().String())
-					return err
+					if !s.headerValidation(localHeader) {
+						s.fallBack()
+						return err
+					} else {
+						log.Warn("Remote validation failed!", "height", block.GetHeight(), "signer", block.GetSigner().String())
+						return err
+					}
 				}
 			}
 		} else {

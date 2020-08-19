@@ -10,6 +10,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/sirupsen/logrus"
@@ -112,7 +113,7 @@ func parseCandidate(cmd *cobra.Command, args []string, p2pid string) (*types.Mes
 		if fFees < 0 {
 			return nil, errors.New("[fees] wrong")
 		}
-		if fee, err = types.NewAmount(fFees); err != nil {
+		if fee, err = amount.NewAmount(fFees); err != nil {
 			log.Error(cmd.Use + " err: ")
 			return nil, errors.New("[fees] wrong")
 		}
@@ -201,7 +202,7 @@ func parseCancel(args []string) (*types.Message, error) {
 		if fFees < 0 {
 			return nil, errors.New("[fees] wrong")
 		}
-		if fee, err = types.NewAmount(fFees); err != nil {
+		if fee, err = amount.NewAmount(fFees); err != nil {
 			return nil, errors.New("[fees] wrong")
 		}
 	}
@@ -290,7 +291,7 @@ func parseVote(args []string) (*types.Message, error) {
 		if fFees < 0 {
 			return nil, errors.New("[fees] wrong")
 		}
-		if fee, err = types.NewAmount(fFees); err != nil {
+		if fee, err = amount.NewAmount(fFees); err != nil {
 			return nil, errors.New("[fees] wrong")
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -306,18 +307,18 @@ func (a *Account) checkTokenAmount(msg types.IMessage) error {
 	main, ok := a.Tokens.Get(mainAddress)
 	if !ok {
 		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
-			Amount(consumption).ToCoin(),
+			amount2.Amount(consumption).ToCoin(),
 			mainAddress,
-			Amount(msg.Fee()).ToCoin(),
+			amount2.Amount(msg.Fee()).ToCoin(),
 			mainAddress,
-			Amount(amount).ToCoin())
+			amount2.Amount(amount).ToCoin())
 	} else if main.Balance < msg.Fee()+consumption {
 		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
-			Amount(consumption).ToCoin(),
+			amount2.Amount(consumption).ToCoin(),
 			mainAddress,
-			Amount(msg.Fee()).ToCoin(),
+			amount2.Amount(msg.Fee()).ToCoin(),
 			mainAddress,
-			Amount(amount).ToCoin())
+			amount2.Amount(amount).ToCoin())
 	}
 	return nil
 }

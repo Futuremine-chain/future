@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
@@ -13,7 +14,7 @@ type IRpcMessageBody interface {
 }
 
 type RpcMessageHeader struct {
-	MsgHash   string               `json:"txhash"`
+	MsgHash   string               `json:"msghash"`
 	Type      fmctypes.MessageType `json:"type"`
 	From      string               `json:"from"`
 	Nonce     uint64               `json:"nonce"`
@@ -23,12 +24,13 @@ type RpcMessageHeader struct {
 }
 
 type RpcMessage struct {
-	MsgHeader     *RpcMessageHeader   `json:"txhead"`
-	TxBody        *RpcTransactionBody `json:"txbody"`
+	MsgHeader *RpcMessageHeader `json:"msgheader"`
+	MsgBody   IRpcMessageBody   `json:"msgbody"`
+	/*TxBody        *RpcTransactionBody `json:"txbody"`
 	TokenBody     *RpcTokenBody       `json:"tokenbody"`
 	CandidateBody *RpcCandidateBody   `json:"candidatebody"`
 	CancelBody    *RpcCancelBody      `json:"cancelbody"`
-	VoteBody      *RpcVoteBody        `json:"votebody"`
+	VoteBody      *RpcVoteBody        `json:"votebody"`*/
 }
 
 type RpcSignature struct {
@@ -38,6 +40,9 @@ type RpcSignature struct {
 
 func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	var err error
+	if rpcMsg.MsgHeader == nil {
+		return nil, errors.New("message header is nil")
+	}
 	signScript, err := RpcSignatureToSignature(rpcMsg.MsgHeader.Signature)
 	if err != nil {
 		return nil, err
@@ -45,15 +50,51 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	var msgBody types.IMessageBody
 	switch rpcMsg.MsgHeader.Type {
 	case fmctypes.Transaction:
-		msgBody, err = RpcTransactionBodyToBody(rpcMsg.TxBody)
+		body := &RpcTransactionBody{}
+		bytes, err := json.Marshal(rpcMsg.MsgBody)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(bytes, body)
+		if err != nil {
+			return nil, err
+		}
+		msgBody, err = RpcTransactionBodyToBody(body)
 	case fmctypes.Token:
-		msgBody, err = RpcTokenBodyToBody(rpcMsg.TokenBody)
+		body := &RpcTokenBody{}
+		bytes, err := json.Marshal(rpcMsg.MsgBody)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(bytes, body)
+		if err != nil {
+			return nil, err
+		}
+		msgBody, err = RpcTokenBodyToBody(body)
 	case fmctypes.Candidate:
-		msgBody, err = RpcCandidateBodyToBody(rpcMsg.CandidateBody)
+		body := &RpcCandidateBody{}
+		bytes, err := json.Marshal(rpcMsg.MsgBody)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(bytes, body)
+		if err != nil {
+			return nil, err
+		}
+		msgBody, err = RpcCandidateBodyToBody(body)
 	case fmctypes.Cancel:
 		msgBody = &fmctypes.CancelBody{}
 	case fmctypes.Vote:
-		msgBody, err = RpcVoteBodyToBody(rpcMsg.VoteBody)
+		body := &RpcVoteBody{}
+		bytes, err := json.Marshal(rpcMsg.MsgBody)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(bytes, body)
+		if err != nil {
+			return nil, err
+		}
+		msgBody, err = RpcVoteBodyToBody(body)
 	}
 	hash, err := arry.StringToHash(rpcMsg.MsgHeader.MsgHash)
 	if err != nil {
@@ -87,15 +128,11 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 				Signature: hex.EncodeToString(msg.Header.Signature.SignatureBytes()),
 				PubKey:    hex.EncodeToString(msg.Header.Signature.PubicKey()),
 			}},
-		TxBody:        nil,
-		TokenBody:     nil,
-		CandidateBody: nil,
-		CancelBody:    nil,
-		VoteBody:      nil,
+		MsgBody: nil,
 	}
 	switch fmctypes.MessageType(msg.Type()) {
 	case fmctypes.Transaction:
-		rpcMsg.TxBody = &RpcTransactionBody{
+		rpcMsg.MsgBody = &RpcTransactionBody{
 			Token:  msg.Body.MsgToken().String(),
 			To:     msg.Body.MsgTo().String(),
 			Amount: msg.Body.MsgAmount(),
@@ -105,25 +142,27 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 		if !ok {
 			return nil, errors.New("message type error")
 		}
+
 		rpcMsg.TokenBody = &RpcTokenBody{
-			Address:   msg.Body.MsgToken().String(),
-			Receiver:  msg.Body.MsgTo().String(),
-			Name:      body.Name,
-			Shorthand: body.Shorthand,
-			Amount:    msg.Body.MsgAmount(),
+			Address:        msg.Body.MsgToken().String(),
+			Receiver:       msg.Body.MsgTo().String(),
+			Name:           body.Name,
+			Shorthand:      body.Shorthand,
+			IncreaseIssues: body.IncreaseIssues,
+			Amount:         msg.Body.MsgAmount(),
 		}
 	case fmctypes.Candidate:
 		body, ok := msg.Body.(*fmctypes.CandidateBody)
 		if !ok {
 			return nil, errors.New("message type error")
 		}
-		rpcMsg.CandidateBody = &RpcCandidateBody{
+		rpcMsg.MsgBody = &RpcCandidateBody{
 			PeerId: body.Peer.String(),
 		}
 	case fmctypes.Cancel:
-		rpcMsg.CancelBody = &RpcCancelBody{}
+		rpcMsg.MsgBody = &RpcCancelBody{}
 	case fmctypes.Vote:
-		rpcMsg.VoteBody = &RpcVoteBody{To: msg.Body.MsgTo().String()}
+		rpcMsg.MsgBody = &RpcVoteBody{To: msg.Body.MsgTo().String()}
 
 	}
 
@@ -169,11 +208,12 @@ func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*fmctypes.TokenBody, error) {
 	}
 
 	return &fmctypes.TokenBody{
-		TokenAddress: arry.StringToAddress(rpcBody.Address),
-		Receiver:     arry.StringToAddress(rpcBody.Receiver),
-		Name:         rpcBody.Name,
-		Shorthand:    rpcBody.Shorthand,
-		Amount:       rpcBody.Amount,
+		TokenAddress:   arry.StringToAddress(rpcBody.Address),
+		Receiver:       arry.StringToAddress(rpcBody.Receiver),
+		Name:           rpcBody.Name,
+		Shorthand:      rpcBody.Shorthand,
+		IncreaseIssues: rpcBody.IncreaseIssues,
+		Amount:         rpcBody.Amount,
 	}, nil
 }
 

@@ -143,7 +143,7 @@ func (r *Rpc) SendMessageRaw(ctx context.Context, req *Request) (*Response, erro
 	}
 	tx, err := rpctypes.RpcMsgToMsg(rpcMsg)
 	if err != nil {
-		return NewResponse(Err_Params, nil, ""), nil
+		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
 	if err := r.msgPool.Put(tx, false); err != nil {
 		return NewResponse(Err_MsgPool, nil, err.Error()), nil

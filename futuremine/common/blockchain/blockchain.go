@@ -6,6 +6,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	servicesync "github.com/Futuremine-chain/futuremine/service/sync"
@@ -94,6 +95,8 @@ func (b *FMCChain) NextHeader(time uint64) (types.IHeader, error) {
 func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBlock, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
+	height := b.lastHeight + 1
+	coinbase := kit.CalCoinBase(config.Param.Name, height)
 
 	coinBase := &fmctypes.Message{
 		Header: &fmctypes.MsgHeader{
@@ -104,7 +107,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBl
 		Body: &fmctypes.TransactionBody{
 			TokenAddress: config.Param.TokenParam.MainToken,
 			Receiver:     config.Param.IPrivate.Address(),
-			Amount:       config.Param.TokenParam.CoinBase + fmctypes.CalculateFee(msgs),
+			Amount:       coinbase + fmctypes.CalculateFee(msgs),
 		},
 	}
 	coinBase.SetHash()
@@ -121,7 +124,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBl
 		b.actRoot,
 		b.dPosRoot,
 		b.tokenRoot,
-		b.lastHeight+1,
+		b.lastHeight+height,
 		blockTime,
 		config.Param.IPrivate.Address(),
 	)
@@ -278,22 +281,19 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	b.db.SaveActRoot(b.actRoot)
 	b.db.SaveDPosRoot(b.dPosRoot)
 	b.db.SaveTokenRoot(b.tokenRoot)
-	fmt.Println(b.actRoot.String())
-	fmt.Println(b.dPosRoot.String())
-	fmt.Println(b.tokenRoot.String())
 
 	b.lastHeight = block.GetHeight()
 	b.db.SaveLastHeight(b.lastHeight)
-	log.Info("Save block", "module", "module",
-		"height", block.GetHeight(),
-		"hash", block.GetHash().String(),
-		"actroot", block.GetActRoot().String(),
-		"tokenroot", block.GetTokenRoot().String(),
-		"dposroot", block.GetDPosRoot().String(),
-		"signer", block.GetSigner().String(),
-		"msgcount", len(block.BlockBody().MsgList()),
-		"time", block.GetTime(),
-		"cycle", block.GetCycle())
+	/*log.Info("Save block", "module", "module",
+	"height", block.GetHeight(),
+	"hash", block.GetHash().String(),
+	"actroot", block.GetActRoot().String(),
+	"tokenroot", block.GetTokenRoot().String(),
+	"dposroot", block.GetDPosRoot().String(),
+	"signer", block.GetSigner().String(),
+	"msgcount", len(block.BlockBody().MsgList()),
+	"time", block.GetTime(),
+	"cycle", block.GetCycle())*/
 }
 
 func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
@@ -379,11 +379,11 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 	return nil
 }
 
-func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
+func (b *FMCChain) checkMsgs(msgs []types.IMessage, height uint64) error {
 	address := make(map[string]bool)
 	for _, msg := range msgs {
 		if msg.IsCoinBase() {
-			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs)); err != nil {
+			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs), height); err != nil {
 				return err
 			}
 		} else {
@@ -406,13 +406,14 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 	return nil
 }
 
-func (b *FMCChain) checkCoinBase(coinBase types.IMessage, fee uint64) error {
+func (b *FMCChain) checkCoinBase(coinBase types.IMessage, fee, height uint64) error {
 	msg, ok := coinBase.(*fmctypes.Message)
 	if !ok {
 		return errors.New("wrong message type")
 	}
+	coinbase := kit.CalCoinBase(config.Param.Name, height)
 
-	if err := msg.CheckCoinBase(fee); err != nil {
+	if err := msg.CheckCoinBase(fee, coinbase); err != nil {
 		return err
 	}
 	return nil
@@ -445,15 +446,15 @@ func (b *FMCChain) Roll() error {
 	var curHeight uint64
 	confirmed := b.Confirmed()
 	if confirmed != 0 {
-		curHeight = confirmed - 1
+		curHeight = confirmed
 	}
 	return b.RollbackTo(curHeight)
 }
 
 func (b *FMCChain) RollbackTo(height uint64) error {
 	confirmedHeight := b.confirmed
-	if height >= confirmedHeight && height != 0 {
-		err := fmt.Sprintf("the height of the roolback must be less than %d and greater than %d", confirmedHeight, 0)
+	if height > confirmedHeight && height != 0 {
+		err := fmt.Sprintf("the height of the roolback must be less than or equal to %d and greater than %d", confirmedHeight, 0)
 		log.Error("Roll back to block height", "height", height, "error", err)
 		return errors.New(err)
 	}

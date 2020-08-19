@@ -197,7 +197,7 @@ func (p *P2p) peerDiscovery() {
 		case _, _ = <-p.close:
 			return
 		default:
-			log.Info("Look for other peers...", "module", module)
+			//log.Info("Look for other peers...", "module", module)
 			ch, err := rouDis.FindPeers(context.Background(), config.Param.P2pParam.NetWork)
 			if err != nil {
 				log.Error("Peer search failed", "module", module, "error", err)
