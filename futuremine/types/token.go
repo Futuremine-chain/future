@@ -4,22 +4,21 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/math"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const MaxTokenCount = math.MaxInt64
-
-// Contract structure, issuing a contract with the same
+// token structure, issuing a contract with the same
 // name is equivalent to reissuing the pass
 type TokenRecord struct {
-	Address   arry.Address
-	Sender    arry.Address
-	Name      string
-	Shorthand string
-	Records   *RecordList
+	Address        arry.Address
+	Sender         arry.Address
+	Name           string
+	Shorthand      string
+	IncreaseIssues bool
+	Records        *RecordList
 }
 
 func NewToken() *TokenRecord {
@@ -50,6 +49,9 @@ func (t *TokenRecord) IsExist(msgHash arry.Hash) bool {
 
 func (t *TokenRecord) Check(msg types.IMessage) error {
 	body := msg.MsgBody().(*TokenBody)
+	if !t.IncreaseIssues {
+		return errors.New("token does not allow increase issuance")
+	}
 	if t.Shorthand != body.Shorthand {
 		return errors.New("token shorthand is not consistent")
 	}
@@ -59,7 +61,7 @@ func (t *TokenRecord) Check(msg types.IMessage) error {
 	if t.IsExist(msg.Hash()) {
 		return errors.New("duplicate message hash")
 	}
-	fAmount := Amount(t.amount() + body.Amount).ToCoin()
+	fAmount := amount.Amount(t.amount() + body.Amount).ToCoin()
 	if fAmount < 0 {
 		return fmt.Errorf("the total number of coins must not exceed %.8f", config.Param.MaxCoinCount)
 	}
@@ -69,7 +71,7 @@ func (t *TokenRecord) Check(msg types.IMessage) error {
 	return nil
 }
 
-func (t *TokenRecord) AddContract(record *Record) {
+func (t *TokenRecord) IncreaseRecord(record *Record) {
 	t.Records.Set(record)
 }
 

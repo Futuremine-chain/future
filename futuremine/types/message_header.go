@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 )
 
@@ -77,10 +78,10 @@ func (m *MsgHeader) checkFrom() error {
 
 func (m *MsgHeader) checkFee() error {
 	if m.Fee < minFees {
-		return fmt.Errorf("fee %.8f is less than the minimum poundage allowed %.8f", Amount(m.Fee).ToCoin(), Amount(minFees).ToCoin())
+		return fmt.Errorf("fee %.8f is less than the minimum poundage allowed %.8f", amount.Amount(m.Fee).ToCoin(), amount.Amount(minFees).ToCoin())
 	}
 	if m.Fee > maxFees {
-		return fmt.Errorf("fee %.8f greater is greater than the maximum poundage allowed %.8f", Amount(m.Fee).ToCoin(), Amount(maxFees).ToCoin())
+		return fmt.Errorf("fee %.8f greater is greater than the maximum poundage allowed %.8f", amount.Amount(m.Fee).ToCoin(), amount.Amount(maxFees).ToCoin())
 	}
 	return nil
 }

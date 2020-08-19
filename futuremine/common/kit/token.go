@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
@@ -19,9 +20,24 @@ func CalConsumption(amount uint64, proportion uint64) uint64 {
 	return amount / proportion
 }
 
-func GenerateMainAddress(net string) arry.Address {
-	addr, _ := GenerateTokenAddress(net, arry.StringToAddress(""), "FMC")
-	return addr
+func CalCoinBase(net string, height uint64) uint64 {
+	params := param.MainNetParam
+	switch net {
+	case param.MainNet:
+	case param.TestNet:
+		params = param.TestNetParam
+	}
+	fCoinBase := amount.Amount(params.CoinBase).ToCoin()
+
+	maxHeight := params.Circulation / fCoinBase
+	if float64(height) <= maxHeight {
+		return params.CoinBase
+	} else if float64(height) > maxHeight && (float64(height)-maxHeight) < 1 {
+		uCoinBase, _ := amount.NewAmount(params.Circulation - fCoinBase*float64(uint64(maxHeight)))
+		return uCoinBase
+	} else {
+		return 0
+	}
 }
 
 func GenerateTokenAddress(net string, address arry.Address, shorthand string) (arry.Address, error) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/math"
 )
@@ -55,11 +56,12 @@ func (t *TransactionBody) MsgToken() arry.Address {
 }
 
 type TokenBody struct {
-	TokenAddress arry.Address
-	Receiver     arry.Address
-	Name         string
-	Shorthand    string
-	Amount       uint64
+	TokenAddress   arry.Address
+	Receiver       arry.Address
+	Name           string
+	Shorthand      string
+	IncreaseIssues bool
+	Amount         uint64
 }
 
 func (t *TokenBody) MsgTo() arry.Address {
@@ -87,9 +89,9 @@ func (t *TokenBody) CheckBody(from arry.Address) error {
 		return fmt.Errorf("the maximum length of the token name is %d", MaxName)
 	}
 	if t.Amount > math.MaxInt64 {
-		return fmt.Errorf("amount cannot be greater than %.8f", Amount(math.MaxInt64).ToCoin())
+		return fmt.Errorf("amount cannot be greater than %.8f", amount.Amount(math.MaxInt64).ToCoin())
 	}
-	fAmount := Amount(t.Amount).ToCoin()
+	fAmount := amount.Amount(t.Amount).ToCoin()
 	if fAmount < config.Param.MinCoinCount || fAmount > config.Param.MaxCoinCount {
 		return fmt.Errorf("the quantity of coins must be between %.8f and %.8f", config.Param.MinCoinCount, config.Param.MaxCoinCount)
 	}

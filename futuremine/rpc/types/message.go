@@ -142,12 +142,14 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 		if !ok {
 			return nil, errors.New("message type error")
 		}
-		rpcMsg.MsgBody = &RpcTokenBody{
-			Address:   msg.Body.MsgToken().String(),
-			Receiver:  msg.Body.MsgTo().String(),
-			Name:      body.Name,
-			Shorthand: body.Shorthand,
-			Amount:    msg.Body.MsgAmount(),
+
+		rpcMsg.TokenBody = &RpcTokenBody{
+			Address:        msg.Body.MsgToken().String(),
+			Receiver:       msg.Body.MsgTo().String(),
+			Name:           body.Name,
+			Shorthand:      body.Shorthand,
+			IncreaseIssues: body.IncreaseIssues,
+			Amount:         msg.Body.MsgAmount(),
 		}
 	case fmctypes.Candidate:
 		body, ok := msg.Body.(*fmctypes.CandidateBody)
@@ -206,11 +208,12 @@ func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*fmctypes.TokenBody, error) {
 	}
 
 	return &fmctypes.TokenBody{
-		TokenAddress: arry.StringToAddress(rpcBody.Address),
-		Receiver:     arry.StringToAddress(rpcBody.Receiver),
-		Name:         rpcBody.Name,
-		Shorthand:    rpcBody.Shorthand,
-		Amount:       rpcBody.Amount,
+		TokenAddress:   arry.StringToAddress(rpcBody.Address),
+		Receiver:       arry.StringToAddress(rpcBody.Receiver),
+		Name:           rpcBody.Name,
+		Shorthand:      rpcBody.Shorthand,
+		IncreaseIssues: rpcBody.IncreaseIssues,
+		Amount:         rpcBody.Amount,
 	}, nil
 }
 

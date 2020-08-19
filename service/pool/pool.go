@@ -101,14 +101,27 @@ func (p *Pool) monitorExpired() {
 	t := time.NewTicker(time.Second * config.Param.MonitorMsgInterval)
 	defer t.Stop()
 
-	for range t.C {
-		p.removeExpired()
+	for {
+		select {
+		case _ = <-t.C:
+			p.removeExpired()
+			p.dealStagnant()
+		}
 	}
 }
 
 func (p *Pool) removeExpired() {
 	threshold := utils.NowUnix() - config.Param.MsgExpiredTime
 	p.msgMgt.DeleteExpired(threshold)
+}
+
+func (p *Pool) dealStagnant() {
+	msgs := p.msgMgt.StagnantMsgs()
+	if msgs != nil && len(msgs) > 0 {
+		for _, msg := range msgs {
+			p.broadcastCh <- msg
+		}
+	}
 }
 
 func (p *Pool) Delete(msg types.IMessage) {

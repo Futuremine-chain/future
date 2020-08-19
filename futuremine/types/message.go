@@ -3,7 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
@@ -84,12 +83,12 @@ func (m *Message) Check() error {
 	return nil
 }
 
-func (m *Message) CheckCoinBase(fee uint64) error {
+func (m *Message) CheckCoinBase(fee uint64, coinbase uint64) error {
 	nTx := m.Body.(*TransactionBody)
-	sumAmount := config.Param.CoinBase + fee
+	sumAmount := coinbase + fee
 	if sumAmount != nTx.Amount {
 		return fmt.Errorf("the fee of %d and the reward of %d are not consistent "+
-			"with Coinbase %d", fee, config.Param.CoinBase, nTx.Amount)
+			"with amount %d", fee, coinbase, nTx.Amount)
 	}
 	return nil
 }

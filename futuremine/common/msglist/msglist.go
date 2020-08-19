@@ -123,6 +123,13 @@ func (t *MsgManagement) NeedPackaged(count int) []types.IMessage {
 	return t.ready.NeedPackaged(count)
 }
 
+func (t *MsgManagement) StagnantMsgs() []types.IMessage {
+	t.mutex.RLock()
+	defer t.mutex.RUnlock()
+
+	return t.ready.StagnantMsgs()
+}
+
 func (t *MsgManagement) GetAll() ([]types.IMessage, []types.IMessage) {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()

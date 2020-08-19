@@ -80,7 +80,7 @@ func NewVote(from, to arry.Address, fee, nonce uint64) *types.Message {
 	return vote
 }
 
-func NewToken(from, to, tokenAddr arry.Address, amount, fee, nonce uint64, name, shorthand string) *types.Message {
+func NewToken(from, to, tokenAddr arry.Address, amount, fee, nonce uint64, name, shorthand string, allowIncrease bool) *types.Message {
 	token := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Token,
@@ -92,11 +92,12 @@ func NewToken(from, to, tokenAddr arry.Address, amount, fee, nonce uint64, name,
 			Signature: &types.Signature{},
 		},
 		Body: &types.TokenBody{
-			TokenAddress: tokenAddr,
-			Receiver:     to,
-			Name:         name,
-			Shorthand:    shorthand,
-			Amount:       amount,
+			TokenAddress:   tokenAddr,
+			Receiver:       to,
+			Name:           name,
+			Shorthand:      shorthand,
+			IncreaseIssues: allowIncrease,
+			Amount:         amount,
 		},
 	}
 	token.SetHash()

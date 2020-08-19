@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 )
 
 type Account struct {
@@ -25,8 +26,8 @@ func ToRpcAccount(a *types.Account) *Account {
 	for i, t := range a.Tokens {
 		tokens[i] = &TokenAccount{
 			Address:  t.Address,
-			Balance:  types.Amount(t.Balance).ToCoin(),
-			LockedIn: types.Amount(t.LockedIn).ToCoin(),
+			Balance:  amount.Amount(t.Balance).ToCoin(),
+			LockedIn: amount.Amount(t.LockedIn).ToCoin(),
 		}
 	}
 	return &Account{

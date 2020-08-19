@@ -9,6 +9,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
 	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/sirupsen/logrus"
@@ -214,7 +215,7 @@ func parseTransaction(cmd *cobra.Command, args []string) (*types.Message, error)
 		if fAmount < 0 {
 			return nil, errors.New("[amount] wrong")
 		}
-		if amount, err = types.NewAmount(fAmount); err != nil {
+		if amount, err = amount2.NewAmount(fAmount); err != nil {
 			return nil, errors.New("[amount] wrong")
 		}
 	}
@@ -224,7 +225,7 @@ func parseTransaction(cmd *cobra.Command, args []string) (*types.Message, error)
 		if fFees < 0 {
 			return nil, errors.New("[fees] wrong")
 		}
-		if fee, err = types.NewAmount(fFees); err != nil {
+		if fee, err = amount2.NewAmount(fFees); err != nil {
 			return nil, errors.New("[fees] wrong")
 		}
 	}

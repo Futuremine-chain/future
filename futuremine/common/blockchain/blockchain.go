@@ -6,6 +6,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/status"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
 	"github.com/Futuremine-chain/futuremine/futuremine/db/chain_db"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	servicesync "github.com/Futuremine-chain/futuremine/service/sync"
@@ -94,6 +95,8 @@ func (b *FMCChain) NextHeader(time uint64) (types.IHeader, error) {
 func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBlock, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
+	height := b.lastHeight + 1
+	coinbase := kit.CalCoinBase(config.Param.Name, height)
 
 	coinBase := &fmctypes.Message{
 		Header: &fmctypes.MsgHeader{
@@ -104,7 +107,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBl
 		Body: &fmctypes.TransactionBody{
 			TokenAddress: config.Param.TokenParam.MainToken,
 			Receiver:     config.Param.IPrivate.Address(),
-			Amount:       config.Param.TokenParam.CoinBase + fmctypes.CalculateFee(msgs),
+			Amount:       coinbase + fmctypes.CalculateFee(msgs),
 		},
 	}
 	coinBase.SetHash()
@@ -121,7 +124,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBl
 		b.actRoot,
 		b.dPosRoot,
 		b.tokenRoot,
-		b.lastHeight+1,
+		b.lastHeight+height,
 		blockTime,
 		config.Param.IPrivate.Address(),
 	)
@@ -376,11 +379,11 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 	return nil
 }
 
-func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
+func (b *FMCChain) checkMsgs(msgs []types.IMessage, height uint64) error {
 	address := make(map[string]bool)
 	for _, msg := range msgs {
 		if msg.IsCoinBase() {
-			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs)); err != nil {
+			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs), height); err != nil {
 				return err
 			}
 		} else {
@@ -403,13 +406,14 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, blockHeight uint64) error {
 	return nil
 }
 
-func (b *FMCChain) checkCoinBase(coinBase types.IMessage, fee uint64) error {
+func (b *FMCChain) checkCoinBase(coinBase types.IMessage, fee, height uint64) error {
 	msg, ok := coinBase.(*fmctypes.Message)
 	if !ok {
 		return errors.New("wrong message type")
 	}
+	coinbase := kit.CalCoinBase(config.Param.Name, height)
 
-	if err := msg.CheckCoinBase(fee); err != nil {
+	if err := msg.CheckCoinBase(fee, coinbase); err != nil {
 		return err
 	}
 	return nil
