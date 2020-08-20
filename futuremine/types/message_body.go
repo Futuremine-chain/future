@@ -36,7 +36,7 @@ func (t *TransactionBody) MsgTo() arry.Address {
 }
 
 func (t *TransactionBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver.String()) {
 		return errors.New("receive address verification failed")
 	}
 	if !t.TokenAddress.IsEqual(config.Param.MainToken) {
@@ -69,7 +69,7 @@ func (t *TokenBody) MsgTo() arry.Address {
 }
 
 func (t *TokenBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver.String()) {
 		return errors.New("receive address verification failed")
 	}
 	if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress) {
@@ -154,7 +154,7 @@ func (v *VoteBody) MsgTo() arry.Address {
 }
 
 func (v *VoteBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, v.To) {
+	if !kit.CheckAddress(config.Param.Name, v.To.String()) {
 		return errors.New("wrong to address")
 	}
 	return nil

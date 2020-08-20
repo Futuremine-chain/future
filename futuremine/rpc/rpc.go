@@ -114,23 +114,9 @@ func (r *Rpc) RegisterLocalInfo(f func() *types.Local) {
 	r.getLocal = f
 }
 
-
-/*GetAccount(context.Context, *Address) (*Response, error)
-SendMessageRaw(context.Context, *SendMessageCode) (*Response, error)
-GetMessage(context.Context, *Hash) (*Response, error)
-GetBlockHash(context.Context, *Hash) (*Response, error)
-GetBlockHeight(context.Context, *Height) (*Response, error)
-LastHeight(context.Context, *Null) (*Response, error)
-Confirmed(context.Context, *Null) (*Response, error)
-GetMsgPool(context.Context, *Null) (*Response, error)
-Candidates(context.Context, *Null) (*Response, error)
-GetCycleSupers(context.Context, *Cycle) (*Response, error)
-Token(context.Context, *TokenAddress) (*Response, error)
-PeersInfo(context.Context, *Null) (*Response, error)
-LocalInfo(context.Context, *Null) (*Response, error)*/
-func (r *Rpc) GetAccount(_ context.Context, address *Address) (*Response, error) {
+func (r *Rpc) GetAccount(_ context.Context, address *AddressReq) (*Response, error) {
 	arryAddr := arry.StringToAddress(address.Address)
-	if !kit.CheckAddress(config.Param.Name, arryAddr) {
+	if !kit.CheckAddress(config.Param.Name, arryAddr.String()) {
 		return NewResponse(Err_Params, nil, fmt.Sprintf("%s address check failed", address.Address)), nil
 	}
 	account := r.status.Account(arryAddr)
@@ -139,7 +125,7 @@ func (r *Rpc) GetAccount(_ context.Context, address *Address) (*Response, error)
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCode) (*Response, error) {
+func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCodeReq) (*Response, error) {
 	var rpcMsg *rpctypes.RpcMessage
 	if err := json.Unmarshal(code.Code, &rpcMsg); err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
@@ -154,7 +140,7 @@ func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCode) (*Respo
 	return NewResponse(Success, []byte(fmt.Sprintf("send transaction raw %s success", tx.Hash().String())), ""), nil
 }
 
-func (r *Rpc) GetMessage(ctx context.Context, hash *Hash) (*Response, error) {
+func (r *Rpc) GetMessage(ctx context.Context, hash *HashReq) (*Response, error) {
 	hashArry, err := arry.StringToHash(hash.Hash)
 	if err != nil {
 		return NewResponse(Err_Params, nil, "wrong hash "+err.Error()), nil
@@ -169,7 +155,7 @@ func (r *Rpc) GetMessage(ctx context.Context, hash *Hash) (*Response, error) {
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) GetBlockHash(ctx context.Context, hash *Hash) (*Response, error) {
+func (r *Rpc) GetBlockHash(ctx context.Context, hash *HashReq) (*Response, error) {
 	hashArry, err := arry.StringToHash(hash.Hash)
 	if err != nil {
 		return NewResponse(Err_Params, nil, "wrong hash"), nil
@@ -186,7 +172,7 @@ func (r *Rpc) GetBlockHash(ctx context.Context, hash *Hash) (*Response, error) {
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) GetBlockHeight(ctx context.Context, height *Height) (*Response, error) {
+func (r *Rpc) GetBlockHeight(ctx context.Context, height *HeightReq) (*Response, error) {
 	block, err := r.chain.GetBlockHeight(height.Height)
 	if err != nil {
 		return NewResponse(Err_Chain, nil, err.Error()), nil
@@ -199,25 +185,25 @@ func (r *Rpc) GetBlockHeight(ctx context.Context, height *Height) (*Response, er
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) LastHeight(context.Context, *Null) (*Response, error) {
+func (r *Rpc) LastHeight(context.Context, *NullReq) (*Response, error) {
 	height := r.chain.LastHeight()
 	sHeight := strconv.FormatUint(height, 10)
 	return NewResponse(Success, []byte(sHeight), ""), nil
 }
-func (r *Rpc) Confirmed(context.Context, *Null) (*Response, error) {
+func (r *Rpc) Confirmed(context.Context, *NullReq) (*Response, error) {
 	height := r.chain.LastConfirmed()
 	sHeight := strconv.FormatUint(height, 10)
 	return NewResponse(Success, []byte(sHeight), ""), nil
 }
 
-func (r *Rpc) GetMsgPool(context.Context, *Null) (*Response, error) {
+func (r *Rpc) GetMsgPool(context.Context, *NullReq) (*Response, error) {
 	preparedTxs, futureTxs := r.msgPool.All()
 	txPoolTxs := rpctypes.MsgsToRpcMsgsPool(preparedTxs, futureTxs)
 	bytes, _ := json.Marshal(txPoolTxs)
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) Candidates(context.Context, *Null) (*Response, error) {
+func (r *Rpc) Candidates(context.Context, *NullReq) (*Response, error) {
 	candidates := r.status.Candidates()
 	if candidates == nil || candidates.Len() == 0 {
 		return NewResponse(Err_DPos, nil, "no candidates"), nil
@@ -230,7 +216,7 @@ func (r *Rpc) Candidates(context.Context, *Null) (*Response, error) {
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) GetCycleSupers(ctx context.Context, cycle *Cycle) (*Response, error) {
+func (r *Rpc) GetCycleSupers(ctx context.Context, cycle *CycleReq) (*Response, error) {
 	supers := r.status.CycleSupers(cycle.Cycle)
 	if supers == nil {
 		return NewResponse(Err_DPos, nil, "no supers"), nil
@@ -240,7 +226,7 @@ func (r *Rpc) GetCycleSupers(ctx context.Context, cycle *Cycle) (*Response, erro
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) Token(ctx context.Context, token *TokenAddress) (*Response, error) {
+func (r *Rpc) Token(ctx context.Context, token *TokenAddressReq) (*Response, error) {
 	iToken, err := r.status.Token(arry.StringToAddress(token.Token))
 	if err != nil {
 		return NewResponse(Err_Token, nil, fmt.Sprintf("token address %s is not exist", token.Token)), nil
@@ -249,12 +235,12 @@ func (r *Rpc) Token(ctx context.Context, token *TokenAddress) (*Response, error)
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) PeersInfo(context.Context, *Null) (*Response, error) {
+func (r *Rpc) PeersInfo(context.Context, *NullReq) (*Response, error) {
 	peersInfo := r.peers.PeersInfo()
 	bytes, _ := json.Marshal(peersInfo)
 	return NewResponse(Success, bytes, ""), nil
 }
-func (r *Rpc) LocalInfo(context.Context, *Null) (*Response, error) {
+func (r *Rpc) LocalInfo(context.Context, *NullReq) (*Response, error) {
 	if r.getLocal != nil {
 		local := r.getLocal()
 		bytes, _ := json.Marshal(local)
@@ -262,6 +248,16 @@ func (r *Rpc) LocalInfo(context.Context, *Null) (*Response, error) {
 	}
 	return NewResponse(Err_Local, nil, "no local info"), nil
 }
+
+func (r *Rpc) GenerateAddress(ctx context.Context, req *GenerateReq) (*Response, error) {
+	kit.GenerateAddress(req.Network, req.Publickey)
+	return nil, nil
+}
+func (r *Rpc) CreateTransaction(context.Context, *TransactionReq) (*Response, error) { return nil, nil }
+func (r *Rpc) CreateToken(context.Context, *TokenReq) (*Response, error)             { return nil, nil }
+func (r *Rpc) CreateCandidate(context.Context, *CandidateReq) (*Response, error)     { return nil, nil }
+func (r *Rpc) CreateCancel(context.Context, *CancelReq) (*Response, error)           { return nil, nil }
+func (r *Rpc) CreateVote(context.Context, *VoteReq) (*Response, error)               { return nil, nil }
 
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}

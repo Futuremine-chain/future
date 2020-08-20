@@ -323,7 +323,7 @@ func GetCandidates(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.Candidates(ctx, &rpc.Null{})
+	resp, err := client.Gc.Candidates(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -361,8 +361,7 @@ func CycleSupers(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-
-	resp, err := client.Gc.GetCycleSupers(ctx, &rpc.Cycle{Cycle: term})
+	resp, err := client.Gc.GetCycleSupers(ctx, &rpc.CycleReq{Cycle: term})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return

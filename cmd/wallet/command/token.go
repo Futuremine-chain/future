@@ -172,7 +172,7 @@ func GetTokenByRpc(tokenAddr string) (*rpc.Response, error) {
 	}
 	defer client.Close()
 
-	re := &rpc.TokenAddress{Token: tokenAddr}
+	re := &rpc.TokenAddressReq{Token: tokenAddr}
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 	return client.Gc.Token(ctx, re)

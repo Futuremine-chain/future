@@ -42,7 +42,7 @@ func MsgPool(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	resp, err := client.Gc.GetMsgPool(ctx, &rpc.Null{})
+	resp, err := client.Gc.GetMsgPool(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -75,7 +75,7 @@ func PeerInfo(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.PeersInfo(ctx, &rpc.Null{})
+	resp, err := client.Gc.PeersInfo(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -108,7 +108,7 @@ func LocalInfo(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.LocalInfo(ctx, &rpc.Null{})
+	resp, err := client.Gc.LocalInfo(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return

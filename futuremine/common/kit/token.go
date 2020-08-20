@@ -53,7 +53,7 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	if err := CheckShorthand(shorthand); err != nil {
 		return arry.Address{}, err
 	}
-	if !CheckAddress(net, address) {
+	if !CheckAddress(net, address.String()) {
 		return arry.Address{}, errors.New("incorrect address")
 	}
 	addrBytes := base58.Decode(address.String())

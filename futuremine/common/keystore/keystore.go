@@ -57,7 +57,7 @@ func PrivateToJson(net string, priv *secp256k1.PrivateKey, mnemonicStr string, p
 		return nil, fmt.Errorf("get rand salt failed! %s", err.Error())
 	}
 
-	address, err := kit.GenerateAddress(net, priv.PubKey())
+	address, err := kit.GenerateAddress(net, priv.PubKey().SerializeCompressedString())
 	if err != nil {
 		return nil, fmt.Errorf("generate address failed! %s", err.Error())
 	}
@@ -70,7 +70,7 @@ func PrivateToJson(net string, priv *secp256k1.PrivateKey, mnemonicStr string, p
 		return nil, errors.New("aes encrypt failed")
 	}
 	j := &Key{
-		Address: address.String(),
+		Address: address,
 		Crypto: &crypto{
 			Cipher:             "aes-128-cfb",
 			CipherText:         hex.EncodeToString(cipherText),

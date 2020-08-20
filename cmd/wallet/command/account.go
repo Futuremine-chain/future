@@ -58,7 +58,7 @@ func AccountByRpc(addr string) (*types.Account, error) {
 	}
 	defer client.Close()
 
-	re := &rpc.Address{Address: addr}
+	re := &rpc.AddressReq{Address: addr}
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 	resp, err := client.Gc.GetAccount(ctx, re)
