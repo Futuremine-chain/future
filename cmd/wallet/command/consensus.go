@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit/message"
@@ -324,7 +323,7 @@ func GetCandidates(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.Candidates(ctx, &rpc.Request{})
+	resp, err := client.Gc.Candidates(ctx, &rpc.Null{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -362,20 +361,16 @@ func CycleSupers(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{term}
-	if bytes, err := json.Marshal(params); err != nil {
+
+	resp, err := client.Gc.GetCycleSupers(ctx, &rpc.Cycle{Cycle: term})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetCycleSupers(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }

@@ -57,30 +57,27 @@ func AccountByRpc(addr string) (*types.Account, error) {
 		return nil, err
 	}
 	defer client.Close()
-	params := []interface{}{addr}
-	if bytes, err := json.Marshal(params); err != nil {
+
+	re := &rpc.Address{Address: addr}
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
+	defer cancel()
+	resp, err := client.Gc.GetAccount(ctx, re)
+	if err != nil {
 		return nil, err
-	} else {
-		re := &rpc.Request{Params: bytes}
-		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
-		defer cancel()
-		resp, err := client.Gc.GetAccount(ctx, re)
-		if err != nil {
+	}
+	if resp.Code == 0 {
+		var account *types.Account
+		if err := json.Unmarshal(resp.Result, &account); err != nil {
 			return nil, err
 		}
-		if resp.Code == 0 {
-			var account *types.Account
-			if err := json.Unmarshal(resp.Result, &account); err != nil {
-				return nil, err
-			}
-			if account.Address != addr {
-				account.Address = addr
-			}
-			return account, nil
-		} else {
-			return nil, fmt.Errorf("err code :%d, message :%s", resp.Code, resp.Err)
+		if account.Address != addr {
+			account.Address = addr
 		}
+		return account, nil
+	} else {
+		return nil, fmt.Errorf("err code :%d, message :%s", resp.Code, resp.Err)
 	}
+
 }
 
 var CreateCmd = &cobra.Command{

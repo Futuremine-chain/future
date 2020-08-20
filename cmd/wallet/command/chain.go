@@ -51,7 +51,7 @@ func LastHeight(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.LastHeight(ctx, &rpc.Request{})
+	resp, err := client.Gc.LastHeight(ctx, &rpc.Null{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -91,22 +91,17 @@ func GetBlock(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{height}
-	if bytes, err := json.Marshal(params); err != nil {
+	resp, err := client.Gc.GetBlockHeight(ctx, &rpc.Height{Height: height})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetBlockHeight(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }
 
 func GetBlockByHash(cmd *cobra.Command, args []string) {
@@ -121,22 +116,18 @@ func GetBlockByHash(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{args[0]}
-	if bytes, err := json.Marshal(params); err != nil {
+
+	resp, err := client.Gc.GetBlockHash(ctx, &rpc.Hash{Hash: args[0]})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetBlockHash(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }
 
 var SendMessageCmd = &cobra.Command{
@@ -265,7 +256,7 @@ func sendMsg(msg *types.Message) (*rpc.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	re := &rpc.Request{Params: jsonBytes}
+	re := &rpc.SendMessageCode{Code: jsonBytes}
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
@@ -311,11 +302,7 @@ func GetMessageRpc(hashStr string) (*rpc.Response, error) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{hashStr}
-	if bytes, err := json.Marshal(params); err != nil {
-		return nil, err
-	} else {
-		resp, err := client.Gc.GetMessage(ctx, &rpc.Request{Params: bytes})
-		return resp, err
-	}
+
+	resp, err := client.Gc.GetMessage(ctx, &rpc.Hash{Hash: hashStr})
+	return resp, err
 }

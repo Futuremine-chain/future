@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
@@ -173,13 +172,9 @@ func GetTokenByRpc(tokenAddr string) (*rpc.Response, error) {
 	}
 	defer client.Close()
 
-	params := []interface{}{tokenAddr}
-	if bytes, err := json.Marshal(params); err != nil {
-		return nil, err
-	} else {
-		re := &rpc.Request{Params: bytes}
-		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
-		defer cancel()
-		return client.Gc.Token(ctx, re)
-	}
+	re := &rpc.TokenAddress{Token: tokenAddr}
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
+	defer cancel()
+	return client.Gc.Token(ctx, re)
+
 }

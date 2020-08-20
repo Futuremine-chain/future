@@ -114,31 +114,34 @@ func (r *Rpc) RegisterLocalInfo(f func() *types.Local) {
 	r.getLocal = f
 }
 
-func (r *Rpc) GetAccount(_ context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
-	}
-	if len(params) == 0 {
-		return NewResponse(Err_Params, nil, "no address"), nil
-	}
-	if address, ok := params[0].(string); !ok {
-		return NewResponse(Err_Params, nil, "address type error"), nil
-	} else {
-		arryAddr := arry.StringToAddress(address)
-		if !kit.CheckAddress(config.Param.Name, arryAddr) {
-			return NewResponse(Err_Params, nil, fmt.Sprintf("%s address check failed", string(req.Params))), nil
-		}
-		account := r.status.Account(arryAddr)
 
-		bytes, _ := json.Marshal(rpctypes.ToRpcAccount(account.(*fmctypes.Account)))
-		return NewResponse(Success, bytes, ""), nil
+/*GetAccount(context.Context, *Address) (*Response, error)
+SendMessageRaw(context.Context, *SendMessageCode) (*Response, error)
+GetMessage(context.Context, *Hash) (*Response, error)
+GetBlockHash(context.Context, *Hash) (*Response, error)
+GetBlockHeight(context.Context, *Height) (*Response, error)
+LastHeight(context.Context, *Null) (*Response, error)
+Confirmed(context.Context, *Null) (*Response, error)
+GetMsgPool(context.Context, *Null) (*Response, error)
+Candidates(context.Context, *Null) (*Response, error)
+GetCycleSupers(context.Context, *Cycle) (*Response, error)
+Token(context.Context, *TokenAddress) (*Response, error)
+PeersInfo(context.Context, *Null) (*Response, error)
+LocalInfo(context.Context, *Null) (*Response, error)*/
+func (r *Rpc) GetAccount(_ context.Context, address *Address) (*Response, error) {
+	arryAddr := arry.StringToAddress(address.Address)
+	if !kit.CheckAddress(config.Param.Name, arryAddr) {
+		return NewResponse(Err_Params, nil, fmt.Sprintf("%s address check failed", address.Address)), nil
 	}
+	account := r.status.Account(arryAddr)
+
+	bytes, _ := json.Marshal(rpctypes.ToRpcAccount(account.(*fmctypes.Account)))
+	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) SendMessageRaw(ctx context.Context, req *Request) (*Response, error) {
+func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCode) (*Response, error) {
 	var rpcMsg *rpctypes.RpcMessage
-	if err := json.Unmarshal(req.Params, &rpcMsg); err != nil {
+	if err := json.Unmarshal(code.Code, &rpcMsg); err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
 	tx, err := rpctypes.RpcMsgToMsg(rpcMsg)
@@ -150,103 +153,71 @@ func (r *Rpc) SendMessageRaw(ctx context.Context, req *Request) (*Response, erro
 	}
 	return NewResponse(Success, []byte(fmt.Sprintf("send transaction raw %s success", tx.Hash().String())), ""), nil
 }
-func (r *Rpc) GetMessage(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
-	}
-	if len(params) < 1 {
-		return NewResponse(Err_Params, nil, "no hash"), nil
-	}
-	if hashStr, ok := params[0].(string); !ok {
-		return NewResponse(Err_Params, nil, "only string hash is allowed"), nil
-	} else {
-		hash, err := arry.StringToHash(hashStr)
-		if err != nil {
-			return NewResponse(Err_Params, nil, "wrong hash "+err.Error()), nil
-		}
-		msg, err := r.chain.GetMessage(hash)
-		if err != nil {
-			return NewResponse(Err_Chain, nil, err.Error()), nil
-		}
-		rpcMsg, _ := rpctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
-		bytes, _ := json.Marshal(rpcMsg)
 
-		return NewResponse(Success, bytes, ""), nil
+func (r *Rpc) GetMessage(ctx context.Context, hash *Hash) (*Response, error) {
+	hashArry, err := arry.StringToHash(hash.Hash)
+	if err != nil {
+		return NewResponse(Err_Params, nil, "wrong hash "+err.Error()), nil
 	}
-}
-func (r *Rpc) GetBlockHash(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
+	msg, err := r.chain.GetMessage(hashArry)
+	if err != nil {
+		return NewResponse(Err_Chain, nil, err.Error()), nil
 	}
-	if len(params) < 1 {
-		return NewResponse(Err_Params, nil, "no hash"), nil
-	}
-	if hashStr, ok := params[0].(string); !ok {
-		return NewResponse(Err_Params, nil, "only string hash is allowed"), nil
-	} else {
-		hash, err := arry.StringToHash(hashStr)
-		if err != nil {
-			return NewResponse(Err_Params, nil, "wrong hash"), nil
-		}
-		block, err := r.chain.GetBlockHash(hash)
-		if err != nil {
-			return NewResponse(Err_Chain, nil, err.Error()), nil
-		}
-		rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
-		if err != nil {
-			return NewResponse(Err_Chain, nil, err.Error()), nil
-		}
-		bytes, _ := json.Marshal(rpcBlock)
-		return NewResponse(Success, bytes, ""), nil
-	}
+	rpcMsg, _ := rpctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
+	bytes, _ := json.Marshal(rpcMsg)
+
+	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) GetBlockHeight(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
+func (r *Rpc) GetBlockHash(ctx context.Context, hash *Hash) (*Response, error) {
+	hashArry, err := arry.StringToHash(hash.Hash)
+	if err != nil {
+		return NewResponse(Err_Params, nil, "wrong hash"), nil
 	}
-	if len(params) < 1 {
-		return NewResponse(Err_Params, nil, "no height"), nil
+	block, err := r.chain.GetBlockHash(hashArry)
+	if err != nil {
+		return NewResponse(Err_Chain, nil, err.Error()), nil
 	}
-	if height, ok := params[0].(float64); !ok {
-		return NewResponse(Err_Params, nil, "height type error"), nil
-	} else {
-		block, err := r.chain.GetBlockHeight(uint64(height))
-		if err != nil {
-			return NewResponse(Err_Chain, nil, err.Error()), nil
-		}
-		rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
-		if err != nil {
-			return NewResponse(Err_Chain, nil, err.Error()), nil
-		}
-		bytes, _ := json.Marshal(rpcBlock)
-
-		return NewResponse(Success, bytes, ""), nil
+	rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
+	if err != nil {
+		return NewResponse(Err_Chain, nil, err.Error()), nil
 	}
+	bytes, _ := json.Marshal(rpcBlock)
+	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) LastHeight(context.Context, *Request) (*Response, error) {
+func (r *Rpc) GetBlockHeight(ctx context.Context, height *Height) (*Response, error) {
+	block, err := r.chain.GetBlockHeight(height.Height)
+	if err != nil {
+		return NewResponse(Err_Chain, nil, err.Error()), nil
+	}
+	rpcBlock, err := rpctypes.BlockToRpcBlock(block.(*fmctypes.Block), r.chain.LastConfirmed())
+	if err != nil {
+		return NewResponse(Err_Chain, nil, err.Error()), nil
+	}
+	bytes, _ := json.Marshal(rpcBlock)
+	return NewResponse(Success, bytes, ""), nil
+}
+
+func (r *Rpc) LastHeight(context.Context, *Null) (*Response, error) {
 	height := r.chain.LastHeight()
 	sHeight := strconv.FormatUint(height, 10)
 	return NewResponse(Success, []byte(sHeight), ""), nil
 }
-func (r *Rpc) Confirmed(context.Context, *Request) (*Response, error) {
+func (r *Rpc) Confirmed(context.Context, *Null) (*Response, error) {
 	height := r.chain.LastConfirmed()
 	sHeight := strconv.FormatUint(height, 10)
 	return NewResponse(Success, []byte(sHeight), ""), nil
 }
 
-func (r *Rpc) GetMsgPool(context.Context, *Request) (*Response, error) {
+func (r *Rpc) GetMsgPool(context.Context, *Null) (*Response, error) {
 	preparedTxs, futureTxs := r.msgPool.All()
 	txPoolTxs := rpctypes.MsgsToRpcMsgsPool(preparedTxs, futureTxs)
 	bytes, _ := json.Marshal(txPoolTxs)
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) Candidates(context.Context, *Request) (*Response, error) {
+func (r *Rpc) Candidates(context.Context, *Null) (*Response, error) {
 	candidates := r.status.Candidates()
 	if candidates == nil || candidates.Len() == 0 {
 		return NewResponse(Err_DPos, nil, "no candidates"), nil
@@ -259,53 +230,31 @@ func (r *Rpc) Candidates(context.Context, *Request) (*Response, error) {
 	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) GetCycleSupers(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
+func (r *Rpc) GetCycleSupers(ctx context.Context, cycle *Cycle) (*Response, error) {
+	supers := r.status.CycleSupers(cycle.Cycle)
+	if supers == nil {
+		return NewResponse(Err_DPos, nil, "no supers"), nil
 	}
-	if len(params) < 1 {
-		return NewResponse(Err_Params, nil, "no cycle"), nil
-	}
-	if cycle, ok := params[0].(float64); !ok {
-		return NewResponse(Err_Params, nil, "wrong cycle type"), nil
-	} else {
-		supers := r.status.CycleSupers(uint64(cycle))
-		if supers == nil {
-			return NewResponse(Err_DPos, nil, "no supers"), nil
-		}
-		bytes, _ := json.Marshal(rpctypes.SupersToRpcCandidates(supers))
+	bytes, _ := json.Marshal(rpctypes.SupersToRpcCandidates(supers))
 
-		return NewResponse(Success, bytes, ""), nil
-	}
+	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) Token(ctx context.Context, req *Request) (*Response, error) {
-	params := make([]interface{}, 0)
-	if err := json.Unmarshal(req.Params, &params); err != nil {
-		return NewResponse(Err_Params, nil, err.Error()), nil
+func (r *Rpc) Token(ctx context.Context, token *TokenAddress) (*Response, error) {
+	iToken, err := r.status.Token(arry.StringToAddress(token.Token))
+	if err != nil {
+		return NewResponse(Err_Token, nil, fmt.Sprintf("token address %s is not exist", token.Token)), nil
 	}
-	if len(params) < 1 {
-		return NewResponse(Err_Params, nil, "no token"), nil
-	}
-	if tokenStr, ok := params[0].(string); !ok {
-		return NewResponse(Err_Params, nil, "token type error"), nil
-	} else {
-		iToken, err := r.status.Token(arry.StringToAddress(tokenStr))
-		if err != nil {
-			return NewResponse(Err_Token, nil, fmt.Sprintf("token address %s is not exist", tokenStr)), nil
-		}
-		bytes, _ := json.Marshal(rpctypes.TokenToRpcToken(iToken.(*fmctypes.TokenRecord)))
-		return NewResponse(Success, bytes, ""), nil
-	}
+	bytes, _ := json.Marshal(rpctypes.TokenToRpcToken(iToken.(*fmctypes.TokenRecord)))
+	return NewResponse(Success, bytes, ""), nil
 }
 
-func (r *Rpc) PeersInfo(context.Context, *Request) (*Response, error) {
+func (r *Rpc) PeersInfo(context.Context, *Null) (*Response, error) {
 	peersInfo := r.peers.PeersInfo()
 	bytes, _ := json.Marshal(peersInfo)
 	return NewResponse(Success, bytes, ""), nil
 }
-func (r *Rpc) LocalInfo(context.Context, *Request) (*Response, error) {
+func (r *Rpc) LocalInfo(context.Context, *Null) (*Response, error) {
 	if r.getLocal != nil {
 		local := r.getLocal()
 		bytes, _ := json.Marshal(local)

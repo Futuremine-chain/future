@@ -19,25 +19,50 @@ package rpc;
 // The greeting service definition.
 service Greeter {
     // Sends a greeting
-    rpc GetAccount(Request)returns (Response) {}
-    rpc SendMessageRaw(Request)returns (Response) {}
-    rpc GetMessage(Request)returns (Response) {}
-    rpc GetBlockHash(Request)returns (Response) {}
-    rpc GetBlockHeight(Request)returns (Response) {}
-    rpc LastHeight(Request)returns (Response) {}
-    rpc Confirmed(Request)returns (Response) {}
-    rpc GetMsgPool(Request)returns (Response) {}
-    rpc Candidates(Request)returns (Response) {}
-    rpc GetCycleSupers(Request)returns (Response) {}
-    rpc Token(Request)returns (Response) {}
-    rpc PeersInfo(Request)returns (Response) {}
-    rpc LocalInfo(Request)returns (Response) {}
+    rpc GetAccount(Address)returns (Response) {}
+    rpc SendMessageRaw(SendMessageCode)returns (Response) {}
+    rpc GetMessage(Hash)returns (Response) {}
+    rpc GetBlockHash(Hash)returns (Response) {}
+    rpc GetBlockHeight(Height)returns (Response) {}
+    rpc LastHeight(Null)returns (Response) {}
+    rpc Confirmed(Null)returns (Response) {}
+    rpc GetMsgPool(Null)returns (Response) {}
+    rpc Candidates(Null)returns (Response) {}
+    rpc GetCycleSupers(Cycle)returns (Response) {}
+    rpc Token(TokenAddress)returns (Response) {}
+    rpc PeersInfo(Null)returns (Response) {}
+    rpc LocalInfo(Null)returns (Response) {}
 }
 
 // The request message containing the user's name.
-message Request {
-  bytes params = 1;
+message Null {
 }
+
+message Address {
+  string address = 1;
+}
+
+message TokenAddress {
+  string token = 1;
+}
+
+message SendMessageCode{
+  bytes code = 1;
+}
+
+message Hash{
+  string hash = 1;
+}
+
+message Height{
+  uint64 height = 1;
+}
+
+message Cycle{
+  uint64 cycle = 1;
+}
+
+
 
 // The response message containing the greetings
 message Response {
