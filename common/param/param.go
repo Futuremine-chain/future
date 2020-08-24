@@ -211,3 +211,17 @@ var MainNetParam = &Param{
 		MaxAddressMsg:      1000,
 	},
 }
+
+type PreCirculation struct {
+	Address string
+	Note    string
+	Amount  uint64
+}
+
+var PreCirculations = []PreCirculation{
+	{
+		Address: "FckAt3A12YfAbH1DzFfS11jrXA1UNoE1oue",
+		Note:    "",
+		Amount:  38000000 * AtomsPerCoin,
+	},
+}

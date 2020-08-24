@@ -7,6 +7,7 @@ import (
 	"github.com/Futuremine-chain/futuremine/common/config"
 	"github.com/Futuremine-chain/futuremine/common/dpos"
 	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/futuremine/common/kit/message"
 	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/utils"
@@ -51,6 +52,11 @@ func (d *DPos) GenesisBlock() types.IBlock {
 		msg.SetHash()
 		block.Body.Messages = append(block.Body.Messages, msg)
 	}
+	for _, e := range param.PreCirculations {
+		tx := message.NewTransaction("", e.Address, config.Param.MainToken.String(), e.Amount, 0, 0)
+		block.Body.Messages = append(block.Body.Messages, tx)
+	}
+
 	block.SetHash()
 	return block
 }
