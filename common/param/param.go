@@ -106,8 +106,8 @@ var TestNetParam = &Param{
 	Data:              "data",
 	App:               "future-chain",
 	RollBack:          0,
-	PubKeyHashAddrID:  [2]byte{0x1f, 0x13},
-	PubKeyHashTokenID: [2]byte{0x0f, 0x03},
+	PubKeyHashAddrID:  [2]byte{0x08, 0x3a},
+	PubKeyHashTokenID: [2]byte{0x08, 0x62},
 	Logging:           true,
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
@@ -160,8 +160,8 @@ var MainNetParam = &Param{
 	Data:              "data",
 	App:               "future-chain",
 	RollBack:          0,
-	PubKeyHashAddrID:  [2]byte{0x1e, 0x12},
-	PubKeyHashTokenID: [2]byte{0x0e, 0x02},
+	PubKeyHashAddrID:  [2]byte{0x07, 0xff},
+	PubKeyHashTokenID: [2]byte{0x08, 0x24},
 	Logging:           true,
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
