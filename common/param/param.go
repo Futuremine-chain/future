@@ -8,11 +8,11 @@ import (
 
 const (
 	// Block interval period
-	BlockInterval = uint64(30)
+	BlockInterval = uint64(5)
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
-	SuperSize = 9
+	SuperSize = 3
 
 	DPosSize = SuperSize*2/3 + 1
 )
@@ -220,7 +220,7 @@ type PreCirculation struct {
 
 var PreCirculations = []PreCirculation{
 	{
-		Address: "FckAt3A12YfAbH1DzFfS11jrXA1UNoE1oue",
+		Address: "FMizWwybDdxE9wWtbeiukj4ixcnMGLaT5La",
 		Note:    "",
 		Amount:  38000000 * AtomsPerCoin,
 	},

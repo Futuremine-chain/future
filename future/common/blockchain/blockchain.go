@@ -124,7 +124,7 @@ func (b *FMCChain) NextBlock(msgs []types.IMessage, blockTime uint64) (types.IBl
 		b.actRoot,
 		b.dPosRoot,
 		b.tokenRoot,
-		b.lastHeight+height,
+		height,
 		blockTime,
 		config.Param.IPrivate.Address(),
 	)

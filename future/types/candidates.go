@@ -41,6 +41,7 @@ type Member struct {
 	PeerId   string
 	Weight   uint64
 	MntCount uint32
+	Voters   []arry.Address
 }
 
 func (m *Member) Bytes() []byte {

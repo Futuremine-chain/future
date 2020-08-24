@@ -21,7 +21,6 @@ service Greeter {
     // Sends a greeting
     rpc GetAccount(AddressReq)returns (Response) {}
     rpc SendMessageRaw(SendMessageCodeReq)returns (Response) {}
-    rpc GetMessage(HashReq)returns (Response) {}
     rpc GetBlockHash(HashReq)returns (Response) {}
     rpc GetBlockHeight(HeightReq)returns (Response) {}
     rpc LastHeight(NullReq)returns (Response) {}
@@ -34,11 +33,17 @@ service Greeter {
     rpc LocalInfo(NullReq)returns (Response) {}
 
     rpc GenerateAddress(GenerateReq)returns (Response) {}
+    rpc GenerateTokenAddress(GenerateTokenReq)returns (Response) {}
     rpc CreateTransaction(TransactionReq)returns (Response) {}
     rpc CreateToken(TokenReq)returns (Response) {}
     rpc CreateCandidate(CandidateReq)returns (Response) {}
     rpc CreateCancel(CancelReq)returns (Response) {}
     rpc CreateVote(VoteReq)returns (Response) {}
+    rpc SendTransaction(TransactionReq)returns (Response) {}
+    rpc SendToken(TokenReq)returns (Response) {}
+    rpc SendCandidate(CandidateReq)returns (Response) {}
+    rpc SendCancel(CancelReq)returns (Response) {}
+    rpc SendVote(VoteReq)returns (Response) {}
 }
 
 message NullReq {
@@ -73,6 +78,12 @@ message GenerateReq{
   string publickey = 2;
 }
 
+message GenerateTokenReq{
+  string network = 1;
+  string address = 2;
+  string abbr = 3;
+}
+
 message TransactionReq{
   string from = 1;
   string to = 2;
@@ -80,38 +91,54 @@ message TransactionReq{
   string note = 4;
   uint64 amount = 5;
   uint64 fees = 6;
-  uint64 nonce = 7;
+  uint64 timestamp = 7;
+  uint64 nonce = 8;
+  string signature = 9;
+  string publickey = 10;
 }
 
 message TokenReq{
   string from = 1;
   string receiver = 2;
-  string name = 3;
-  string abbr = 4;
-  bool increase = 5;
-  uint64 amount = 6;
-  uint64 fees = 7;
-  uint64 nonce = 8;
+  string token = 4;
+  string name = 5;
+  string abbr = 6;
+  bool increase = 7;
+  uint64 amount = 8;
+  uint64 fees = 9;
+  uint64 timestamp = 10;
+  uint64 nonce = 11;
+  string signature = 12;
+  string publickey = 13;
 }
 
 message CandidateReq{
   string from = 1;
   string p2pid = 2;
   uint64 fees = 3;
-  uint64 nonce = 4;
+  uint64 timestamp = 4;
+  uint64 nonce = 5;
+  string signature = 6;
+  string publickey = 7;
 }
 
 message CancelReq{
   string from = 1;
   uint64 fees = 2;
-  uint64 nonce = 3;
+  uint64 timestamp = 3;
+  uint64 nonce = 4;
+  string signature = 5;
+  string publickey = 6;
 }
 
 message VoteReq{
   string from = 1;
   string to = 2;
   uint64 fees = 3;
-  uint64 nonce = 4;
+  uint64 timestamp = 4;
+  uint64 nonce = 5;
+  string signature = 6;
+  string publickey = 7;
 }
 
 // The response message containing the greetings

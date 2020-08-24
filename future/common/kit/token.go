@@ -28,7 +28,7 @@ func CalCoinBase(net string, height uint64) uint64 {
 	}
 	coinbase := params.CoinBase
 	times := height/params.EveryChangeCoinHeight + 1
-	return uint64(CalCountByTimes(&coinbase, &times, params.CoinCoefficient) * param.AtomsPerCoin)
+	return uint64(CalCountByTimes(&coinbase, &times, params.CoinCoefficient))
 }
 
 func CalCountByTimes(coinbase *float64, times *uint64, coefficient float64) float64 {

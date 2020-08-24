@@ -14,12 +14,12 @@ ExternalIp = "0.0.0.0"
 # Custom boot
 Boot = ""
 
-# P2P port (default = "19160")
-P2PPort="19160"
+# P2P port (default = "29160")
+P2PPort="29160"
 
 
-# RPC configuration, (default = 19161)
-RpcPort = "19161"
+# RPC configuration, (default = 29161)
+RpcPort = "29161"
 # RPC password
 RpcPass = ""
 

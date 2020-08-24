@@ -9,18 +9,10 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jrick/logrotate v1.0.0
-	github.com/libp2p/go-conn-security v0.1.0 // indirect
-	github.com/libp2p/go-libp2p v0.10.0
-	github.com/libp2p/go-libp2p-core v0.6.1
-	github.com/libp2p/go-libp2p-discovery v0.5.0
-	github.com/libp2p/go-libp2p-host v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-interface-connmgr v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-interface-pnet v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-kad-dht v0.8.3
-	github.com/libp2p/go-libp2p-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-net v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-protocol v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-transport v0.1.0 // indirect
+	github.com/libp2p/go-libp2p v0.7.2
+	github.com/libp2p/go-libp2p-core v0.5.0
+	github.com/libp2p/go-libp2p-discovery v0.2.0
+	github.com/libp2p/go-libp2p-kad-dht v0.5.2
 	github.com/mattn/go-colorable v0.1.7
 	github.com/multiformats/go-multiaddr v0.3.0
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0

@@ -10,49 +10,49 @@ import (
 var genesisSuperList = types.Candidates{
 	Members: []*types.Member{
 		{
-			Signer: arry.StringToAddress("xC6nGfqHPt4KPoyhwCG3zNemNweYsBWXRR2"),
-			PeerId: "16Uiu2HAkvG7xGvVZBkZR16sWwmqhqGNm69FSa61tbpphpgCcMmEo",
+			Signer: arry.StringToAddress("FMizWwybDdxE9wWtbeiukj4ixcnMGLaT5La"),
+			PeerId: "16Uiu2HAmTXRT6srXsTgy2kpzebMPPh5AqzvcLfFga74fcQ8BaEAH",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC3LLtxiCaAcG2KrJmzo75pdavgqNLooz1N"),
-			PeerId: "16Uiu2HAmSUvLmVizqJYNraZ5DUQQGHCgDL6XvRgoTj9KY9oEZoba",
+			Signer: arry.StringToAddress("FMejc9bjiTeQzKQG9fSDPGdsRzzEdEQe6se"),
+			PeerId: "16Uiu2HAkwKrbmaz3WRPjdJZbEBDCj412auZPoBCr3cpDViztzcX6",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC2xC5DNc3Uz3jMnufsX9jX8a67mypdfxGH"),
-			PeerId: "16Uiu2HAmDESGfzayFiBKnKaryyVgXKmJvePva8nFVNzFsGKkLdW2",
+			Signer: arry.StringToAddress("FMhz3oBLYwRtRPXVAz869XFkYYGsEAhjiew"),
+			PeerId: "16Uiu2HAmPQppQsHmVgJNqLPxTDNVy6ucuHt5i6eXMZ7Nn1Uz6Jwr",
+			Weight: 0,
+		},
+		/*{
+			Signer: arry.StringToAddress("FMcNASRUDr5symmsvQyWJ4iXFJYoEJLnPMz"),
+			PeerId: "16Uiu2HAmGCas2irGWZNmSsqhCpNXXxapTEEtAsBhHENrCZB3nPzj",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xCJVPCgbiRy6tAtozAZwXLF5NzG9XBU16ou"),
-			PeerId: "16Uiu2HAkyexJCRYMHrN2Ft3E5MmJr3eoNtEZNJjaZ4jbwXcA1FCK",
+			Signer: arry.StringToAddress("FMdayTLVXkpDgHyB5kTzJEso92EuFHavbhp"),
+			PeerId: "16Uiu2HAmFHNR3k254oHErF9FZXjCo1HZwHNqcP9vCkLgAL9CSwoP",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC554Aq8EiCz82hzVfi5PmnLCFGxAi9fBMp"),
-			PeerId: "16Uiu2HAm9KiJJfE8mhwFuLv8Yco1YJkFtMekzUPowMW4t8FeLbw7",
+			Signer: arry.StringToAddress("FMoTe9q8Duj6yQesQuTbgFuLk7hh19gbut9"),
+			PeerId: "16Uiu2HAmUbzwyv33P135n3u7WAnfFCc7TJENKre53aXBPzYCJw4J",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC86k2HFGPzsJ1vubBoR7DXviN6UKpEKFRv"),
-			PeerId: "16Uiu2HAm5VouADKhW55qLBiFoixegEtym72C9P6M2XKZ7bEMNUt8",
+			Signer: arry.StringToAddress("FMZGtCTtYzpTZfhpJN2rwBFwoVVx8yctVkQ"),
+			PeerId: "16Uiu2HAkwbnpzmXn2KSW5VZAaikKrWYUjYtGYx799cGj3Xg3jpgp",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC1cGYmjAEU3yymozKs5jPLQPzkyzbvxJuU"),
-			PeerId: "16Uiu2HAmLk1r8BHEpuTR9XRm1DCw5GpqaANF2RYJ3DRzQxtAtSc9",
+			Signer: arry.StringToAddress("FMegukTco2m1S9Y4ebXM9kVpQ6jqGGZBwWv"),
+			PeerId: "16Uiu2HAmVBC9Fct91M3ffK71o1rkob9kzjsLKDjLESQruPDdbAMx",
 			Weight: 0,
 		},
 		{
-			Signer: arry.StringToAddress("xC8hzrNRzMzpUcs68HcWqFTLBjWKeTatqcJ"),
-			PeerId: "16Uiu2HAm92KMJiSLAYFCc7AdTBFwVgCBJ9zhWYU6UHM5vMAWH1hr",
+			Signer: arry.StringToAddress("FMnUqdciErY8UkxgQgVcVP2EDV9YTEiZE5g"),
+			PeerId: "16Uiu2HAmPYAvkHqmvVhDH7poHGfBWPFKfwycQ4jssThqYJUZ3NSf",
 			Weight: 0,
-		},
-		{
-			Signer: arry.StringToAddress("xBzSZn52pNuBsUhu3qnRYTqo8HetVpgrRVL"),
-			PeerId: "16Uiu2HAmHBNYs8eFMnjpUwoJzCws77B8LuSXqVwKaQXcA3WVDvvQ",
-			Weight: 0,
-		},
+		},*/
 	},
 }

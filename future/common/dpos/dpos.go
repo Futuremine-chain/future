@@ -53,7 +53,7 @@ func (d *DPos) GenesisBlock() types.IBlock {
 		block.Body.Messages = append(block.Body.Messages, msg)
 	}
 	for _, e := range param.PreCirculations {
-		tx := message.NewTransaction("", e.Address, config.Param.MainToken.String(), e.Amount, 0, 0)
+		tx := message.NewTransaction("", e.Address, config.Param.MainToken.String(), e.Amount, 0, 0, config.Param.GenesisTime)
 		block.Body.Messages = append(block.Body.Messages, tx)
 	}
 

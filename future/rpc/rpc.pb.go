@@ -336,6 +336,61 @@ func (m *GenerateReq) GetPublickey() string {
 	return ""
 }
 
+type GenerateTokenReq struct {
+	Network              string   `protobuf:"bytes,1,opt,name=network,proto3" json:"network,omitempty"`
+	Address              string   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	Abbr                 string   `protobuf:"bytes,3,opt,name=abbr,proto3" json:"abbr,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GenerateTokenReq) Reset()         { *m = GenerateTokenReq{} }
+func (m *GenerateTokenReq) String() string { return proto.CompactTextString(m) }
+func (*GenerateTokenReq) ProtoMessage()    {}
+func (*GenerateTokenReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_77a6da22d6a3feb1, []int{8}
+}
+
+func (m *GenerateTokenReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GenerateTokenReq.Unmarshal(m, b)
+}
+func (m *GenerateTokenReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GenerateTokenReq.Marshal(b, m, deterministic)
+}
+func (m *GenerateTokenReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GenerateTokenReq.Merge(m, src)
+}
+func (m *GenerateTokenReq) XXX_Size() int {
+	return xxx_messageInfo_GenerateTokenReq.Size(m)
+}
+func (m *GenerateTokenReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_GenerateTokenReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GenerateTokenReq proto.InternalMessageInfo
+
+func (m *GenerateTokenReq) GetNetwork() string {
+	if m != nil {
+		return m.Network
+	}
+	return ""
+}
+
+func (m *GenerateTokenReq) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *GenerateTokenReq) GetAbbr() string {
+	if m != nil {
+		return m.Abbr
+	}
+	return ""
+}
+
 type TransactionReq struct {
 	From                 string   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	To                   string   `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
@@ -343,7 +398,10 @@ type TransactionReq struct {
 	Note                 string   `protobuf:"bytes,4,opt,name=note,proto3" json:"note,omitempty"`
 	Amount               uint64   `protobuf:"varint,5,opt,name=amount,proto3" json:"amount,omitempty"`
 	Fees                 uint64   `protobuf:"varint,6,opt,name=fees,proto3" json:"fees,omitempty"`
-	Nonce                uint64   `protobuf:"varint,7,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Timestamp            uint64   `protobuf:"varint,7,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Nonce                uint64   `protobuf:"varint,8,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Signature            string   `protobuf:"bytes,9,opt,name=signature,proto3" json:"signature,omitempty"`
+	Publickey            string   `protobuf:"bytes,10,opt,name=publickey,proto3" json:"publickey,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -353,7 +411,7 @@ func (m *TransactionReq) Reset()         { *m = TransactionReq{} }
 func (m *TransactionReq) String() string { return proto.CompactTextString(m) }
 func (*TransactionReq) ProtoMessage()    {}
 func (*TransactionReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{8}
+	return fileDescriptor_77a6da22d6a3feb1, []int{9}
 }
 
 func (m *TransactionReq) XXX_Unmarshal(b []byte) error {
@@ -416,6 +474,13 @@ func (m *TransactionReq) GetFees() uint64 {
 	return 0
 }
 
+func (m *TransactionReq) GetTimestamp() uint64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
 func (m *TransactionReq) GetNonce() uint64 {
 	if m != nil {
 		return m.Nonce
@@ -423,15 +488,33 @@ func (m *TransactionReq) GetNonce() uint64 {
 	return 0
 }
 
+func (m *TransactionReq) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *TransactionReq) GetPublickey() string {
+	if m != nil {
+		return m.Publickey
+	}
+	return ""
+}
+
 type TokenReq struct {
 	From                 string   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Receiver             string   `protobuf:"bytes,2,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	Name                 string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Abbr                 string   `protobuf:"bytes,4,opt,name=abbr,proto3" json:"abbr,omitempty"`
-	Increase             bool     `protobuf:"varint,5,opt,name=increase,proto3" json:"increase,omitempty"`
-	Amount               uint64   `protobuf:"varint,6,opt,name=amount,proto3" json:"amount,omitempty"`
-	Fees                 uint64   `protobuf:"varint,7,opt,name=fees,proto3" json:"fees,omitempty"`
-	Nonce                uint64   `protobuf:"varint,8,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Token                string   `protobuf:"bytes,4,opt,name=token,proto3" json:"token,omitempty"`
+	Name                 string   `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Abbr                 string   `protobuf:"bytes,6,opt,name=abbr,proto3" json:"abbr,omitempty"`
+	Increase             bool     `protobuf:"varint,7,opt,name=increase,proto3" json:"increase,omitempty"`
+	Amount               uint64   `protobuf:"varint,8,opt,name=amount,proto3" json:"amount,omitempty"`
+	Fees                 uint64   `protobuf:"varint,9,opt,name=fees,proto3" json:"fees,omitempty"`
+	Timestamp            uint64   `protobuf:"varint,10,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Nonce                uint64   `protobuf:"varint,11,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Signature            string   `protobuf:"bytes,12,opt,name=signature,proto3" json:"signature,omitempty"`
+	Publickey            string   `protobuf:"bytes,13,opt,name=publickey,proto3" json:"publickey,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -441,7 +524,7 @@ func (m *TokenReq) Reset()         { *m = TokenReq{} }
 func (m *TokenReq) String() string { return proto.CompactTextString(m) }
 func (*TokenReq) ProtoMessage()    {}
 func (*TokenReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{9}
+	return fileDescriptor_77a6da22d6a3feb1, []int{10}
 }
 
 func (m *TokenReq) XXX_Unmarshal(b []byte) error {
@@ -472,6 +555,13 @@ func (m *TokenReq) GetFrom() string {
 func (m *TokenReq) GetReceiver() string {
 	if m != nil {
 		return m.Receiver
+	}
+	return ""
+}
+
+func (m *TokenReq) GetToken() string {
+	if m != nil {
+		return m.Token
 	}
 	return ""
 }
@@ -511,6 +601,13 @@ func (m *TokenReq) GetFees() uint64 {
 	return 0
 }
 
+func (m *TokenReq) GetTimestamp() uint64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
 func (m *TokenReq) GetNonce() uint64 {
 	if m != nil {
 		return m.Nonce
@@ -518,11 +615,28 @@ func (m *TokenReq) GetNonce() uint64 {
 	return 0
 }
 
+func (m *TokenReq) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *TokenReq) GetPublickey() string {
+	if m != nil {
+		return m.Publickey
+	}
+	return ""
+}
+
 type CandidateReq struct {
 	From                 string   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	P2Pid                string   `protobuf:"bytes,2,opt,name=p2pid,proto3" json:"p2pid,omitempty"`
 	Fees                 uint64   `protobuf:"varint,3,opt,name=fees,proto3" json:"fees,omitempty"`
-	Nonce                uint64   `protobuf:"varint,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Timestamp            uint64   `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Nonce                uint64   `protobuf:"varint,5,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Signature            string   `protobuf:"bytes,6,opt,name=signature,proto3" json:"signature,omitempty"`
+	Publickey            string   `protobuf:"bytes,7,opt,name=publickey,proto3" json:"publickey,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -532,7 +646,7 @@ func (m *CandidateReq) Reset()         { *m = CandidateReq{} }
 func (m *CandidateReq) String() string { return proto.CompactTextString(m) }
 func (*CandidateReq) ProtoMessage()    {}
 func (*CandidateReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{10}
+	return fileDescriptor_77a6da22d6a3feb1, []int{11}
 }
 
 func (m *CandidateReq) XXX_Unmarshal(b []byte) error {
@@ -574,6 +688,13 @@ func (m *CandidateReq) GetFees() uint64 {
 	return 0
 }
 
+func (m *CandidateReq) GetTimestamp() uint64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
 func (m *CandidateReq) GetNonce() uint64 {
 	if m != nil {
 		return m.Nonce
@@ -581,10 +702,27 @@ func (m *CandidateReq) GetNonce() uint64 {
 	return 0
 }
 
+func (m *CandidateReq) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *CandidateReq) GetPublickey() string {
+	if m != nil {
+		return m.Publickey
+	}
+	return ""
+}
+
 type CancelReq struct {
 	From                 string   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Fees                 uint64   `protobuf:"varint,2,opt,name=fees,proto3" json:"fees,omitempty"`
-	Nonce                uint64   `protobuf:"varint,3,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Timestamp            uint64   `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Nonce                uint64   `protobuf:"varint,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Signature            string   `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	Publickey            string   `protobuf:"bytes,6,opt,name=publickey,proto3" json:"publickey,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -594,7 +732,7 @@ func (m *CancelReq) Reset()         { *m = CancelReq{} }
 func (m *CancelReq) String() string { return proto.CompactTextString(m) }
 func (*CancelReq) ProtoMessage()    {}
 func (*CancelReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{11}
+	return fileDescriptor_77a6da22d6a3feb1, []int{12}
 }
 
 func (m *CancelReq) XXX_Unmarshal(b []byte) error {
@@ -629,6 +767,13 @@ func (m *CancelReq) GetFees() uint64 {
 	return 0
 }
 
+func (m *CancelReq) GetTimestamp() uint64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
 func (m *CancelReq) GetNonce() uint64 {
 	if m != nil {
 		return m.Nonce
@@ -636,11 +781,28 @@ func (m *CancelReq) GetNonce() uint64 {
 	return 0
 }
 
+func (m *CancelReq) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *CancelReq) GetPublickey() string {
+	if m != nil {
+		return m.Publickey
+	}
+	return ""
+}
+
 type VoteReq struct {
 	From                 string   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	To                   string   `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
 	Fees                 uint64   `protobuf:"varint,3,opt,name=fees,proto3" json:"fees,omitempty"`
-	Nonce                uint64   `protobuf:"varint,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Timestamp            uint64   `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Nonce                uint64   `protobuf:"varint,5,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Signature            string   `protobuf:"bytes,6,opt,name=signature,proto3" json:"signature,omitempty"`
+	Publickey            string   `protobuf:"bytes,7,opt,name=publickey,proto3" json:"publickey,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -650,7 +812,7 @@ func (m *VoteReq) Reset()         { *m = VoteReq{} }
 func (m *VoteReq) String() string { return proto.CompactTextString(m) }
 func (*VoteReq) ProtoMessage()    {}
 func (*VoteReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{12}
+	return fileDescriptor_77a6da22d6a3feb1, []int{13}
 }
 
 func (m *VoteReq) XXX_Unmarshal(b []byte) error {
@@ -692,11 +854,32 @@ func (m *VoteReq) GetFees() uint64 {
 	return 0
 }
 
+func (m *VoteReq) GetTimestamp() uint64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
 func (m *VoteReq) GetNonce() uint64 {
 	if m != nil {
 		return m.Nonce
 	}
 	return 0
+}
+
+func (m *VoteReq) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+func (m *VoteReq) GetPublickey() string {
+	if m != nil {
+		return m.Publickey
+	}
+	return ""
 }
 
 // The response message containing the greetings
@@ -713,7 +896,7 @@ func (m *Response) Reset()         { *m = Response{} }
 func (m *Response) String() string { return proto.CompactTextString(m) }
 func (*Response) ProtoMessage()    {}
 func (*Response) Descriptor() ([]byte, []int) {
-	return fileDescriptor_77a6da22d6a3feb1, []int{13}
+	return fileDescriptor_77a6da22d6a3feb1, []int{14}
 }
 
 func (m *Response) XXX_Unmarshal(b []byte) error {
@@ -764,6 +947,7 @@ func init() {
 	proto.RegisterType((*HeightReq)(nil), "rpc.HeightReq")
 	proto.RegisterType((*CycleReq)(nil), "rpc.CycleReq")
 	proto.RegisterType((*GenerateReq)(nil), "rpc.GenerateReq")
+	proto.RegisterType((*GenerateTokenReq)(nil), "rpc.GenerateTokenReq")
 	proto.RegisterType((*TransactionReq)(nil), "rpc.TransactionReq")
 	proto.RegisterType((*TokenReq)(nil), "rpc.TokenReq")
 	proto.RegisterType((*CandidateReq)(nil), "rpc.CandidateReq")
@@ -775,52 +959,62 @@ func init() {
 func init() { proto.RegisterFile("rpc.proto", fileDescriptor_77a6da22d6a3feb1) }
 
 var fileDescriptor_77a6da22d6a3feb1 = []byte{
-	// 718 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x55, 0x5d, 0x6f, 0xd3, 0x3c,
-	0x14, 0x7e, 0xfb, 0x99, 0xf6, 0xac, 0x6b, 0x37, 0xbf, 0x13, 0x54, 0x13, 0x48, 0x53, 0x90, 0x60,
-	0x02, 0x51, 0x60, 0xc0, 0x05, 0xdc, 0x8d, 0x0a, 0x75, 0x93, 0x06, 0x9a, 0xb2, 0x09, 0xae, 0x5d,
-	0xe7, 0x6c, 0x8d, 0x9a, 0xda, 0x99, 0xed, 0x32, 0xed, 0xdf, 0x70, 0xc5, 0xef, 0xe0, 0xa7, 0x21,
-	0x3b, 0x4e, 0x9a, 0x2d, 0x99, 0xd6, 0xbb, 0xf3, 0x38, 0xcf, 0xf9, 0x78, 0xfc, 0xf1, 0x04, 0xba,
-	0x32, 0x61, 0xa3, 0x44, 0x0a, 0x2d, 0x48, 0x43, 0x26, 0xcc, 0xef, 0x82, 0xf7, 0x7d, 0x19, 0xc7,
-	0x01, 0x5e, 0xf9, 0xcf, 0x01, 0x0e, 0xc3, 0x50, 0xa2, 0x52, 0x01, 0x5e, 0x91, 0x21, 0x78, 0x34,
-	0x45, 0xc3, 0xda, 0x5e, 0x6d, 0xbf, 0x1b, 0x64, 0xd0, 0x7f, 0x01, 0x83, 0x73, 0x31, 0x47, 0x5e,
-	0x20, 0xef, 0x40, 0x4b, 0x9b, 0x25, 0x47, 0x4d, 0x81, 0xbf, 0x0f, 0xe4, 0x0c, 0x79, 0xf8, 0x0d,
-	0x95, 0xa2, 0x97, 0x38, 0x16, 0x21, 0x1a, 0x2e, 0x81, 0x26, 0x13, 0x21, 0x5a, 0x6a, 0x2f, 0xb0,
-	0xb1, 0xff, 0x14, 0xbc, 0x23, 0xaa, 0x66, 0xee, 0xf3, 0x8c, 0xaa, 0x99, 0xab, 0x64, 0x63, 0xff,
-	0x19, 0x74, 0x8f, 0x30, 0xba, 0x9c, 0x69, 0x43, 0x78, 0x04, 0xed, 0x99, 0x05, 0x96, 0xd2, 0x0c,
-	0x1c, 0xf2, 0xf7, 0xa0, 0x33, 0xbe, 0x61, 0x31, 0xba, 0x79, 0x98, 0x89, 0x1d, 0x25, 0x05, 0xfe,
-	0x57, 0xd8, 0x98, 0x20, 0x47, 0x49, 0x35, 0x3a, 0x85, 0x1c, 0xf5, 0xb5, 0x90, 0xf3, 0x4c, 0xa1,
-	0x83, 0xe4, 0x09, 0x74, 0x93, 0xe5, 0x34, 0x8e, 0xd8, 0x1c, 0x6f, 0x86, 0x75, 0xfb, 0x6d, 0xb5,
-	0xe0, 0xff, 0xae, 0x41, 0xff, 0x5c, 0x52, 0xae, 0x28, 0xd3, 0x91, 0xe0, 0x6e, 0xe8, 0x0b, 0x29,
-	0x16, 0xd9, 0xd0, 0x26, 0x26, 0x7d, 0xa8, 0x6b, 0xe1, 0xb2, 0xeb, 0x5a, 0xac, 0xf6, 0xa8, 0x51,
-	0xd8, 0x23, 0x93, 0xc9, 0x85, 0xc6, 0x61, 0x33, 0xcd, 0x34, 0xb1, 0x51, 0x48, 0x17, 0x62, 0xc9,
-	0xf5, 0xb0, 0x95, 0x2a, 0x4c, 0x91, 0xed, 0x82, 0xa8, 0x86, 0x6d, 0xbb, 0x6a, 0x63, 0x53, 0x95,
-	0x0b, 0xce, 0x70, 0xe8, 0xa5, 0x4a, 0x2d, 0xf0, 0xff, 0xd6, 0xa0, 0x63, 0xcf, 0xe8, 0xbe, 0xe1,
-	0x76, 0xa1, 0x23, 0x91, 0x61, 0xf4, 0x0b, 0xa5, 0x1b, 0x31, 0xc7, 0x76, 0x24, 0xba, 0x40, 0x37,
-	0xa7, 0x8d, 0xcd, 0x1a, 0x9d, 0x4e, 0x65, 0x36, 0xa6, 0x89, 0x4d, 0x8d, 0x88, 0x33, 0x89, 0x54,
-	0xa1, 0x1d, 0xb4, 0x13, 0xe4, 0xb8, 0x20, 0xa1, 0x5d, 0x29, 0xc1, 0xab, 0x92, 0xd0, 0x29, 0x4a,
-	0x98, 0x42, 0x6f, 0x4c, 0x79, 0x18, 0x85, 0xee, 0xb4, 0xaa, 0x54, 0xec, 0x40, 0x2b, 0x39, 0x48,
-	0xa2, 0xd0, 0x49, 0x48, 0x41, 0xde, 0xa3, 0x51, 0xd5, 0xa3, 0x59, 0xec, 0x71, 0x0c, 0xdd, 0x31,
-	0xe5, 0x0c, 0xe3, 0xfb, 0x1a, 0x64, 0xa5, 0xea, 0x55, 0xa5, 0x1a, 0xc5, 0x52, 0x3f, 0xc1, 0xfb,
-	0x21, 0xee, 0x9f, 0xf4, 0xee, 0x65, 0x58, 0x7f, 0xc6, 0x23, 0xe8, 0x04, 0xa8, 0x12, 0xc1, 0x15,
-	0xde, 0x7a, 0x3a, 0xad, 0xf4, 0xe9, 0x98, 0x9d, 0x96, 0xa8, 0x96, 0xb1, 0xb6, 0xd5, 0x7b, 0x81,
-	0x43, 0x64, 0x0b, 0x1a, 0x28, 0xa5, 0x3b, 0x44, 0x13, 0x1e, 0xfc, 0xf1, 0xc0, 0x9b, 0x48, 0x44,
-	0x8d, 0x92, 0x8c, 0x00, 0x26, 0xa8, 0x0f, 0x19, 0xb3, 0xa7, 0x32, 0x18, 0x19, 0x57, 0x58, 0xbd,
-	0xe7, 0xdd, 0x4d, 0xbb, 0x90, 0xf5, 0xf5, 0xff, 0x23, 0x9f, 0xa1, 0x5f, 0x78, 0xca, 0x01, 0xbd,
-	0x26, 0x8f, 0x2d, 0xa5, 0xfc, 0xbe, 0xcb, 0xb9, 0xaf, 0x6c, 0x2f, 0xc7, 0x22, 0x3d, 0xfb, 0xd9,
-	0xbd, 0xf6, 0x32, 0xf9, 0x35, 0xf4, 0x26, 0xa8, 0xbf, 0xc4, 0x82, 0xcd, 0x0d, 0xe7, 0x21, 0xfa,
-	0x3b, 0xe8, 0xe7, 0x74, 0x6b, 0x03, 0xa4, 0x9f, 0x26, 0x64, 0x76, 0x51, 0x39, 0xce, 0x09, 0x55,
-	0xda, 0xd1, 0xd3, 0xfa, 0xce, 0x02, 0xcb, 0xe4, 0x97, 0xd0, 0x1d, 0x0b, 0x7e, 0x11, 0xc9, 0x05,
-	0x86, 0x0f, 0x71, 0x9d, 0x4e, 0x75, 0x79, 0x2a, 0x44, 0xbc, 0x06, 0x39, 0xbf, 0xde, 0xea, 0x21,
-	0xf2, 0x5b, 0xab, 0xd2, 0xba, 0xdb, 0xd9, 0x32, 0x41, 0xa9, 0x48, 0x4a, 0xc9, 0xfc, 0xae, 0x9c,
-	0x31, 0x82, 0x96, 0x7d, 0xff, 0x64, 0xc7, 0x7e, 0xb9, 0xe3, 0xd7, 0x95, 0x3a, 0x4f, 0x11, 0xa5,
-	0x3a, 0xe6, 0x17, 0x62, 0x8d, 0x3d, 0x39, 0x11, 0x8c, 0xc6, 0xeb, 0x70, 0x3f, 0xc0, 0x20, 0xb3,
-	0x5c, 0xd7, 0x9e, 0x6c, 0x59, 0x4e, 0xc1, 0x88, 0xcb, 0x59, 0x9f, 0x60, 0x7b, 0x2c, 0x91, 0x6a,
-	0x2c, 0xd8, 0x2c, 0xf9, 0x3f, 0x55, 0x72, 0xcb, 0x78, 0xab, 0xee, 0xcf, 0x86, 0x4b, 0xb5, 0xf2,
-	0x37, 0x57, 0xf2, 0x2b, 0xe9, 0x1f, 0x61, 0x90, 0xd2, 0xf3, 0xc3, 0x20, 0xdb, 0xe9, 0xd6, 0x16,
-	0xbc, 0xa7, 0x9c, 0xf6, 0x06, 0x7a, 0x79, 0x1a, 0xc3, 0xd8, 0x5d, 0xba, 0xdc, 0x4b, 0xaa, 0x8f,
-	0xdb, 0x26, 0x18, 0x93, 0x70, 0x9b, 0xe6, 0xfc, 0xa2, 0x44, 0x9e, 0xb6, 0xed, 0xff, 0xf9, 0xfd,
-	0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe7, 0xf2, 0x6f, 0xe0, 0xac, 0x07, 0x00, 0x00,
+	// 869 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xcf, 0x8f, 0xdb, 0x44,
+	0x14, 0xc7, 0xc9, 0x6f, 0xfb, 0x6d, 0x36, 0xd9, 0x0e, 0x0b, 0x58, 0x15, 0x48, 0x95, 0x91, 0xa0,
+	0xb0, 0xea, 0x02, 0x2d, 0x08, 0xc1, 0x01, 0xa9, 0x44, 0x68, 0x17, 0xa9, 0x45, 0x95, 0x5b, 0x71,
+	0xe0, 0x36, 0x3b, 0x7e, 0x9b, 0x58, 0x71, 0x66, 0xdc, 0x99, 0x09, 0x55, 0xff, 0x1e, 0xee, 0x08,
+	0xee, 0xfc, 0x65, 0x9c, 0xd0, 0xfc, 0xb0, 0x9d, 0xc4, 0x71, 0x9a, 0xde, 0xb8, 0xcd, 0x1b, 0x7f,
+	0xdf, 0xf8, 0xbd, 0x4f, 0xc6, 0xef, 0x1b, 0x08, 0x65, 0xc1, 0x2e, 0x0b, 0x29, 0xb4, 0x20, 0x3d,
+	0x59, 0xb0, 0x38, 0x84, 0xd1, 0x2f, 0xeb, 0x3c, 0x4f, 0xf0, 0x65, 0xfc, 0x09, 0xc0, 0xe3, 0x34,
+	0x95, 0xa8, 0x54, 0x82, 0x2f, 0x49, 0x04, 0x23, 0xea, 0xa2, 0xa8, 0x73, 0xaf, 0x73, 0x3f, 0x4c,
+	0xca, 0x30, 0xfe, 0x14, 0xa6, 0x2f, 0xc4, 0x12, 0xf9, 0x86, 0xf8, 0x1c, 0x06, 0xda, 0x6c, 0x79,
+	0xa9, 0x0b, 0xe2, 0xfb, 0x40, 0x9e, 0x23, 0x4f, 0x9f, 0xa2, 0x52, 0x74, 0x8e, 0x33, 0x91, 0xa2,
+	0xd1, 0x12, 0xe8, 0x33, 0x91, 0xa2, 0x95, 0x8e, 0x13, 0xbb, 0x8e, 0x3f, 0x82, 0xd1, 0x35, 0x55,
+	0x0b, 0xff, 0x78, 0x41, 0xd5, 0xc2, 0x9f, 0x64, 0xd7, 0xf1, 0xc7, 0x10, 0x5e, 0x63, 0x36, 0x5f,
+	0x68, 0x23, 0x78, 0x1f, 0x86, 0x0b, 0x1b, 0x58, 0x49, 0x3f, 0xf1, 0x51, 0x7c, 0x0f, 0x82, 0xd9,
+	0x6b, 0x96, 0xa3, 0xaf, 0x87, 0x99, 0xb5, 0x97, 0xb8, 0x20, 0xfe, 0x09, 0x4e, 0xae, 0x90, 0xa3,
+	0xa4, 0x1a, 0x7d, 0x87, 0x1c, 0xf5, 0x2b, 0x21, 0x97, 0x65, 0x87, 0x3e, 0x24, 0x1f, 0x42, 0x58,
+	0xac, 0x6f, 0xf2, 0x8c, 0x2d, 0xf1, 0x75, 0xd4, 0xb5, 0xcf, 0xea, 0x8d, 0xf8, 0x37, 0x38, 0x2b,
+	0x8f, 0xb1, 0x1c, 0x0e, 0x9f, 0xb5, 0xc1, 0xb1, 0xbb, 0xc5, 0xd1, 0x74, 0x4a, 0x6f, 0x6e, 0x64,
+	0xd4, 0x73, 0x9d, 0x9a, 0x75, 0xfc, 0x6f, 0x07, 0x26, 0x2f, 0x24, 0xe5, 0x8a, 0x32, 0x9d, 0x09,
+	0xee, 0x81, 0xdc, 0x4a, 0xb1, 0x2a, 0x81, 0x98, 0x35, 0x99, 0x40, 0x57, 0x0b, 0x7f, 0x5e, 0x57,
+	0x8b, 0x9a, 0x7f, 0x6f, 0x83, 0xbf, 0xc9, 0xe4, 0x42, 0x63, 0xd4, 0x77, 0x99, 0x66, 0x6d, 0xe8,
+	0xd1, 0x95, 0x58, 0x73, 0x1d, 0x0d, 0x1c, 0x3d, 0x17, 0xd9, 0xb7, 0x20, 0xaa, 0x68, 0x68, 0x77,
+	0xed, 0xda, 0x60, 0xd0, 0xd9, 0x0a, 0x95, 0xa6, 0xab, 0x22, 0x1a, 0xd9, 0x07, 0xf5, 0x86, 0x79,
+	0x27, 0x17, 0x9c, 0x61, 0x14, 0x38, 0xc6, 0x36, 0x30, 0x39, 0x2a, 0x9b, 0x73, 0xaa, 0xd7, 0x12,
+	0xa3, 0xd0, 0xa1, 0xab, 0x36, 0xb6, 0xc1, 0xc2, 0x2e, 0xd8, 0xbf, 0xba, 0x10, 0x54, 0x44, 0xf7,
+	0xb5, 0x7d, 0x17, 0x02, 0x89, 0x0c, 0xb3, 0xdf, 0x51, 0xfa, 0xe6, 0xab, 0xb8, 0x46, 0xd0, 0xdf,
+	0x45, 0x40, 0x57, 0x68, 0x9b, 0x35, 0x08, 0xe8, 0x0a, 0x2b, 0xee, 0xc3, 0x9a, 0xbb, 0x39, 0x39,
+	0xe3, 0x4c, 0x22, 0x55, 0x68, 0x3b, 0x0d, 0x92, 0x2a, 0xde, 0x40, 0x16, 0xec, 0x45, 0x16, 0xb6,
+	0x21, 0x83, 0x56, 0x64, 0x27, 0xad, 0xc8, 0xc6, 0x07, 0x91, 0x9d, 0xee, 0x22, 0xfb, 0xa7, 0x03,
+	0xe3, 0x19, 0xe5, 0x69, 0x96, 0xfa, 0x4b, 0xbd, 0x0f, 0xdb, 0x39, 0x0c, 0x8a, 0x87, 0x45, 0x96,
+	0x7a, 0x66, 0x2e, 0xa8, 0xca, 0xef, 0xb5, 0x95, 0xdf, 0x6f, 0x2d, 0x7f, 0xd0, 0x5a, 0xfe, 0xf0,
+	0x60, 0xf9, 0xa3, 0xdd, 0xf2, 0xff, 0xe8, 0x40, 0x38, 0xa3, 0x9c, 0x61, 0xde, 0x56, 0x7b, 0x59,
+	0x65, 0xb7, 0xad, 0xca, 0x5e, 0x6b, 0x95, 0xfd, 0xd6, 0x2a, 0x07, 0x07, 0xab, 0x1c, 0xee, 0x56,
+	0xf9, 0x77, 0x07, 0x46, 0xbf, 0x8a, 0x76, 0xbe, 0xbb, 0x5f, 0xe3, 0xff, 0x81, 0xec, 0x35, 0x04,
+	0x09, 0xaa, 0x42, 0x70, 0x85, 0x5b, 0x13, 0x77, 0xe0, 0x26, 0xae, 0xb9, 0xd4, 0x12, 0xd5, 0x3a,
+	0xd7, 0xb6, 0xee, 0x71, 0xe2, 0x23, 0x72, 0x06, 0x3d, 0x94, 0xe5, 0x4c, 0x32, 0xcb, 0x87, 0x7f,
+	0x86, 0x30, 0xba, 0x92, 0x88, 0x1a, 0x25, 0xb9, 0x04, 0xb8, 0x42, 0xfd, 0x98, 0x31, 0xfb, 0x01,
+	0x4c, 0x2f, 0x8d, 0x99, 0xd4, 0x36, 0x70, 0xf7, 0xd4, 0x6e, 0x94, 0xef, 0x8d, 0xdf, 0x21, 0xdf,
+	0xc3, 0x64, 0xc3, 0x01, 0x12, 0xfa, 0x8a, 0x7c, 0x60, 0x25, 0x4d, 0x5b, 0x68, 0xe6, 0x3e, 0x80,
+	0xf1, 0x15, 0xea, 0x1f, 0x73, 0xc1, 0x96, 0xc6, 0x1b, 0xc8, 0xd8, 0x0a, 0xbc, 0x4d, 0x34, 0xe5,
+	0x5f, 0xc1, 0xa4, 0x92, 0x5b, 0x43, 0x20, 0x13, 0x97, 0x50, 0x1a, 0x47, 0x33, 0xe5, 0x02, 0xe0,
+	0x09, 0x55, 0xda, 0xcb, 0xdd, 0xf9, 0xde, 0x0c, 0x9b, 0xe2, 0xcf, 0x21, 0x9c, 0x09, 0x7e, 0x9b,
+	0xc9, 0x15, 0xa6, 0x6f, 0xd2, 0x5e, 0x58, 0x4c, 0x4f, 0xd5, 0xfc, 0x99, 0x10, 0xf9, 0x11, 0xe2,
+	0xea, 0x0b, 0x56, 0x6f, 0x12, 0x7f, 0x69, 0xbb, 0xb4, 0x3e, 0xf7, 0x7c, 0x5d, 0xa0, 0x54, 0xc4,
+	0x49, 0x4a, 0xe7, 0x6b, 0x66, 0x5c, 0xc2, 0xc0, 0xce, 0x54, 0x72, 0x6e, 0x9f, 0xec, 0x38, 0xf7,
+	0xde, 0x3e, 0x9f, 0x21, 0x4a, 0xf5, 0x33, 0xbf, 0x15, 0x47, 0x30, 0x79, 0x22, 0x18, 0xcd, 0x8f,
+	0xd1, 0x7e, 0x0d, 0xd3, 0xd2, 0x35, 0xfd, 0xeb, 0xc9, 0x99, 0xd5, 0x6c, 0x58, 0x72, 0x33, 0xeb,
+	0x07, 0x38, 0xdf, 0xf2, 0xda, 0x32, 0xf5, 0xbd, 0xad, 0xd4, 0xd2, 0x34, 0x9a, 0xf9, 0xdf, 0xc1,
+	0x9d, 0x99, 0x44, 0x23, 0xa9, 0x4d, 0x95, 0xbc, 0xeb, 0x48, 0x6c, 0xd9, 0xec, 0xbe, 0xfb, 0x77,
+	0xe2, 0x53, 0x2d, 0xbe, 0xd3, 0x1a, 0xdf, 0x5e, 0xf9, 0x37, 0x30, 0x75, 0xf2, 0xea, 0xc7, 0x24,
+	0x77, 0xdc, 0x4f, 0xb3, 0x31, 0x9e, 0x9b, 0x69, 0x5f, 0xc0, 0xb8, 0x4a, 0x63, 0x98, 0xfb, 0x4b,
+	0x5b, 0xcd, 0xc4, 0xfd, 0xd7, 0xc5, 0x26, 0x98, 0x89, 0xe4, 0xa1, 0xfb, 0xe1, 0xd4, 0x14, 0x7f,
+	0x0b, 0x53, 0xf3, 0xa9, 0xbd, 0x7d, 0xf3, 0x17, 0x10, 0xda, 0xc4, 0xa3, 0x5a, 0x7f, 0x04, 0xa7,
+	0x46, 0xfc, 0x76, 0x8d, 0x3f, 0x00, 0xf0, 0x49, 0x47, 0xb5, 0xfd, 0x19, 0x04, 0x46, 0x7e, 0x44,
+	0xd3, 0x37, 0x43, 0xfb, 0xf7, 0xf6, 0xd1, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xca, 0x12, 0xdb,
+	0xb9, 0xeb, 0x0a, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -838,7 +1032,6 @@ type GreeterClient interface {
 	// Sends a greeting
 	GetAccount(ctx context.Context, in *AddressReq, opts ...grpc.CallOption) (*Response, error)
 	SendMessageRaw(ctx context.Context, in *SendMessageCodeReq, opts ...grpc.CallOption) (*Response, error)
-	GetMessage(ctx context.Context, in *HashReq, opts ...grpc.CallOption) (*Response, error)
 	GetBlockHash(ctx context.Context, in *HashReq, opts ...grpc.CallOption) (*Response, error)
 	GetBlockHeight(ctx context.Context, in *HeightReq, opts ...grpc.CallOption) (*Response, error)
 	LastHeight(ctx context.Context, in *NullReq, opts ...grpc.CallOption) (*Response, error)
@@ -850,11 +1043,17 @@ type GreeterClient interface {
 	PeersInfo(ctx context.Context, in *NullReq, opts ...grpc.CallOption) (*Response, error)
 	LocalInfo(ctx context.Context, in *NullReq, opts ...grpc.CallOption) (*Response, error)
 	GenerateAddress(ctx context.Context, in *GenerateReq, opts ...grpc.CallOption) (*Response, error)
+	GenerateTokenAddress(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*Response, error)
 	CreateTransaction(ctx context.Context, in *TransactionReq, opts ...grpc.CallOption) (*Response, error)
 	CreateToken(ctx context.Context, in *TokenReq, opts ...grpc.CallOption) (*Response, error)
 	CreateCandidate(ctx context.Context, in *CandidateReq, opts ...grpc.CallOption) (*Response, error)
 	CreateCancel(ctx context.Context, in *CancelReq, opts ...grpc.CallOption) (*Response, error)
 	CreateVote(ctx context.Context, in *VoteReq, opts ...grpc.CallOption) (*Response, error)
+	SendTransaction(ctx context.Context, in *TransactionReq, opts ...grpc.CallOption) (*Response, error)
+	SendToken(ctx context.Context, in *TokenReq, opts ...grpc.CallOption) (*Response, error)
+	SendCandidate(ctx context.Context, in *CandidateReq, opts ...grpc.CallOption) (*Response, error)
+	SendCancel(ctx context.Context, in *CancelReq, opts ...grpc.CallOption) (*Response, error)
+	SendVote(ctx context.Context, in *VoteReq, opts ...grpc.CallOption) (*Response, error)
 }
 
 type greeterClient struct {
@@ -877,15 +1076,6 @@ func (c *greeterClient) GetAccount(ctx context.Context, in *AddressReq, opts ...
 func (c *greeterClient) SendMessageRaw(ctx context.Context, in *SendMessageCodeReq, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendMessageRaw", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *greeterClient) GetMessage(ctx context.Context, in *HashReq, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, "/rpc.Greeter/GetMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -991,6 +1181,15 @@ func (c *greeterClient) GenerateAddress(ctx context.Context, in *GenerateReq, op
 	return out, nil
 }
 
+func (c *greeterClient) GenerateTokenAddress(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/GenerateTokenAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *greeterClient) CreateTransaction(ctx context.Context, in *TransactionReq, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/rpc.Greeter/CreateTransaction", in, out, opts...)
@@ -1036,12 +1235,56 @@ func (c *greeterClient) CreateVote(ctx context.Context, in *VoteReq, opts ...grp
 	return out, nil
 }
 
+func (c *greeterClient) SendTransaction(ctx context.Context, in *TransactionReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) SendToken(ctx context.Context, in *TokenReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) SendCandidate(ctx context.Context, in *CandidateReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendCandidate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) SendCancel(ctx context.Context, in *CancelReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendCancel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) SendVote(ctx context.Context, in *VoteReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/rpc.Greeter/SendVote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GreeterServer is the server API for Greeter service.
 type GreeterServer interface {
 	// Sends a greeting
 	GetAccount(context.Context, *AddressReq) (*Response, error)
 	SendMessageRaw(context.Context, *SendMessageCodeReq) (*Response, error)
-	GetMessage(context.Context, *HashReq) (*Response, error)
 	GetBlockHash(context.Context, *HashReq) (*Response, error)
 	GetBlockHeight(context.Context, *HeightReq) (*Response, error)
 	LastHeight(context.Context, *NullReq) (*Response, error)
@@ -1053,11 +1296,17 @@ type GreeterServer interface {
 	PeersInfo(context.Context, *NullReq) (*Response, error)
 	LocalInfo(context.Context, *NullReq) (*Response, error)
 	GenerateAddress(context.Context, *GenerateReq) (*Response, error)
+	GenerateTokenAddress(context.Context, *GenerateTokenReq) (*Response, error)
 	CreateTransaction(context.Context, *TransactionReq) (*Response, error)
 	CreateToken(context.Context, *TokenReq) (*Response, error)
 	CreateCandidate(context.Context, *CandidateReq) (*Response, error)
 	CreateCancel(context.Context, *CancelReq) (*Response, error)
 	CreateVote(context.Context, *VoteReq) (*Response, error)
+	SendTransaction(context.Context, *TransactionReq) (*Response, error)
+	SendToken(context.Context, *TokenReq) (*Response, error)
+	SendCandidate(context.Context, *CandidateReq) (*Response, error)
+	SendCancel(context.Context, *CancelReq) (*Response, error)
+	SendVote(context.Context, *VoteReq) (*Response, error)
 }
 
 // UnimplementedGreeterServer can be embedded to have forward compatible implementations.
@@ -1069,9 +1318,6 @@ func (*UnimplementedGreeterServer) GetAccount(ctx context.Context, req *AddressR
 }
 func (*UnimplementedGreeterServer) SendMessageRaw(ctx context.Context, req *SendMessageCodeReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessageRaw not implemented")
-}
-func (*UnimplementedGreeterServer) GetMessage(ctx context.Context, req *HashReq) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMessage not implemented")
 }
 func (*UnimplementedGreeterServer) GetBlockHash(ctx context.Context, req *HashReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockHash not implemented")
@@ -1106,6 +1352,9 @@ func (*UnimplementedGreeterServer) LocalInfo(ctx context.Context, req *NullReq) 
 func (*UnimplementedGreeterServer) GenerateAddress(ctx context.Context, req *GenerateReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateAddress not implemented")
 }
+func (*UnimplementedGreeterServer) GenerateTokenAddress(ctx context.Context, req *GenerateTokenReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateTokenAddress not implemented")
+}
 func (*UnimplementedGreeterServer) CreateTransaction(ctx context.Context, req *TransactionReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
 }
@@ -1120,6 +1369,21 @@ func (*UnimplementedGreeterServer) CreateCancel(ctx context.Context, req *Cancel
 }
 func (*UnimplementedGreeterServer) CreateVote(ctx context.Context, req *VoteReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVote not implemented")
+}
+func (*UnimplementedGreeterServer) SendTransaction(ctx context.Context, req *TransactionReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendTransaction not implemented")
+}
+func (*UnimplementedGreeterServer) SendToken(ctx context.Context, req *TokenReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendToken not implemented")
+}
+func (*UnimplementedGreeterServer) SendCandidate(ctx context.Context, req *CandidateReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendCandidate not implemented")
+}
+func (*UnimplementedGreeterServer) SendCancel(ctx context.Context, req *CancelReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendCancel not implemented")
+}
+func (*UnimplementedGreeterServer) SendVote(ctx context.Context, req *VoteReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendVote not implemented")
 }
 
 func RegisterGreeterServer(s *grpc.Server, srv GreeterServer) {
@@ -1158,24 +1422,6 @@ func _Greeter_SendMessageRaw_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GreeterServer).SendMessageRaw(ctx, req.(*SendMessageCodeReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Greeter_GetMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HashReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GreeterServer).GetMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rpc.Greeter/GetMessage",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).GetMessage(ctx, req.(*HashReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1378,6 +1624,24 @@ func _Greeter_GenerateAddress_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Greeter_GenerateTokenAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).GenerateTokenAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/GenerateTokenAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).GenerateTokenAddress(ctx, req.(*GenerateTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Greeter_CreateTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TransactionReq)
 	if err := dec(in); err != nil {
@@ -1468,6 +1732,96 @@ func _Greeter_CreateVote_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Greeter_SendTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransactionReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).SendTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/SendTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).SendTransaction(ctx, req.(*TransactionReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_SendToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).SendToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/SendToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).SendToken(ctx, req.(*TokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_SendCandidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CandidateReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).SendCandidate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/SendCandidate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).SendCandidate(ctx, req.(*CandidateReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_SendCancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).SendCancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/SendCancel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).SendCancel(ctx, req.(*CancelReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_SendVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoteReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).SendVote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Greeter/SendVote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).SendVote(ctx, req.(*VoteReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Greeter_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "rpc.Greeter",
 	HandlerType: (*GreeterServer)(nil),
@@ -1479,10 +1833,6 @@ var _Greeter_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendMessageRaw",
 			Handler:    _Greeter_SendMessageRaw_Handler,
-		},
-		{
-			MethodName: "GetMessage",
-			Handler:    _Greeter_GetMessage_Handler,
 		},
 		{
 			MethodName: "GetBlockHash",
@@ -1529,6 +1879,10 @@ var _Greeter_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Greeter_GenerateAddress_Handler,
 		},
 		{
+			MethodName: "GenerateTokenAddress",
+			Handler:    _Greeter_GenerateTokenAddress_Handler,
+		},
+		{
 			MethodName: "CreateTransaction",
 			Handler:    _Greeter_CreateTransaction_Handler,
 		},
@@ -1547,6 +1901,26 @@ var _Greeter_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateVote",
 			Handler:    _Greeter_CreateVote_Handler,
+		},
+		{
+			MethodName: "SendTransaction",
+			Handler:    _Greeter_SendTransaction_Handler,
+		},
+		{
+			MethodName: "SendToken",
+			Handler:    _Greeter_SendToken_Handler,
+		},
+		{
+			MethodName: "SendCandidate",
+			Handler:    _Greeter_SendCandidate_Handler,
+		},
+		{
+			MethodName: "SendCancel",
+			Handler:    _Greeter_SendCancel_Handler,
+		},
+		{
+			MethodName: "SendVote",
+			Handler:    _Greeter_SendVote_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

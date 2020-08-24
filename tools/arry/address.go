@@ -61,11 +61,16 @@ func (a Address) Hash() Hash    { return BytesToHash(a[:]) }
 // String implements the stringer interface and is used also by the logger.
 func (a Address) String() string {
 	start := 0
+	find := false
 	for i, c := range a {
 		if c != '\u0000' {
 			start = i
+			find = true
 			break
 		}
+	}
+	if !find {
+		return ""
 	}
 	return string(a[start:])
 }

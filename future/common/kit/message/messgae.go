@@ -6,7 +6,10 @@ import (
 	"time"
 )
 
-func NewTransaction(from, to, token string, amount, fee, nonce uint64) *types.Message {
+func NewTransaction(from, to, token string, amount, fee, nonce, t uint64) *types.Message {
+	if t == 0 {
+		t = uint64(time.Now().Unix())
+	}
 	tx := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Transaction,
@@ -14,7 +17,7 @@ func NewTransaction(from, to, token string, amount, fee, nonce uint64) *types.Me
 			From:      arry.StringToAddress(from),
 			Nonce:     nonce,
 			Fee:       fee,
-			Time:      uint64(time.Now().Unix()),
+			Time:      t,
 			Signature: &types.Signature{},
 		},
 		Body: &types.TransactionBody{
@@ -27,7 +30,10 @@ func NewTransaction(from, to, token string, amount, fee, nonce uint64) *types.Me
 	return tx
 }
 
-func NewCandidate(from string, peerStr string, fee, nonce uint64) *types.Message {
+func NewCandidate(from string, peerStr string, fee, nonce, t uint64) *types.Message {
+	if t == 0 {
+		t = uint64(time.Now().Unix())
+	}
 	var peerID types.Peer
 	copy(peerID[:], peerStr)
 	can := &types.Message{
@@ -37,7 +43,7 @@ func NewCandidate(from string, peerStr string, fee, nonce uint64) *types.Message
 			From:      arry.StringToAddress(from),
 			Nonce:     nonce,
 			Fee:       fee,
-			Time:      uint64(time.Now().Unix()),
+			Time:      t,
 			Signature: &types.Signature{},
 		},
 		Body: &types.CandidateBody{peerID},
@@ -46,7 +52,10 @@ func NewCandidate(from string, peerStr string, fee, nonce uint64) *types.Message
 	return can
 }
 
-func NewCancel(from string, fee, nonce uint64) *types.Message {
+func NewCancel(from string, fee, nonce, t uint64) *types.Message {
+	if t == 0 {
+		t = uint64(time.Now().Unix())
+	}
 	cancel := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Cancel,
@@ -54,7 +63,7 @@ func NewCancel(from string, fee, nonce uint64) *types.Message {
 			From:      arry.StringToAddress(from),
 			Nonce:     nonce,
 			Fee:       fee,
-			Time:      uint64(time.Now().Unix()),
+			Time:      t,
 			Signature: &types.Signature{},
 		},
 		Body: &types.CancelBody{},
@@ -63,7 +72,10 @@ func NewCancel(from string, fee, nonce uint64) *types.Message {
 	return cancel
 }
 
-func NewVote(from, to string, fee, nonce uint64) *types.Message {
+func NewVote(from, to string, fee, nonce, t uint64) *types.Message {
+	if t == 0 {
+		t = uint64(time.Now().Unix())
+	}
 	vote := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Vote,
@@ -71,7 +83,7 @@ func NewVote(from, to string, fee, nonce uint64) *types.Message {
 			From:      arry.StringToAddress(from),
 			Nonce:     nonce,
 			Fee:       fee,
-			Time:      uint64(time.Now().Unix()),
+			Time:      t,
 			Signature: &types.Signature{},
 		},
 		Body: &types.VoteBody{arry.StringToAddress(to)},
@@ -80,7 +92,10 @@ func NewVote(from, to string, fee, nonce uint64) *types.Message {
 	return vote
 }
 
-func NewToken(from, to, tokenAddr string, amount, fee, nonce uint64, name, shorthand string, allowIncrease bool) *types.Message {
+func NewToken(from, to, tokenAddr string, amount, fee, nonce, t uint64, name, shorthand string, allowIncrease bool) *types.Message {
+	if t == 0 {
+		t = uint64(time.Now().Unix())
+	}
 	token := &types.Message{
 		Header: &types.MsgHeader{
 			Type:      types.Token,
@@ -88,7 +103,7 @@ func NewToken(from, to, tokenAddr string, amount, fee, nonce uint64, name, short
 			From:      arry.StringToAddress(from),
 			Nonce:     nonce,
 			Fee:       fee,
-			Time:      uint64(time.Now().Unix()),
+			Time:      t,
 			Signature: &types.Signature{},
 		},
 		Body: &types.TokenBody{

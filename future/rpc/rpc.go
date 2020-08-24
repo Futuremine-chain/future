@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"github.com/Futuremine-chain/future/common/param"
 	"github.com/Futuremine-chain/future/common/status"
 	"github.com/Futuremine-chain/future/future/common/kit"
+	"github.com/Futuremine-chain/future/future/common/kit/message"
 	rpctypes "github.com/Futuremine-chain/future/future/rpc/types"
 	fmctypes "github.com/Futuremine-chain/future/future/types"
 	"github.com/Futuremine-chain/future/service/peers"
@@ -137,7 +139,7 @@ func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCodeReq) (*Re
 	if err := r.msgPool.Put(tx, false); err != nil {
 		return NewResponse(Err_MsgPool, nil, err.Error()), nil
 	}
-	return NewResponse(Success, []byte(fmt.Sprintf("send transaction raw %s success", tx.Hash().String())), ""), nil
+	return NewResponse(Success, []byte(fmt.Sprintf("send message raw %s success", tx.Hash().String())), ""), nil
 }
 
 func (r *Rpc) GetMessage(ctx context.Context, hash *HashReq) (*Response, error) {
@@ -210,7 +212,9 @@ func (r *Rpc) Candidates(context.Context, *NullReq) (*Response, error) {
 	}
 	cas := candidates.(*fmctypes.Candidates)
 	for i, can := range cas.Members {
-		cas.Members[i].Weight = r.chain.Vote(can.Signer)
+		for _, v := range can.Voters {
+			cas.Members[i].Weight += r.chain.Vote(v)
+		}
 	}
 	bytes, _ := json.Marshal(rpctypes.CandidatesToRpcCandidates(cas))
 	return NewResponse(Success, bytes, ""), nil
@@ -250,14 +254,148 @@ func (r *Rpc) LocalInfo(context.Context, *NullReq) (*Response, error) {
 }
 
 func (r *Rpc) GenerateAddress(ctx context.Context, req *GenerateReq) (*Response, error) {
-	kit.GenerateAddress(req.Network, req.Publickey)
-	return nil, nil
+	address, err := kit.GenerateAddress(req.Network, req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Unknown, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(address), ""), nil
 }
-func (r *Rpc) CreateTransaction(context.Context, *TransactionReq) (*Response, error) { return nil, nil }
-func (r *Rpc) CreateToken(context.Context, *TokenReq) (*Response, error)             { return nil, nil }
-func (r *Rpc) CreateCandidate(context.Context, *CandidateReq) (*Response, error)     { return nil, nil }
-func (r *Rpc) CreateCancel(context.Context, *CancelReq) (*Response, error)           { return nil, nil }
-func (r *Rpc) CreateVote(context.Context, *VoteReq) (*Response, error)               { return nil, nil }
+
+func (r *Rpc) GenerateTokenAddress(ctx context.Context, req *GenerateTokenReq) (*Response, error) {
+	address, err := kit.GenerateTokenAddress(req.Network, req.Address, req.Abbr)
+	if err != nil {
+		return NewResponse(Err_Unknown, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(address), ""), nil
+}
+
+func (r *Rpc) CreateTransaction(ctx context.Context, req *TransactionReq) (*Response, error) {
+	message := message.NewTransaction(req.From, req.To, req.Token, req.Amount, req.Fees, req.Nonce, req.Timestamp)
+	bytes, _ := json.Marshal(message)
+	return NewResponse(Success, bytes, ""), nil
+}
+
+func (r *Rpc) CreateToken(ctx context.Context, req *TokenReq) (*Response, error) {
+	message := message.NewToken(req.From, req.Receiver, req.Token, req.Amount, req.Fees, req.Nonce, req.Timestamp, req.Name, req.Abbr, req.Increase)
+	bytes, _ := json.Marshal(message)
+	return NewResponse(Success, bytes, ""), nil
+}
+
+func (r *Rpc) CreateCandidate(ctx context.Context, req *CandidateReq) (*Response, error) {
+	message := message.NewCandidate(req.From, req.P2Pid, req.Fees, req.Nonce, req.Timestamp)
+	bytes, _ := json.Marshal(message)
+	return NewResponse(Success, bytes, ""), nil
+}
+func (r *Rpc) CreateCancel(ctx context.Context, req *CancelReq) (*Response, error) {
+	message := message.NewCancel(req.From, req.Fees, req.Nonce, req.Timestamp)
+	bytes, _ := json.Marshal(message)
+	return NewResponse(Success, bytes, ""), nil
+}
+func (r *Rpc) CreateVote(ctx context.Context, req *VoteReq) (*Response, error) {
+	message := message.NewVote(req.From, req.To, req.Fees, req.Nonce, req.Timestamp)
+	bytes, _ := json.Marshal(message)
+	return NewResponse(Success, bytes, ""), nil
+}
+
+func (r *Rpc) SendTransaction(ctx context.Context, req *TransactionReq) (*Response, error) {
+	message := message.NewTransaction(req.From, req.To, req.Token, req.Amount, req.Fees, req.Nonce, req.Timestamp)
+
+	signature, err := hex.DecodeString(req.Signature)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	pubKey, err := hex.DecodeString(req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	message.Header.Signature.Bytes = signature
+	message.Header.Signature.PubKey = pubKey
+
+	if err := r.msgPool.Put(message, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send message %s success", message.Hash().String())), ""), nil
+}
+
+func (r *Rpc) SendToken(ctx context.Context, req *TokenReq) (*Response, error) {
+	message := message.NewToken(req.From, req.Receiver, req.Token, req.Amount, req.Fees, req.Nonce, req.Timestamp, req.Name, req.Abbr, req.Increase)
+
+	fmt.Println()
+	x, _ := json.Marshal(message)
+	fmt.Println(string(x))
+	signature, err := hex.DecodeString(req.Signature)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	pubKey, err := hex.DecodeString(req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	message.Header.Signature.Bytes = signature
+	message.Header.Signature.PubKey = pubKey
+
+	if err := r.msgPool.Put(message, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send message %s success", message.Hash().String())), ""), nil
+}
+
+func (r *Rpc) SendCandidate(ctx context.Context, req *CandidateReq) (*Response, error) {
+	message := message.NewCandidate(req.From, req.P2Pid, req.Fees, req.Nonce, req.Timestamp)
+	signature, err := hex.DecodeString(req.Signature)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	pubKey, err := hex.DecodeString(req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	message.Header.Signature.Bytes = signature
+	message.Header.Signature.PubKey = pubKey
+
+	if err := r.msgPool.Put(message, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send message %s success", message.Hash().String())), ""), nil
+}
+
+func (r *Rpc) SendCancel(ctx context.Context, req *CancelReq) (*Response, error) {
+	message := message.NewCancel(req.From, req.Fees, req.Nonce, req.Timestamp)
+	signature, err := hex.DecodeString(req.Signature)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	pubKey, err := hex.DecodeString(req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	message.Header.Signature.Bytes = signature
+	message.Header.Signature.PubKey = pubKey
+
+	if err := r.msgPool.Put(message, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send message %s success", message.Hash().String())), ""), nil
+}
+
+func (r *Rpc) SendVote(ctx context.Context, req *VoteReq) (*Response, error) {
+	message := message.NewVote(req.From, req.To, req.Fees, req.Nonce, req.Timestamp)
+	signature, err := hex.DecodeString(req.Signature)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	pubKey, err := hex.DecodeString(req.Publickey)
+	if err != nil {
+		return NewResponse(Err_Params, nil, err.Error()), nil
+	}
+	message.Header.Signature.Bytes = signature
+	message.Header.Signature.PubKey = pubKey
+
+	if err := r.msgPool.Put(message, false); err != nil {
+		return NewResponse(Err_MsgPool, nil, err.Error()), nil
+	}
+	return NewResponse(Success, []byte(fmt.Sprintf("send message %s success", message.Hash().String())), ""), nil
+}
 
 func NewResponse(code int32, result []byte, err string) *Response {
 	return &Response{Code: code, Result: result, Err: err}

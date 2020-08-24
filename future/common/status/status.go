@@ -119,7 +119,15 @@ func (f *FMCStatus) Commit() (arry.Hash, arry.Hash, arry.Hash, error) {
 }
 
 func (f *FMCStatus) Candidates() types.ICandidates {
-	cans, _ := f.dPosStatus.Candidates()
+	iCans, _ := f.dPosStatus.Candidates()
+	cans := iCans.(*fmctypes.Candidates)
+	voterMap := f.dPosStatus.Voters()
+	for index, candidate := range cans.Members {
+		voters, ok := voterMap[candidate.Signer]
+		if ok {
+			cans.Members[index].Voters = voters
+		}
+	}
 	return cans
 }
 

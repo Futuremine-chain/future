@@ -8,4 +8,5 @@ const (
 	Err_DPos    = 4
 	Err_Token   = 5
 	Err_Local   = 6
+	Err_Unknown = 7
 )
