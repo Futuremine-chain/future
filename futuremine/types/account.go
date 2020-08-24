@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
-	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/rlp"
 	"github.com/Futuremine-chain/futuremine/types"
@@ -96,11 +94,12 @@ func (a *Account) UpdateLocked(confirmed uint64) error {
 }
 
 func (a *Account) FromMessage(msg types.IMessage, height uint64) error {
-	if MessageType(msg.Type()) == Token {
-		return a.addToken(msg, height)
-	}
 	if a.Nonce+1 != msg.Nonce() {
 		return fmt.Errorf("wrong nonce value")
+	}
+
+	if MessageType(msg.Type()) == Token {
+		return a.addToken(msg, height)
 	}
 	body := msg.MsgBody()
 	tokenAddr := body.MsgToken()
@@ -114,24 +113,15 @@ func (a *Account) FromMessage(msg types.IMessage, height uint64) error {
 // Change of contract information
 func (a *Account) addToken(msg types.IMessage, height uint64) error {
 	fees := msg.Fee()
-	msgBody := msg.MsgBody()
-	amount := msgBody.MsgAmount()
 	mainAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
 	if !ok {
 		return errors.New("account is not exist")
 	}
-	consumption := kit.CalConsumption(amount, config.Param.Proportion)
 	if mainAccount.Balance < fees {
-		return fmt.Errorf("need a handling fee of %d, insufficient handling fee", fees)
+		return fmt.Errorf("balance %d is not enough to pay the fee %d", mainAccount.Balance, fees)
 	}
 	mainAccount.Balance -= fees
 	mainAccount.LockedOut += fees
-	if mainAccount.Balance < consumption {
-		return fmt.Errorf("insufficient balance")
-	}
-
-	mainAccount.Balance -= consumption
-	mainAccount.LockedOut += consumption
 
 	a.Tokens.Set(mainAccount)
 	a.Nonce = msg.Nonce()
@@ -288,39 +278,13 @@ func (a *Account) Check(msg types.IMessage, strict bool) error {
 			return a.checkTokenBalance(msg, body)
 		}
 	case Token:
-		return a.checkTokenAmount(msg)
+		return a.checkFees(msg)
 	default:
 		if msg.MsgBody().MsgAmount() != 0 {
 			return errors.New("wrong amount")
 		}
 		return a.checkFees(msg)
 	}
-}
-
-// Verification contract amount
-func (a *Account) checkTokenAmount(msg types.IMessage) error {
-	body := msg.MsgBody()
-
-	amount := body.MsgAmount()
-	consumption := kit.CalConsumption(amount, config.Param.Proportion)
-	mainAddress := config.Param.MainToken.String()
-	main, ok := a.Tokens.Get(mainAddress)
-	if !ok {
-		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
-			amount2.Amount(consumption).ToCoin(),
-			mainAddress,
-			amount2.Amount(msg.Fee()).ToCoin(),
-			mainAddress,
-			amount2.Amount(amount).ToCoin())
-	} else if main.Balance < msg.Fee()+consumption {
-		return fmt.Errorf("it takes %f %s and %f %s as a handling fee to issue %f, and the balance is insufficient",
-			amount2.Amount(consumption).ToCoin(),
-			mainAddress,
-			amount2.Amount(msg.Fee()).ToCoin(),
-			mainAddress,
-			amount2.Amount(amount).ToCoin())
-	}
-	return nil
 }
 
 // Verify the account balance of the primary transaction, the transaction
@@ -421,7 +385,7 @@ func (j *journalOut) Add(msg types.IMessage, height uint64) {
 	amount := body.MsgAmount()
 	if MessageType(msg.Type()) == Token {
 		TokenAddress = config.Param.MainToken
-		amount = kit.CalConsumption(amount, config.Param.Proportion)
+		amount = 0
 	}
 	j.Outs.Set(&txOut{
 		TokenAddress: TokenAddress.String(),
