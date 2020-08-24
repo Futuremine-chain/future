@@ -61,6 +61,7 @@ type TokenParam struct {
 	Proportion            uint64
 	MinCoinCount          float64
 	MaxCoinCount          float64
+	MinimumTransfer       uint64
 	MainToken             arry.Address
 }
 
@@ -123,6 +124,7 @@ var TestNetParam = &Param{
 		Proportion:            10000,
 		MinCoinCount:          1 * 1e4,
 		MaxCoinCount:          9 * 1e10,
+		MinimumTransfer:       0.0001 * AtomsPerCoin,
 		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
@@ -177,6 +179,7 @@ var MainNetParam = &Param{
 		Proportion:            10000,
 		MinCoinCount:          1 * 1e4,
 		MaxCoinCount:          9 * 1e10,
+		MinimumTransfer:       0.0001 * AtomsPerCoin,
 		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{

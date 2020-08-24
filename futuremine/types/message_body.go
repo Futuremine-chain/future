@@ -44,6 +44,9 @@ func (t *TransactionBody) CheckBody(from arry.Address) error {
 			return errors.New("token address verification failed")
 		}
 	}
+	if t.Amount < config.Param.MinimumTransfer {
+		return fmt.Errorf("the minimum allowed transfer is %d", config.Param.MinimumTransfer)
+	}
 	return nil
 }
 
