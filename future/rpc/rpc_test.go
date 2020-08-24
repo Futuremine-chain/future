@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/future/common/kit/message"
 	"github.com/Futuremine-chain/future/future/types"
 	"github.com/Futuremine-chain/future/tools/arry"
 	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
@@ -77,21 +78,17 @@ func TestRpc_CreateTransaction(t *testing.T) {
 		Token:     "FM",
 		Amount:    1000000000,
 		Fees:      1000000,
-		Nonce:     3,
+		Nonce:     8,
 		Timestamp: ti,
 	})
+	fmt.Println(string(resp.Result))
 	var h *respHash
 
 	err = json.Unmarshal(resp.Result, &h)
 	if err != nil {
 		t.Fatalf("error %s", err.Error())
 	}
-	priv, err := secp256k1.ParseStringToPrivate("68d01d8fe1d512f9038040f0e1d3b26a599513a2e6595322aae07060afae698c")
-	hash, err := arry.StringToHash(h.Header.Hash)
-	if err != nil {
-		t.Fatalf("error %s", err.Error())
-	}
-	si, err := types.Sign(priv, hash)
+	si, err := message.Sign("68d01d8fe1d512f9038040f0e1d3b26a599513a2e6595322aae07060afae698c", h.Header.Hash)
 	if err != nil {
 		t.Fatalf("error %s", err.Error())
 	}
@@ -101,7 +98,7 @@ func TestRpc_CreateTransaction(t *testing.T) {
 		Token:     "FM",
 		Amount:    1000000000,
 		Fees:      1000000,
-		Nonce:     3,
+		Nonce:     8,
 		Timestamp: ti,
 		Signature: si.SignatureString(),
 		Publickey: si.PubKeyString(),
@@ -120,7 +117,7 @@ func TestRpc_CreateToken(t *testing.T) {
 		Address: "FMejc9bjiTeQzKQG9fSDPGdsRzzEdEQe6se",
 		Abbr:    "ANBJ",
 	})
-
+	fmt.Println(string(resp.Result))
 	token := string(resp.Result)
 	resp, err = client.Gc.CreateToken(context.Background(), &TokenReq{
 		From:      "FMejc9bjiTeQzKQG9fSDPGdsRzzEdEQe6se",
@@ -182,7 +179,7 @@ func TestRpc_CreateCandidate(t *testing.T) {
 		Timestamp: ti,
 	})
 	var h *respHash
-
+	fmt.Println(string(resp.Result))
 	err = json.Unmarshal(resp.Result, &h)
 	if err != nil {
 		t.Fatalf("error %s", err.Error())
@@ -221,7 +218,7 @@ func TestRpc_CreateCancel(t *testing.T) {
 		Timestamp: ti,
 	})
 	var h *respHash
-
+	fmt.Println(string(resp.Result))
 	err = json.Unmarshal(resp.Result, &h)
 	if err != nil {
 		t.Fatalf("error %s", err.Error())
@@ -260,7 +257,7 @@ func TestRpc_CreateVote(t *testing.T) {
 		Timestamp: ti,
 	})
 	var h *respHash
-
+	fmt.Println(string(resp.Result))
 	err = json.Unmarshal(resp.Result, &h)
 	if err != nil {
 		t.Fatalf("error %s", err.Error())

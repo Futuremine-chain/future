@@ -3,6 +3,7 @@ package message
 import (
 	"github.com/Futuremine-chain/future/future/types"
 	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 	"time"
 )
 
@@ -117,4 +118,16 @@ func NewToken(from, to, tokenAddr string, amount, fee, nonce, t uint64, name, sh
 	}
 	token.SetHash()
 	return token
+}
+
+func Sign(keyStr string, hash string) (*types.Signature, error) {
+	key, err := secp256k1.ParseStringToPrivate(keyStr)
+	if err != nil {
+		return nil, err
+	}
+	h, err := arry.StringToHash(hash)
+	if err != nil {
+		return nil, err
+	}
+	return types.Sign(key, h)
 }
