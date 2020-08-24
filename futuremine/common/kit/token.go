@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
@@ -27,17 +26,21 @@ func CalCoinBase(net string, height uint64) uint64 {
 	case param.TestNet:
 		params = param.TestNetParam
 	}
-	fCoinBase := amount.Amount(params.CoinBase).ToCoin()
+	coinbase := params.CoinBase
+	times := height/params.EveryChangeCoinHeight + 1
+	return uint64(CalCountByTimes(&coinbase, &times, params.CoinCoefficient) * param.AtomsPerCoin)
+}
 
-	maxHeight := params.Circulation / fCoinBase
-	if float64(height) <= maxHeight {
-		return params.CoinBase
-	} else if float64(height) > maxHeight && (float64(height)-maxHeight) < 1 {
-		uCoinBase, _ := amount.NewAmount(params.Circulation - fCoinBase*float64(uint64(maxHeight)))
-		return uCoinBase
-	} else {
+func CalCountByTimes(coinbase *float64, times *uint64, coefficient float64) float64 {
+	if *times == 1 {
+		return *coinbase
+	}
+	if *times > 10 {
 		return 0
 	}
+	*coinbase += *coinbase * coefficient
+	*times--
+	return CalCountByTimes(coinbase, times, coefficient)
 }
 
 func GenerateTokenAddress(net string, address string, shorthand string) (string, error) {

@@ -8,7 +8,7 @@ import (
 
 const (
 	// Block interval period
-	BlockInterval = uint64(5)
+	BlockInterval = uint64(30)
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
@@ -31,6 +31,9 @@ const (
 	MaxReqBytes  = MaxReadBytes * 1000
 )
 
+// AtomsPerCoin is the number of atomic units in one coin.
+const AtomsPerCoin = 1e8
+
 type Param struct {
 	Name              string
 	Data              string
@@ -50,12 +53,15 @@ type Param struct {
 }
 
 type TokenParam struct {
-	Circulation  float64
-	CoinBase     uint64
-	Proportion   uint64
-	MinCoinCount float64
-	MaxCoinCount float64
-	MainToken    arry.Address
+	PreCirculation        uint64
+	Circulation           uint64
+	CoinBase              float64
+	CoinCoefficient       float64
+	EveryChangeCoinHeight uint64
+	Proportion            uint64
+	MinCoinCount          float64
+	MaxCoinCount          float64
+	MainToken             arry.Address
 }
 
 type PrivateParam struct {
@@ -109,12 +115,15 @@ var TestNetParam = &Param{
 		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
-		Circulation:  10000000009,
-		CoinBase:     10 * 1e8,
-		Proportion:   10000,
-		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FC"),
+		PreCirculation:        38000000 * AtomsPerCoin,
+		Circulation:           248034687.5 * AtomsPerCoin,
+		CoinBase:              100 * AtomsPerCoin,
+		EveryChangeCoinHeight: 1051200,
+		CoinCoefficient:       -0.5,
+		Proportion:            10000,
+		MinCoinCount:          1 * 1e4,
+		MaxCoinCount:          9 * 1e10,
+		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    TestNet + "_FUTURE_CHAIN",
@@ -160,12 +169,15 @@ var MainNetParam = &Param{
 		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
-		Circulation:  1 * 1e10,
-		CoinBase:     10 * 1e8,
-		Proportion:   10000,
-		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FC"),
+		PreCirculation:        38000000 * AtomsPerCoin,
+		Circulation:           248034687.5 * AtomsPerCoin,
+		CoinBase:              100 * AtomsPerCoin,
+		EveryChangeCoinHeight: 1051200,
+		CoinCoefficient:       -0.5,
+		Proportion:            10000,
+		MinCoinCount:          1 * 1e4,
+		MaxCoinCount:          9 * 1e10,
+		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    MainNet + "_FUTURE_CHAIN",

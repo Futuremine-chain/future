@@ -10,8 +10,8 @@ func TestGenerateAddress(t *testing.T) {
 	e, _ := Entropy()
 	m, _ := Mnemonic(e)
 	key, _ := MnemonicToEc(m)
-	addr, _ := GenerateAddress(param.MainNet, key.PubKey())
-	fmt.Println(addr.String())
+	addr, _ := GenerateAddress(param.MainNet, key.PubKey().SerializeCompressedString())
+	fmt.Println(addr)
 	if !CheckAddress(param.MainNet, addr) {
 		t.Fatalf("failed")
 	}
