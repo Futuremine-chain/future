@@ -1,10 +1,10 @@
 package token_db
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/db/base"
-	"github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/trie"
+	"github.com/Futuremine-chain/future/common/db/base"
+	"github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/trie"
 )
 
 type TokenDB struct {

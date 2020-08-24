@@ -1,7 +1,7 @@
 package types
 
 import (
-	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
+	fmctypes "github.com/Futuremine-chain/future/future/types"
 )
 
 type RpcBlock struct {

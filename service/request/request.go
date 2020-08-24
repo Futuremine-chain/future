@@ -2,8 +2,8 @@ package request
 
 import (
 	"errors"
-	"github.com/Futuremine-chain/futuremine/server"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/server"
+	"github.com/Futuremine-chain/future/types"
 	"github.com/libp2p/go-libp2p-core/network"
 )
 

@@ -2,7 +2,7 @@ package command
 
 import (
 	"context"
-	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
+	"github.com/Futuremine-chain/future/future/rpc"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"time"

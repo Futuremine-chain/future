@@ -1,6 +1,6 @@
 package msglist
 
-import "github.com/Futuremine-chain/futuremine/types"
+import "github.com/Futuremine-chain/future/types"
 
 type ITxListDB interface {
 	Read() []types.IMessage

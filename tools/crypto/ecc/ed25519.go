@@ -7,7 +7,7 @@ package ecc
 
 import (
 	"errors"
-	edwards "github.com/Futuremine-chain/futuremine/tools/crypto/ecc/ed25519"
+	edwards "github.com/Futuremine-chain/future/tools/crypto/ecc/ed25519"
 	"io"
 	"math/big"
 )

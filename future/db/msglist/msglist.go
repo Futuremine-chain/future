@@ -1,9 +1,9 @@
 package msglist
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/db/base"
-	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/db/base"
+	fmctypes "github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/types"
 )
 
 const (

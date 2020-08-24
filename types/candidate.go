@@ -1,6 +1,6 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/tools/arry"
+import "github.com/Futuremine-chain/future/tools/arry"
 
 type ICandidates interface {
 	Len() int

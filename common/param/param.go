@@ -1,8 +1,8 @@
 package param
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/private"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/future/common/private"
+	"github.com/Futuremine-chain/future/tools/arry"
 	"time"
 )
 

@@ -19,7 +19,7 @@ package trie
 import (
 	"errors"
 	"fmt"
-	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
+	hasharry "github.com/Futuremine-chain/future/tools/arry"
 
 	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
 )

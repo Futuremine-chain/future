@@ -2,7 +2,7 @@ package msglist
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/types"
 	"strconv"
 )
 

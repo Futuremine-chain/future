@@ -19,8 +19,8 @@ package trie
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/Futuremine-chain/futuremine/common/db/base"
-	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/future/common/db/base"
+	hasharry "github.com/Futuremine-chain/future/tools/arry"
 	"github.com/davecgh/go-spew/spew"
 	"math/rand"
 	"reflect"

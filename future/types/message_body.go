@@ -3,11 +3,11 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
-	"github.com/Futuremine-chain/futuremine/tools/amount"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/math"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/future/common/kit"
+	"github.com/Futuremine-chain/future/tools/amount"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/math"
 )
 
 const (

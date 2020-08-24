@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/Futuremine-chain/futuremine/cmd/wallet/command"
-	"github.com/Futuremine-chain/futuremine/cmd/wallet/config"
-	config2 "github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/tools/utils"
+	"github.com/Futuremine-chain/future/cmd/wallet/command"
+	"github.com/Futuremine-chain/future/cmd/wallet/config"
+	config2 "github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/common/param"
+	"github.com/Futuremine-chain/future/tools/utils"
 	"github.com/spf13/cobra"
 	"os"
 )

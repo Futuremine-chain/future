@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/types"
+	"github.com/Futuremine-chain/future/future/types"
 	"time"
 )
 

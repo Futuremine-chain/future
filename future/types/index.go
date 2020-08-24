@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/rlp"
 )
 
 type MsgIndex struct {

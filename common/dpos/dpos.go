@@ -1,8 +1,8 @@
 package dpos
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/blockchain"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/blockchain"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type IDPos interface {

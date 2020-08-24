@@ -2,11 +2,11 @@ package node
 
 import (
 	"encoding/json"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/server"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/common/param"
+	"github.com/Futuremine-chain/future/server"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
+	"github.com/Futuremine-chain/future/types"
 )
 
 const module = "fc_node"

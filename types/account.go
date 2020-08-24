@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/future/tools/arry"
 )
 
 type IAccount interface {

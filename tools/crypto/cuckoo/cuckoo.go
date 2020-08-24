@@ -2,7 +2,7 @@ package cuckoo
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/cuckoo/siphash"
+	"github.com/Futuremine-chain/future/tools/crypto/cuckoo/siphash"
 	"github.com/pkg/errors"
 	"runtime"
 	"sort"

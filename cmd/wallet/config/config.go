@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/future/common/config"
 )
 
 type Config struct {

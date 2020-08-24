@@ -19,8 +19,8 @@ package trie
 import (
 	"bytes"
 	"crypto/sha256"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/rlp"
 	"hash"
 	"sync"
 )

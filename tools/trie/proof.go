@@ -19,10 +19,10 @@ package trie
 import (
 	"bytes"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	cypHash "github.com/Futuremine-chain/futuremine/tools/crypto/hash"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
+	"github.com/Futuremine-chain/future/tools/arry"
+	cypHash "github.com/Futuremine-chain/future/tools/crypto/hash"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
+	"github.com/Futuremine-chain/future/tools/rlp"
 )
 
 // Prove constructs a merkle proof for key. The result contains all

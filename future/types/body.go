@@ -1,6 +1,6 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/types"
+import "github.com/Futuremine-chain/future/types"
 
 type Body struct {
 	Messages

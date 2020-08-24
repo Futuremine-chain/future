@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/amount"
+	"github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/amount"
 )
 
 type Account struct {

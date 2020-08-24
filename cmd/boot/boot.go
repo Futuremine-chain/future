@@ -4,8 +4,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/private"
-	"github.com/Futuremine-chain/futuremine/service/p2p"
+	"github.com/Futuremine-chain/future/future/common/private"
+	"github.com/Futuremine-chain/future/service/p2p"
 	"os"
 	"sync"
 )

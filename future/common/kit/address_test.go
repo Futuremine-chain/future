@@ -2,7 +2,7 @@ package kit
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/future/common/param"
 	"testing"
 )
 

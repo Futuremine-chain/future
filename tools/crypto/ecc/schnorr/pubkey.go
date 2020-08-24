@@ -7,7 +7,7 @@ package schnorr
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 )
 
 // These constants define the lengths of serialized public keys.

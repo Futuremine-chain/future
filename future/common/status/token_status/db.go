@@ -1,8 +1,8 @@
 package token_status
 
 import (
-	"github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
+	"github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/arry"
 )
 
 type ITokenDB interface {

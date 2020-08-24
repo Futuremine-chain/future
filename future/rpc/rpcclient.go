@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
+	"github.com/Futuremine-chain/future/common/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

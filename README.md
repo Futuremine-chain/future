@@ -1,9 +1,9 @@
-# future mine chain
+# future chain
 
 ### Start the testing
 
 - Test with the command line wallet.
-- Or you can test it by downloading the wallet APP, [DOWNLOAD](https://wallet.futuremine.io).
+- Or you can test it by downloading the wallet APP, [DOWNLOAD](https://wallet.future.io).
 - Test COINS can be applied through APP wallet.
 
 ### How to build
@@ -20,10 +20,10 @@ go version go1.13 darwin/amd64
 ```
 
 ```bash
-cd futuremine/cmd/futuremine
+cd future/cmd/future
 go build
 
-cd futuremine/cmd/wallet
+cd future/cmd/wallet
 go build
 ```
 
@@ -41,11 +41,11 @@ go build
 * set RpcPass
 * set ExternalIp
 
-##### Start the futuremine
+##### Start the future
 
 ```bash
 
-./futuremine --config config.toml
+./future --config config.toml
 ```
 
 ##### Copy wallet configuration file for reconfiguration

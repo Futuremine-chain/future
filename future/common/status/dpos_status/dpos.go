@@ -2,11 +2,11 @@ package dpos_status
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/futuremine/db/status/dpos_db"
-	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/future/db/status/dpos_db"
+	fmctypes "github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/types"
 )
 
 const dPosDB = "dpos_db"

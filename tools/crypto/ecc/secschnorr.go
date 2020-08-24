@@ -7,8 +7,8 @@ package ecc
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/schnorr"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/schnorr"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 	"io"
 	"math/big"
 )

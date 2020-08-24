@@ -1,6 +1,6 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/tools/rlp"
+import "github.com/Futuremine-chain/future/tools/rlp"
 
 type RlpHeader Header
 

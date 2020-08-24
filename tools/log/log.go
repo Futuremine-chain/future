@@ -2,7 +2,7 @@ package log
 
 import (
 	"fmt"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
 	"github.com/jrick/logrotate/rotator"
 	"os"
 	"path/filepath"

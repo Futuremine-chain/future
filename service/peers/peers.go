@@ -1,9 +1,9 @@
 package peers
 
 import (
-	request2 "github.com/Futuremine-chain/futuremine/service/request"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
-	"github.com/Futuremine-chain/futuremine/types"
+	request2 "github.com/Futuremine-chain/future/service/request"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
+	"github.com/Futuremine-chain/future/types"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"math/rand"
 	"sync"

@@ -3,15 +3,15 @@ package dpos
 import (
 	"errors"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/blockchain"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/kit/message"
-	fmctypes "github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/utils"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/blockchain"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/common/dpos"
+	"github.com/Futuremine-chain/future/common/param"
+	"github.com/Futuremine-chain/future/future/common/kit/message"
+	fmctypes "github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/utils"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type DPos struct {

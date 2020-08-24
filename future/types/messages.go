@@ -2,9 +2,9 @@ package types
 
 import (
 	"bytes"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/crypto/hash"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type Messages []types.IMessage

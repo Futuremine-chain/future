@@ -18,7 +18,7 @@ package trie
 
 import (
 	"fmt"
-	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
+	hasharry "github.com/Futuremine-chain/future/tools/arry"
 )
 
 // MissingNodeError is returned by the trie functions (TryGet, TryUpdate, TryDelete)

@@ -2,7 +2,7 @@ package gorutinue
 
 import (
 	"errors"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
 	"sync"
 )
 

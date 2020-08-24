@@ -1,8 +1,8 @@
-cmd/futuremine/config1.toml
-cmd/futuremine/config2.toml
-cmd/futuremine/config5.toml
-cmd/futuremine/futuremine
-cmd/futuremine/data
+cmd/future/config1.toml
+cmd/future/config2.toml
+cmd/future/config5.toml
+cmd/future/future
+cmd/future/data
 cmd/wallet/keystore
 cmd/wallet/wallet
 

@@ -1,6 +1,6 @@
 package types
 
-import "github.com/Futuremine-chain/futuremine/futuremine/types"
+import "github.com/Futuremine-chain/future/future/types"
 
 type RpcBody struct {
 	Messages []*RpcMessage `json:"transactions"`

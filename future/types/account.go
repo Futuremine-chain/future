@@ -3,10 +3,10 @@ package types
 import (
 	"errors"
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/rlp"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type Account struct {

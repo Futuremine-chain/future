@@ -1,11 +1,11 @@
 package generate
 
 import (
-	"github.com/Futuremine-chain/futuremine/common/blockchain"
-	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/common/horn"
-	"github.com/Futuremine-chain/futuremine/service/pool"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/future/common/blockchain"
+	"github.com/Futuremine-chain/future/common/dpos"
+	"github.com/Futuremine-chain/future/common/horn"
+	"github.com/Futuremine-chain/future/service/pool"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
 	"time"
 )
 

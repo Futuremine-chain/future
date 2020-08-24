@@ -1,9 +1,9 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type Block struct {

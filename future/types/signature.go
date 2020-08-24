@@ -2,10 +2,10 @@ package types
 
 import (
 	"encoding/hex"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/future/common/kit"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/types"
 )
 
 // Signature information, including the result of the

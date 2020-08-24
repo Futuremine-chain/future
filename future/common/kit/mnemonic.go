@@ -2,10 +2,10 @@ package kit
 
 import (
 	"encoding/hex"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/bip32"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/bip39"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/seed"
+	"github.com/Futuremine-chain/future/tools/crypto/bip32"
+	"github.com/Futuremine-chain/future/tools/crypto/bip39"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/tools/crypto/seed"
 )
 
 func Entropy() (string, error) {

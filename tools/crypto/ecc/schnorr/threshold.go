@@ -6,7 +6,7 @@ package schnorr
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 	"math/big"
 
 	chainhash "github.com/Qitmeer/qitmeer-lib/common/hash"

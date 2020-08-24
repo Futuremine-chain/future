@@ -19,8 +19,8 @@ package trie
 import (
 	"fmt"
 
-	hasharry "github.com/Futuremine-chain/futuremine/tools/arry"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	hasharry "github.com/Futuremine-chain/future/tools/arry"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
 )
 
 var secureKeyPrefix = []byte("secure-key-")

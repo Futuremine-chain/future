@@ -2,8 +2,8 @@ package p2p
 
 import (
 	"context"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
 	"github.com/libp2p/go-libp2p-core/peer"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/multiformats/go-multiaddr"

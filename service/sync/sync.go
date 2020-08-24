@@ -2,13 +2,13 @@ package sync
 
 import (
 	"errors"
-	"github.com/Futuremine-chain/futuremine/common/blockchain"
-	"github.com/Futuremine-chain/futuremine/common/dpos"
-	"github.com/Futuremine-chain/futuremine/common/param"
-	"github.com/Futuremine-chain/futuremine/service/peers"
-	"github.com/Futuremine-chain/futuremine/service/request"
-	log "github.com/Futuremine-chain/futuremine/tools/log/log15"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/blockchain"
+	"github.com/Futuremine-chain/future/common/dpos"
+	"github.com/Futuremine-chain/future/common/param"
+	"github.com/Futuremine-chain/future/service/peers"
+	"github.com/Futuremine-chain/future/service/request"
+	log "github.com/Futuremine-chain/future/tools/log/log15"
+	"github.com/Futuremine-chain/future/types"
 	"time"
 )
 

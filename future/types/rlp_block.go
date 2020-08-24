@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/tools/rlp"
+	"github.com/Futuremine-chain/future/types"
 )
 
 type RlpBlock struct {

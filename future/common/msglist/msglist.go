@@ -2,10 +2,10 @@ package msglist
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/common/config"
-	"github.com/Futuremine-chain/futuremine/common/validator"
-	"github.com/Futuremine-chain/futuremine/futuremine/db/msglist"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/config"
+	"github.com/Futuremine-chain/future/common/validator"
+	"github.com/Futuremine-chain/future/future/db/msglist"
+	"github.com/Futuremine-chain/future/types"
 	"sync"
 )
 

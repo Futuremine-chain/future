@@ -2,9 +2,9 @@ package msglist
 
 import (
 	"container/heap"
-	"github.com/Futuremine-chain/futuremine/common/validator"
-	"github.com/Futuremine-chain/futuremine/tools/utils"
-	"github.com/Futuremine-chain/futuremine/types"
+	"github.com/Futuremine-chain/future/common/validator"
+	"github.com/Futuremine-chain/future/tools/utils"
+	"github.com/Futuremine-chain/future/types"
 )
 
 const maxStagnantTime uint64 = 60

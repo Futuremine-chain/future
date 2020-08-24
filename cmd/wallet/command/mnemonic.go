@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
+	"github.com/Futuremine-chain/future/future/common/kit"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

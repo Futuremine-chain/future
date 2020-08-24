@@ -2,12 +2,12 @@ package dpos_db
 
 import (
 	"bytes"
-	"github.com/Futuremine-chain/futuremine/common/db/base"
-	"github.com/Futuremine-chain/futuremine/futuremine/types"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
-	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
-	"github.com/Futuremine-chain/futuremine/tools/rlp"
-	"github.com/Futuremine-chain/futuremine/tools/trie"
+	"github.com/Futuremine-chain/future/common/db/base"
+	"github.com/Futuremine-chain/future/future/types"
+	"github.com/Futuremine-chain/future/tools/arry"
+	"github.com/Futuremine-chain/future/tools/crypto/hash"
+	"github.com/Futuremine-chain/future/tools/rlp"
+	"github.com/Futuremine-chain/future/tools/trie"
 	"strconv"
 )
 

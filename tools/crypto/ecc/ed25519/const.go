@@ -6,7 +6,7 @@
 package edwards
 
 import (
-	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/ed25519/internal/edwards25519"
+	"github.com/Futuremine-chain/future/tools/crypto/ecc/ed25519/internal/edwards25519"
 	"math/big"
 )
 

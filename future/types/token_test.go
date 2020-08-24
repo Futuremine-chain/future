@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"github.com/Futuremine-chain/futuremine/tools/amount"
+	"github.com/Futuremine-chain/future/tools/amount"
 	"testing"
 )
 
