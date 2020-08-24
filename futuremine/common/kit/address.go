@@ -2,7 +2,9 @@ package kit
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/Futuremine-chain/futuremine/common/param"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
@@ -13,7 +15,7 @@ import (
 const addressLength = 35
 const addressBytesLength = 26
 
-func GenerateAddress(net string, key *secp256k1.PublicKey) (arry.Address, error) {
+func GenerateAddress(net string, pubKey string) (string, error) {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -21,12 +23,20 @@ func GenerateAddress(net string, key *secp256k1.PublicKey) (arry.Address, error)
 	case param.TestNet:
 		ver = append(ver, param.TestNetParam.PubKeyHashAddrID[0:]...)
 	default:
-		return arry.Address{}, errors.New("wrong network")
+		return "", errors.New("wrong network")
+	}
+	pubBytes, err := hex.DecodeString(pubKey)
+	if err != nil {
+		return "", fmt.Errorf("wrong public key, error:%s", err.Error())
+	}
+	key, err := secp256k1.ParsePubKey(pubBytes)
+	if err != nil {
+		return "", fmt.Errorf("wrong public key, error:%s", err.Error())
 	}
 	hashed256 := hash.Hash(key.SerializeCompressed())
 	hashed160, err := hash.Hash160(hashed256.Bytes())
 	if err != nil {
-		return arry.Address{}, err
+		return "", err
 	}
 
 	addNet := append(ver, hashed160...)
@@ -34,10 +44,10 @@ func GenerateAddress(net string, key *secp256k1.PublicKey) (arry.Address, error)
 	hashed2 := hash.Hash(hashed1.Bytes())
 	checkSum := hashed2[0:4]
 	hashedCheck1 := append(addNet, checkSum...)
-	return arry.StringToAddress(base58.Encode(hashedCheck1)), nil
+	return arry.StringToAddress(base58.Encode(hashedCheck1)).String(), nil
 }
 
-func CheckAddress(net string, address arry.Address) bool {
+func CheckAddress(net string, address string) bool {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -47,11 +57,10 @@ func CheckAddress(net string, address arry.Address) bool {
 	default:
 		return false
 	}
-	addr := address.String()
-	if len(addr) != addressLength {
+	if len(address) != addressLength {
 		return false
 	}
-	addrBytes := base58.Decode(addr)
+	addrBytes := base58.Decode(address)
 	if len(addrBytes) != addressBytesLength {
 		return false
 	}

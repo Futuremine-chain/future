@@ -38,11 +38,11 @@ func CreatePrivate(network string) (*Private, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to mnemonic to ec, %s", err.Error())
 	}
-	address, err := kit.GenerateAddress(network, key.PubKey())
+	address, err := kit.GenerateAddress(network, key.PubKey().SerializeCompressedString())
 	if err != nil {
 		return nil, err
 	}
-	return &Private{address, key, mnemonicStr}, nil
+	return &Private{arry.StringToAddress(address), key, mnemonicStr}, nil
 }
 
 func (p *Private) PrivateKey() *secp256k1.PrivateKey {

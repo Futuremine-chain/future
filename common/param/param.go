@@ -8,7 +8,7 @@ import (
 
 const (
 	// Block interval period
-	BlockInterval = uint64(5)
+	BlockInterval = uint64(30)
 	// Re-election interval
 	CycleInterval = 60 * 60 * 24
 	// Maximum number of super nodes
@@ -23,13 +23,16 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.2.0"
+	Version = "0.2.1"
 )
 
 const (
 	MaxReadBytes = 1024 * 10
 	MaxReqBytes  = MaxReadBytes * 1000
 )
+
+// AtomsPerCoin is the number of atomic units in one coin.
+const AtomsPerCoin = 1e8
 
 type Param struct {
 	Name              string
@@ -50,12 +53,16 @@ type Param struct {
 }
 
 type TokenParam struct {
-	Circulation  float64
-	CoinBase     uint64
-	Proportion   uint64
-	MinCoinCount float64
-	MaxCoinCount float64
-	MainToken    arry.Address
+	PreCirculation        uint64
+	Circulation           uint64
+	CoinBase              float64
+	CoinCoefficient       float64
+	EveryChangeCoinHeight uint64
+	Proportion            uint64
+	MinCoinCount          float64
+	MaxCoinCount          float64
+	MinimumTransfer       uint64
+	MainToken             arry.Address
 }
 
 type PrivateParam struct {
@@ -98,26 +105,30 @@ type PoolParam struct {
 var TestNetParam = &Param{
 	Name:              TestNet,
 	Data:              "data",
-	App:               "future-mine-chain",
+	App:               "future-chain",
 	RollBack:          0,
-	PubKeyHashAddrID:  [2]byte{0x1f, 0x13},
-	PubKeyHashTokenID: [2]byte{0x0f, 0x03},
+	PubKeyHashAddrID:  [2]byte{0x08, 0x3a},
+	PubKeyHashTokenID: [2]byte{0x08, 0x62},
 	Logging:           true,
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fmc",
+		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
-		Circulation:  10000000009,
-		CoinBase:     10 * 1e8,
-		Proportion:   10000,
-		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FMC"),
+		PreCirculation:        38000000 * AtomsPerCoin,
+		Circulation:           248034687.5 * AtomsPerCoin,
+		CoinBase:              100 * AtomsPerCoin,
+		EveryChangeCoinHeight: 1051200,
+		CoinCoefficient:       -0.5,
+		Proportion:            10000,
+		MinCoinCount:          1 * 1e4,
+		MaxCoinCount:          9 * 1e10,
+		MinimumTransfer:       0.0001 * AtomsPerCoin,
+		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
-		NetWork:    TestNet + "_FUTURE_MINE_CHAIN",
+		NetWork:    TestNet + "_FUTURE_CHAIN",
 		P2pPort:    "19160",
 		ExternalIp: "0.0.0.0",
 		CustomBoot: "",
@@ -149,26 +160,30 @@ var TestNetParam = &Param{
 var MainNetParam = &Param{
 	Name:              MainNet,
 	Data:              "data",
-	App:               "future-mine-chain",
+	App:               "future-chain",
 	RollBack:          0,
-	PubKeyHashAddrID:  [2]byte{0x1e, 0x12},
-	PubKeyHashTokenID: [2]byte{0x0e, 0x02},
+	PubKeyHashAddrID:  [2]byte{0x07, 0xff},
+	PubKeyHashTokenID: [2]byte{0x08, 0x24},
 	Logging:           true,
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fmc",
+		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
-		Circulation:  1 * 1e10,
-		CoinBase:     10 * 1e8,
-		Proportion:   10000,
-		MinCoinCount: 1 * 1e4,
-		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FMC"),
+		PreCirculation:        38000000 * AtomsPerCoin,
+		Circulation:           248034687.5 * AtomsPerCoin,
+		CoinBase:              100 * AtomsPerCoin,
+		EveryChangeCoinHeight: 1051200,
+		CoinCoefficient:       -0.5,
+		Proportion:            10000,
+		MinCoinCount:          1 * 1e4,
+		MaxCoinCount:          9 * 1e10,
+		MinimumTransfer:       0.0001 * AtomsPerCoin,
+		MainToken:             arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
-		NetWork:    MainNet + "_FUTURE_MINE_CHAIN",
+		NetWork:    MainNet + "_FUTURE_CHAIN",
 		P2pPort:    "29160",
 		ExternalIp: "0.0.0.0",
 		CustomBoot: "",
@@ -194,5 +209,19 @@ var MainNetParam = &Param{
 		MsgExpiredTime:     60 * 60 * 3,
 		MonitorMsgInterval: 10,
 		MaxAddressMsg:      1000,
+	},
+}
+
+type PreCirculation struct {
+	Address string
+	Note    string
+	Amount  uint64
+}
+
+var PreCirculations = []PreCirculation{
+	{
+		Address: "FckAt3A12YfAbH1DzFfS11jrXA1UNoE1oue",
+		Note:    "",
+		Amount:  38000000 * AtomsPerCoin,
 	},
 }

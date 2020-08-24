@@ -36,13 +36,16 @@ func (t *TransactionBody) MsgTo() arry.Address {
 }
 
 func (t *TransactionBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver.String()) {
 		return errors.New("receive address verification failed")
 	}
 	if !t.TokenAddress.IsEqual(config.Param.MainToken) {
-		if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress) {
+		if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress.String()) {
 			return errors.New("token address verification failed")
 		}
+	}
+	if t.Amount < config.Param.MinimumTransfer {
+		return fmt.Errorf("the minimum allowed transfer is %d", config.Param.MinimumTransfer)
 	}
 	return nil
 }
@@ -69,17 +72,17 @@ func (t *TokenBody) MsgTo() arry.Address {
 }
 
 func (t *TokenBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, t.Receiver) {
+	if !kit.CheckAddress(config.Param.Name, t.Receiver.String()) {
 		return errors.New("receive address verification failed")
 	}
-	if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress) {
+	if !kit.CheckTokenAddress(config.Param.Name, t.TokenAddress.String()) {
 		return errors.New("token address verification failed")
 	}
-	toKenAddr, err := kit.GenerateTokenAddress(config.Param.Name, from, t.Shorthand)
+	toKenAddr, err := kit.GenerateTokenAddress(config.Param.Name, from.String(), t.Shorthand)
 	if err != nil {
 		return errors.New("token address verification failed")
 	}
-	if !toKenAddr.IsEqual(t.TokenAddress) {
+	if toKenAddr != t.TokenAddress.String() {
 		return errors.New("token address verification failed")
 	}
 	if err := kit.CheckShorthand(t.Shorthand); err != nil {
@@ -154,7 +157,7 @@ func (v *VoteBody) MsgTo() arry.Address {
 }
 
 func (v *VoteBody) CheckBody(from arry.Address) error {
-	if !kit.CheckAddress(config.Param.Name, v.To) {
+	if !kit.CheckAddress(config.Param.Name, v.To.String()) {
 		return errors.New("wrong to address")
 	}
 	return nil

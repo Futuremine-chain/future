@@ -55,13 +55,9 @@ func Verify(hash arry.Hash, signScript types.ISignature) bool {
 
 // Verify whether the signers are consistent through the public key
 func VerifySigner(network string, signer arry.Address, pubKey []byte) bool {
-	key, err := secp256k1.ParsePubKey(pubKey)
+	generateAddress, err := kit.GenerateAddress(network, hex.EncodeToString(pubKey))
 	if err != nil {
 		return false
 	}
-	generateAddress, err := kit.GenerateAddress(network, key)
-	if err != nil {
-		return false
-	}
-	return generateAddress.IsEqual(signer)
+	return generateAddress == signer.String()
 }

@@ -70,7 +70,7 @@ func (m *MsgHeader) checkType() error {
 }
 
 func (m *MsgHeader) checkFrom() error {
-	if !kit.CheckAddress(config.Param.Name, m.From) {
+	if !kit.CheckAddress(config.Param.Name, m.From.String()) {
 		return fmt.Errorf("%s address illegal", m.From.String())
 	}
 	return nil

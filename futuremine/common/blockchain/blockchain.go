@@ -296,9 +296,13 @@ func (b *FMCChain) saveBlock(block types.IBlock) {
 	"cycle", block.GetCycle())*/
 }
 
-func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
+func (b *FMCChain) saveGenesisBlock(block types.IBlock) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
+
+	if err := b.verifyGenesis(block); err != nil {
+		return err
+	}
 
 	b.status.Change(block.BlockBody().MsgList(), block)
 	bk := block.(*fmctypes.Block)
@@ -326,6 +330,18 @@ func (b *FMCChain) saveGenesisBlock(block types.IBlock) {
 		"msgcount", len(block.BlockBody().MsgList()),
 		"time", block.GetTime(),
 		"cycle", block.GetCycle())
+	return nil
+}
+
+func (b *FMCChain) verifyGenesis(block types.IBlock) error {
+	var sumCoins uint64
+	for _, tx := range block.BlockBody().MsgList() {
+		sumCoins += tx.MsgBody().MsgAmount()
+	}
+	if sumCoins != config.Param.PreCirculation {
+		return fmt.Errorf("wrong genesis coins")
+	}
+	return nil
 }
 
 func (b *FMCChain) checkBlock(block types.IBlock) error {

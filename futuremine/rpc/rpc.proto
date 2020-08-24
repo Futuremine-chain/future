@@ -19,24 +19,99 @@ package rpc;
 // The greeting service definition.
 service Greeter {
     // Sends a greeting
-    rpc GetAccount(Request)returns (Response) {}
-    rpc SendMessageRaw(Request)returns (Response) {}
-    rpc GetMessage(Request)returns (Response) {}
-    rpc GetBlockHash(Request)returns (Response) {}
-    rpc GetBlockHeight(Request)returns (Response) {}
-    rpc LastHeight(Request)returns (Response) {}
-    rpc Confirmed(Request)returns (Response) {}
-    rpc GetMsgPool(Request)returns (Response) {}
-    rpc Candidates(Request)returns (Response) {}
-    rpc GetCycleSupers(Request)returns (Response) {}
-    rpc Token(Request)returns (Response) {}
-    rpc PeersInfo(Request)returns (Response) {}
-    rpc LocalInfo(Request)returns (Response) {}
+    rpc GetAccount(AddressReq)returns (Response) {}
+    rpc SendMessageRaw(SendMessageCodeReq)returns (Response) {}
+    rpc GetMessage(HashReq)returns (Response) {}
+    rpc GetBlockHash(HashReq)returns (Response) {}
+    rpc GetBlockHeight(HeightReq)returns (Response) {}
+    rpc LastHeight(NullReq)returns (Response) {}
+    rpc Confirmed(NullReq)returns (Response) {}
+    rpc GetMsgPool(NullReq)returns (Response) {}
+    rpc Candidates(NullReq)returns (Response) {}
+    rpc GetCycleSupers(CycleReq)returns (Response) {}
+    rpc Token(TokenAddressReq)returns (Response) {}
+    rpc PeersInfo(NullReq)returns (Response) {}
+    rpc LocalInfo(NullReq)returns (Response) {}
+
+    rpc GenerateAddress(GenerateReq)returns (Response) {}
+    rpc CreateTransaction(TransactionReq)returns (Response) {}
+    rpc CreateToken(TokenReq)returns (Response) {}
+    rpc CreateCandidate(CandidateReq)returns (Response) {}
+    rpc CreateCancel(CancelReq)returns (Response) {}
+    rpc CreateVote(VoteReq)returns (Response) {}
 }
 
-// The request message containing the user's name.
-message Request {
-  bytes params = 1;
+message NullReq {
+}
+
+message AddressReq {
+  string address = 1;
+}
+
+message TokenAddressReq {
+  string token = 1;
+}
+
+message SendMessageCodeReq{
+  bytes code = 1;
+}
+
+message HashReq{
+  string hash = 1;
+}
+
+message HeightReq{
+  uint64 height = 1;
+}
+
+message CycleReq{
+  uint64 cycle = 1;
+}
+
+message GenerateReq{
+  string network = 1;
+  string publickey = 2;
+}
+
+message TransactionReq{
+  string from = 1;
+  string to = 2;
+  string token = 3;
+  string note = 4;
+  uint64 amount = 5;
+  uint64 fees = 6;
+  uint64 nonce = 7;
+}
+
+message TokenReq{
+  string from = 1;
+  string receiver = 2;
+  string name = 3;
+  string abbr = 4;
+  bool increase = 5;
+  uint64 amount = 6;
+  uint64 fees = 7;
+  uint64 nonce = 8;
+}
+
+message CandidateReq{
+  string from = 1;
+  string p2pid = 2;
+  uint64 fees = 3;
+  uint64 nonce = 4;
+}
+
+message CancelReq{
+  string from = 1;
+  uint64 fees = 2;
+  uint64 nonce = 3;
+}
+
+message VoteReq{
+  string from = 1;
+  string to = 2;
+  uint64 fees = 3;
+  uint64 nonce = 4;
 }
 
 // The response message containing the greetings

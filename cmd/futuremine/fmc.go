@@ -41,20 +41,20 @@ func main() {
 	// Initialize the goroutine count,  Use all processor cores.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	// Work around defer not working after os.Exit()
-	if err := FMCMain(); err != nil {
+	if err := FCMain(); err != nil {
 		fmt.Println("Failed to start, ", err)
 		os.Exit(1)
 	}
 }
 
 // main start the FMC node function
-func FMCMain() error {
-	var node *node.FMCNode
+func FCMain() error {
+	var node *node.FCNode
 	var err error
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	if node, err = createFMCNode(); err != nil {
+	if node, err = createFCNode(); err != nil {
 		return err
 	}
 	if err := node.Start(); err != nil {
@@ -75,7 +75,7 @@ func FMCMain() error {
 	return nil
 }
 
-func createFMCNode() (*node.FMCNode, error) {
+func createFCNode() (*node.FCNode, error) {
 	err := config.LoadParam(private.NewPrivate(nil))
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func createFMCNode() (*node.FMCNode, error) {
 	rpcSv := rpc.NewRpc(status, poolSv, chain, peersSv)
 	syncSv := sync_service.NewSync(peersSv, dPosStatus, reqHandler, chain)
 	generateSv := generate.NewGenerate(chain, dPos, poolSv, horn)
-	node := node.NewFMCNode()
+	node := node.NewFCNode()
 
 	rpcSv.RegisterLocalInfo(node.LocalInfo)
 	reqHandler.RegisterLocalInfo(node.LocalInfo)

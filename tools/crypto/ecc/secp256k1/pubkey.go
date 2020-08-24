@@ -7,6 +7,7 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"math/big"
@@ -140,6 +141,13 @@ func (p PublicKey) SerializeUncompressed() []byte {
 	return paddedAppend(32, b, p.Y.Bytes())
 }
 
+func (p PublicKey) SerializeUncompressedString() string {
+	b := make([]byte, 0, PubKeyBytesLenUncompressed)
+	b = append(b, pubkeyUncompressed)
+	b = paddedAppend(32, b, p.X.Bytes())
+	return hex.EncodeToString(paddedAppend(32, b, p.Y.Bytes()))
+}
+
 // SerializeCompressed serializes a public key in a 33-byte compressed format.
 func (p PublicKey) SerializeCompressed() []byte {
 	b := make([]byte, 0, PubKeyBytesLenCompressed)
@@ -149,6 +157,16 @@ func (p PublicKey) SerializeCompressed() []byte {
 	}
 	b = append(b, format)
 	return paddedAppend(32, b, p.X.Bytes())
+}
+
+func (p PublicKey) SerializeCompressedString() string {
+	b := make([]byte, 0, PubKeyBytesLenCompressed)
+	format := pubkeyCompressed
+	if isOdd(p.Y) {
+		format |= 0x1
+	}
+	b = append(b, format)
+	return hex.EncodeToString(paddedAppend(32, b, p.X.Bytes()))
 }
 
 // IsEqual compares this PublicKey instance to the one passed, returning true if

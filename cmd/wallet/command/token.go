@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit"
@@ -10,7 +9,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/rpc"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -92,12 +90,12 @@ func SendCreateToken(cmd *cobra.Command, args []string) {
 
 func parseToken(args []string) (*types.Message, error) {
 	var err error
-	var from, to, tokenAddr arry.Address
+	var from, to, tokenAddr string
 	var amount, fee, nonce uint64
 	var name, shorthand string
 	var allowIncrease bool
-	from = arry.StringToAddress(args[0])
-	to = arry.StringToAddress(args[1])
+	from = args[0]
+	to = args[1]
 	name = args[2]
 	shorthand = args[3]
 	allowIncrease, err = strconv.ParseBool(args[4])
@@ -119,7 +117,7 @@ func parseToken(args []string) (*types.Message, error) {
 		return nil, err
 	}
 	fmt.Println(kit.CheckTokenAddress(Net, tokenAddr))
-	fmt.Println("token address is ", tokenAddr.String())
+	fmt.Println("token address is ", tokenAddr)
 
 	if fFees, err := strconv.ParseFloat(args[6], 64); err != nil {
 		return nil, errors.New("[fees] wrong")
@@ -173,13 +171,9 @@ func GetTokenByRpc(tokenAddr string) (*rpc.Response, error) {
 	}
 	defer client.Close()
 
-	params := []interface{}{tokenAddr}
-	if bytes, err := json.Marshal(params); err != nil {
-		return nil, err
-	} else {
-		re := &rpc.Request{Params: bytes}
-		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
-		defer cancel()
-		return client.Gc.Token(ctx, re)
-	}
+	re := &rpc.TokenAddressReq{Token: tokenAddr}
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
+	defer cancel()
+	return client.Gc.Token(ctx, re)
+
 }

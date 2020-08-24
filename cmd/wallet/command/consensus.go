@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Futuremine-chain/futuremine/futuremine/common/kit/message"
@@ -11,7 +10,6 @@ import (
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	"github.com/Futuremine-chain/futuremine/service/p2p"
 	"github.com/Futuremine-chain/futuremine/tools/amount"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -103,9 +101,9 @@ func SendCandidate(cmd *cobra.Command, args []string) {
 
 func parseCandidate(cmd *cobra.Command, args []string, p2pid string) (*types.Message, error) {
 	var err error
-	var from arry.Address
+	var from string
 	var fee, nonce uint64
-	from = arry.StringToAddress(args[0])
+	from = args[0]
 
 	if fFees, err := strconv.ParseFloat(args[1], 64); err != nil {
 		return nil, errors.New("[fees] wrong")
@@ -193,9 +191,9 @@ func CancelCandidate(cmd *cobra.Command, args []string) {
 
 func parseCancel(args []string) (*types.Message, error) {
 	var err error
-	var from arry.Address
+	var from string
 	var fee, nonce uint64
-	from = arry.StringToAddress(args[0])
+	from = args[0]
 	if fFees, err := strconv.ParseFloat(args[1], 64); err != nil {
 		return nil, errors.New("[fees] wrong")
 	} else {
@@ -281,10 +279,10 @@ func Vote(cmd *cobra.Command, args []string) {
 
 func parseVote(args []string) (*types.Message, error) {
 	var err error
-	var from, to arry.Address
+	var from, to string
 	var fee, nonce uint64
-	from = arry.StringToAddress(args[0])
-	to = arry.StringToAddress(args[1])
+	from = args[0]
+	to = args[1]
 	if fFees, err := strconv.ParseFloat(args[2], 64); err != nil {
 		return nil, errors.New("[fees] wrong")
 	} else {
@@ -324,7 +322,7 @@ func GetCandidates(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.Candidates(ctx, &rpc.Request{})
+	resp, err := client.Gc.Candidates(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -362,20 +360,15 @@ func CycleSupers(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{term}
-	if bytes, err := json.Marshal(params); err != nil {
+	resp, err := client.Gc.GetCycleSupers(ctx, &rpc.CycleReq{Cycle: term})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetCycleSupers(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }

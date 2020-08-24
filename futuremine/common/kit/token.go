@@ -27,20 +27,24 @@ func CalCoinBase(net string, height uint64) uint64 {
 	case param.TestNet:
 		params = param.TestNetParam
 	}
-	fCoinBase := amount.Amount(params.CoinBase).ToCoin()
-
-	maxHeight := params.Circulation / fCoinBase
-	if float64(height) <= maxHeight {
-		return params.CoinBase
-	} else if float64(height) > maxHeight && (float64(height)-maxHeight) < 1 {
-		uCoinBase, _ := amount.NewAmount(params.Circulation - fCoinBase*float64(uint64(maxHeight)))
-		return uCoinBase
-	} else {
-		return 0
-	}
+	coinbase := params.CoinBase
+	times := height/params.EveryChangeCoinHeight + 1
+	return uint64(CalCountByTimes(&coinbase, &times, params.CoinCoefficient) * param.AtomsPerCoin)
 }
 
-func GenerateTokenAddress(net string, address arry.Address, shorthand string) (arry.Address, error) {
+func CalCountByTimes(coinbase *float64, times *uint64, coefficient float64) float64 {
+	if *times == 1 {
+		return *coinbase
+	}
+	if *times > 10 {
+		return 0
+	}
+	*coinbase += *coinbase * coefficient
+	*times--
+	return CalCountByTimes(coinbase, times, coefficient)
+}
+
+func GenerateTokenAddress(net string, address string, shorthand string) (string, error) {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -48,20 +52,20 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	case param.TestNet:
 		ver = append(ver, param.TestNetParam.PubKeyHashTokenID[0:]...)
 	default:
-		return arry.Address{}, errors.New("wrong network")
+		return "", errors.New("wrong network")
 	}
 	if err := CheckShorthand(shorthand); err != nil {
-		return arry.Address{}, err
+		return "", err
 	}
 	if !CheckAddress(net, address) {
-		return arry.Address{}, errors.New("incorrect address")
+		return "", errors.New("incorrect address")
 	}
-	addrBytes := base58.Decode(address.String())
+	addrBytes := base58.Decode(address)
 	buffBytes := append(addrBytes, []byte(shorthand)...)
 	hashed := hash.Hash(buffBytes)
 	hash160, err := hash.Hash160(hashed.Bytes())
 	if err != nil {
-		return arry.Address{}, err
+		return "", err
 	}
 
 	addNet := append(ver, hash160...)
@@ -70,10 +74,10 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	checkSum := hashed2[0:4]
 	hashedCheck1 := append(addNet, checkSum...)
 	code58 := base58.Encode(hashedCheck1)
-	return arry.StringToAddress(code58), nil
+	return arry.StringToAddress(code58).String(), nil
 }
 
-func CheckTokenAddress(net string, address arry.Address) bool {
+func CheckTokenAddress(net string, address string) bool {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -83,7 +87,7 @@ func CheckTokenAddress(net string, address arry.Address) bool {
 	default:
 		return false
 	}
-	addr := address.String()
+	addr := address
 	if len(addr) != addressLength {
 		return false
 	}

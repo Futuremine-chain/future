@@ -143,7 +143,7 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 			return nil, errors.New("message type error")
 		}
 
-		rpcMsg.TokenBody = &RpcTokenBody{
+		rpcMsg.MsgBody = &RpcTokenBody{
 			Address:        msg.Body.MsgToken().String(),
 			Receiver:       msg.Body.MsgTo().String(),
 			Name:           body.Name,

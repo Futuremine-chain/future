@@ -10,7 +10,6 @@ import (
 	rpctypes "github.com/Futuremine-chain/futuremine/futuremine/rpc/types"
 	"github.com/Futuremine-chain/futuremine/futuremine/types"
 	amount2 "github.com/Futuremine-chain/futuremine/tools/amount"
-	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/ecc/secp256k1"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -51,7 +50,7 @@ func LastHeight(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
-	resp, err := client.Gc.LastHeight(ctx, &rpc.Request{})
+	resp, err := client.Gc.LastHeight(ctx, &rpc.NullReq{})
 	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
@@ -91,22 +90,17 @@ func GetBlock(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{height}
-	if bytes, err := json.Marshal(params); err != nil {
+	resp, err := client.Gc.GetBlockHeight(ctx, &rpc.HeightReq{Height: height})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetBlockHeight(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }
 
 func GetBlockByHash(cmd *cobra.Command, args []string) {
@@ -121,22 +115,17 @@ func GetBlockByHash(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{args[0]}
-	if bytes, err := json.Marshal(params); err != nil {
+	resp, err := client.Gc.GetBlockHash(ctx, &rpc.HashReq{Hash: args[0]})
+	if err != nil {
 		log.Error(cmd.Use+" err: ", err)
 		return
-	} else {
-		resp, err := client.Gc.GetBlockHash(ctx, &rpc.Request{Params: bytes})
-		if err != nil {
-			log.Error(cmd.Use+" err: ", err)
-			return
-		}
-		if resp.Code == 0 {
-			output(string(resp.Result))
-			return
-		}
-		outputRespError(cmd.Use, resp)
 	}
+	if resp.Code == 0 {
+		output(string(resp.Result))
+		return
+	}
+	outputRespError(cmd.Use, resp)
+
 }
 
 var SendMessageCmd = &cobra.Command{
@@ -144,11 +133,11 @@ var SendMessageCmd = &cobra.Command{
 	Aliases: []string{"sendtransaction", "ST", "st"},
 	Short:   "SendTransaction {from} {to} {token} {amount} {fees} {password} {nonce}; Send a transaction;",
 	Example: `
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FC 10 0.1
 		OR
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1 123456
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FC 10 0.1 123456
 		OR
-	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FMC 10 0.1 123456 1
+	SendTransaction xCHiGPLCzgnrdTqjKABXZteAGVJu3jXLjnQ xCE9boXz2TxSE9srVPDdfszyiXtfT3vduc8 FC 10 0.1 123456 1
 	`,
 	Args: cobra.MinimumNArgs(5),
 	Run:  SendTransaction,
@@ -204,11 +193,11 @@ func SendTransaction(cmd *cobra.Command, args []string) {
 
 func parseTransaction(cmd *cobra.Command, args []string) (*types.Message, error) {
 	var err error
-	var from, to, token arry.Address
+	var from, to, token string
 	var amount, fee, nonce uint64
-	from = arry.StringToAddress(args[0])
-	to = arry.StringToAddress(args[1])
-	token = arry.StringToAddress(args[2])
+	from = args[0]
+	to = args[1]
+	token = args[2]
 	if fAmount, err := strconv.ParseFloat(args[3], 64); err != nil {
 		return nil, errors.New("[amount] wrong")
 	} else {
@@ -265,7 +254,7 @@ func sendMsg(msg *types.Message) (*rpc.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	re := &rpc.Request{Params: jsonBytes}
+	re := &rpc.SendMessageCodeReq{Code: jsonBytes}
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
@@ -311,11 +300,6 @@ func GetMessageRpc(hashStr string) (*rpc.Response, error) {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*20)
 	defer cancel()
 
-	params := []interface{}{hashStr}
-	if bytes, err := json.Marshal(params); err != nil {
-		return nil, err
-	} else {
-		resp, err := client.Gc.GetMessage(ctx, &rpc.Request{Params: bytes})
-		return resp, err
-	}
+	resp, err := client.Gc.GetMessage(ctx, &rpc.HashReq{Hash: hashStr})
+	return resp, err
 }
