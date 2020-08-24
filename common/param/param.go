@@ -23,7 +23,7 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.2.0"
+	Version = "0.2.1"
 )
 
 const (
@@ -98,7 +98,7 @@ type PoolParam struct {
 var TestNetParam = &Param{
 	Name:              TestNet,
 	Data:              "data",
-	App:               "future-mine-chain",
+	App:               "future-chain",
 	RollBack:          0,
 	PubKeyHashAddrID:  [2]byte{0x1f, 0x13},
 	PubKeyHashTokenID: [2]byte{0x0f, 0x03},
@@ -106,7 +106,7 @@ var TestNetParam = &Param{
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fmc",
+		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
 		Circulation:  10000000009,
@@ -114,10 +114,10 @@ var TestNetParam = &Param{
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
 		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FMC"),
+		MainToken:    arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
-		NetWork:    TestNet + "_FUTURE_MINE_CHAIN",
+		NetWork:    TestNet + "_FUTURE_CHAIN",
 		P2pPort:    "19160",
 		ExternalIp: "0.0.0.0",
 		CustomBoot: "",
@@ -149,7 +149,7 @@ var TestNetParam = &Param{
 var MainNetParam = &Param{
 	Name:              MainNet,
 	Data:              "data",
-	App:               "future-mine-chain",
+	App:               "future-chain",
 	RollBack:          0,
 	PubKeyHashAddrID:  [2]byte{0x1e, 0x12},
 	PubKeyHashTokenID: [2]byte{0x0e, 0x02},
@@ -157,7 +157,7 @@ var MainNetParam = &Param{
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fmc",
+		PrivatePass: "fc",
 	},
 	TokenParam: &TokenParam{
 		Circulation:  1 * 1e10,
@@ -165,10 +165,10 @@ var MainNetParam = &Param{
 		Proportion:   10000,
 		MinCoinCount: 1 * 1e4,
 		MaxCoinCount: 9 * 1e10,
-		MainToken:    arry.StringToAddress("FMC"),
+		MainToken:    arry.StringToAddress("FC"),
 	},
 	P2pParam: &P2pParam{
-		NetWork:    MainNet + "_FUTURE_MINE_CHAIN",
+		NetWork:    MainNet + "_FUTURE_CHAIN",
 		P2pPort:    "29160",
 		ExternalIp: "0.0.0.0",
 		CustomBoot: "",

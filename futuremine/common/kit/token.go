@@ -40,7 +40,7 @@ func CalCoinBase(net string, height uint64) uint64 {
 	}
 }
 
-func GenerateTokenAddress(net string, address arry.Address, shorthand string) (arry.Address, error) {
+func GenerateTokenAddress(net string, address string, shorthand string) (string, error) {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -48,20 +48,20 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	case param.TestNet:
 		ver = append(ver, param.TestNetParam.PubKeyHashTokenID[0:]...)
 	default:
-		return arry.Address{}, errors.New("wrong network")
+		return "", errors.New("wrong network")
 	}
 	if err := CheckShorthand(shorthand); err != nil {
-		return arry.Address{}, err
+		return "", err
 	}
-	if !CheckAddress(net, address.String()) {
-		return arry.Address{}, errors.New("incorrect address")
+	if !CheckAddress(net, address) {
+		return "", errors.New("incorrect address")
 	}
-	addrBytes := base58.Decode(address.String())
+	addrBytes := base58.Decode(address)
 	buffBytes := append(addrBytes, []byte(shorthand)...)
 	hashed := hash.Hash(buffBytes)
 	hash160, err := hash.Hash160(hashed.Bytes())
 	if err != nil {
-		return arry.Address{}, err
+		return "", err
 	}
 
 	addNet := append(ver, hash160...)
@@ -70,10 +70,10 @@ func GenerateTokenAddress(net string, address arry.Address, shorthand string) (a
 	checkSum := hashed2[0:4]
 	hashedCheck1 := append(addNet, checkSum...)
 	code58 := base58.Encode(hashedCheck1)
-	return arry.StringToAddress(code58), nil
+	return arry.StringToAddress(code58).String(), nil
 }
 
-func CheckTokenAddress(net string, address arry.Address) bool {
+func CheckTokenAddress(net string, address string) bool {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
@@ -83,7 +83,7 @@ func CheckTokenAddress(net string, address arry.Address) bool {
 	default:
 		return false
 	}
-	addr := address.String()
+	addr := address
 	if len(addr) != addressLength {
 		return false
 	}

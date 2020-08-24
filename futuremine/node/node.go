@@ -9,26 +9,26 @@ import (
 	"github.com/Futuremine-chain/futuremine/types"
 )
 
-const module = "fmc_node"
+const module = "fc_node"
 
-type FMCNode struct {
+type FCNode struct {
 	services []server.IService
 }
 
-func NewFMCNode() *FMCNode {
-	return &FMCNode{
+func NewFCNode() *FCNode {
+	return &FCNode{
 		services: make([]server.IService, 0),
 	}
 }
 
-func (fmc *FMCNode) Start() error {
+func (fmc *FCNode) Start() error {
 	if err := fmc.startServices(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (fmc *FMCNode) Stop() error {
+func (fmc *FCNode) Stop() error {
 	for _, s := range fmc.services {
 		if err := s.Stop(); err != nil {
 			log.Error("Service failed to stop", "module", module, "service", s.Name(), "error", err.Error())
@@ -38,11 +38,11 @@ func (fmc *FMCNode) Stop() error {
 	return nil
 }
 
-func (fmc *FMCNode) Register(s server.IService) {
+func (fmc *FCNode) Register(s server.IService) {
 	fmc.services = append(fmc.services, s)
 }
 
-func (fmc *FMCNode) LocalInfo() *types.Local {
+func (fmc *FCNode) LocalInfo() *types.Local {
 	all := make(map[string]interface{})
 	for _, s := range fmc.services {
 		infoMap := s.Info()
@@ -64,7 +64,7 @@ func (fmc *FMCNode) LocalInfo() *types.Local {
 	return rs
 }
 
-func (fmc *FMCNode) startServices() error {
+func (fmc *FCNode) startServices() error {
 	for _, s := range fmc.services {
 		if err := s.Start(); err != nil {
 			log.Error("Service failed to start", "module", module, "service", s.Name(), "error", err.Error())
