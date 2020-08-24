@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/Futuremine-chain/futuremine/common/param"
+	"github.com/Futuremine-chain/futuremine/tools/amount"
 	"github.com/Futuremine-chain/futuremine/tools/arry"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/base58"
 	"github.com/Futuremine-chain/futuremine/tools/crypto/hash"
