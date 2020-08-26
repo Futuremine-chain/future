@@ -33,7 +33,8 @@ type Config struct {
 	TestNet    bool   `long:"testnet" description:"Use the test network"`
 	KeyFile    string `long:"keyfile" description:"If you participate in mining, you need to configure the mining address key file"`
 	KeyPass    string `long:"keypass" description:"The decryption password for key file"`
-	RollBack   uint64 `long:"rollback" description:"Rool back to a height"`
+	RollBack   uint64 `long:"rollback" description:"Roll back to the previous height"`
+	Version    bool   `long:"version" description:"View Version number"`
 	Private    private.IPrivate
 }
 
@@ -57,6 +58,11 @@ func LoadParam(private private.IPrivate) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if cfg.Version {
+		fmt.Printf("futurechain version %s\n", param.Version)
+		os.Exit(0)
 	}
 
 	if cfg.TestNet {

@@ -54,11 +54,6 @@ func NewFMCChain(status status.IStatus, dPos dpos.IDPos) (*FMCChain, error) {
 	}
 	fmc.UpdateConfirmed(fmc.dPos.Confirmed())
 
-	if config.Param.RollBack != 0 {
-		if err := fmc.RollbackTo(uint64(config.Param.RollBack)); err != nil {
-			return nil, err
-		}
-	}
 	return fmc, nil
 }
 

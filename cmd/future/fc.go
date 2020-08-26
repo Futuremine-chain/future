@@ -100,6 +100,13 @@ func createFCNode() (*node.FCNode, error) {
 	if err != nil {
 		return nil, err
 	}
+	if config.Param.RollBack != 0 {
+		if err := chain.RollbackTo(config.Param.RollBack); err != nil {
+			return nil, err
+		}
+		os.Exit(0)
+	}
+
 	reqHandler := request.NewRequestHandler(chain)
 	peersSv := peers.NewPeers(reqHandler)
 

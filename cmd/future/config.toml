@@ -26,10 +26,6 @@ RpcPass = ""
 # TLS switch
 RpcTLS = false
 
-# Roll back the node chain to a certain height, 0 means not roll back
-RollBack = 0
-
-
 # If it is a block generating node, it needs to be configured
 # Json file address of the address private key
 KeyFile = ""
