@@ -123,7 +123,7 @@ func parseCandidate(cmd *cobra.Command, args []string, p2pid string) (*types.Mes
 		}
 	}
 
-	return message.NewCandidate(from, p2pid, fee, nonce), nil
+	return message.NewCandidate(from, p2pid, fee, nonce, uint64(time.Now().Unix())), nil
 }
 
 var SendCancelCmd = &cobra.Command{
@@ -210,7 +210,7 @@ func parseCancel(args []string) (*types.Message, error) {
 			return nil, errors.New("[nonce] wrong")
 		}
 	}
-	return message.NewCancel(from, fee, nonce), nil
+	return message.NewCancel(from, fee, nonce, uint64(time.Now().Unix())), nil
 }
 
 var SendVoteCmd = &cobra.Command{
@@ -299,7 +299,7 @@ func parseVote(args []string) (*types.Message, error) {
 			return nil, errors.New("[nonce] wrong")
 		}
 	}
-	return message.NewVote(from, to, fee, nonce), nil
+	return message.NewVote(from, to, fee, nonce, uint64(time.Now().Unix())), nil
 }
 
 var GetCandidatesCmd = &cobra.Command{

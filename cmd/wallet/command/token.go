@@ -135,7 +135,7 @@ func parseToken(args []string) (*types.Message, error) {
 			return nil, errors.New("[nonce] wrong")
 		}
 	}
-	tokenMsg := message.NewToken(from, to, tokenAddr, amount, fee, nonce, name, shorthand, allowIncrease)
+	tokenMsg := message.NewToken(from, to, tokenAddr, amount, fee, nonce, uint64(time.Now().Unix()), name, shorthand, allowIncrease)
 	return tokenMsg, nil
 }
 

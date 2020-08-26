@@ -224,7 +224,7 @@ func parseTransaction(cmd *cobra.Command, args []string) (*types.Message, error)
 			return nil, errors.New("[nonce] wrong")
 		}
 	}
-	return message.NewTransaction(from, to, token, amount, fee, nonce), nil
+	return message.NewTransaction(from, to, token, amount, fee, nonce, uint64(time.Now().Unix())), nil
 }
 
 func signMsg(msg *types.Message, key string) error {
