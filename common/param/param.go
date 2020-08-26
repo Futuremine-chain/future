@@ -113,7 +113,7 @@ var TestNetParam = &Param{
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fc",
+		PrivatePass: "fm",
 	},
 	TokenParam: &TokenParam{
 		PreCirculation:        38000000 * AtomsPerCoin,
@@ -168,7 +168,7 @@ var MainNetParam = &Param{
 	PeerRequestChan:   1000,
 	PrivateParam: &PrivateParam{
 		PrivateFile: "key.json",
-		PrivatePass: "fc",
+		PrivatePass: "fm",
 	},
 	TokenParam: &TokenParam{
 		PreCirculation:        38000000 * AtomsPerCoin,

@@ -21,6 +21,7 @@ service Greeter {
     // Sends a greeting
     rpc GetAccount(AddressReq)returns (Response) {}
     rpc SendMessageRaw(SendMessageCodeReq)returns (Response) {}
+    rpc GetMessage(HashReq)returns (Response) {}
     rpc GetBlockHash(HashReq)returns (Response) {}
     rpc GetBlockHeight(HeightReq)returns (Response) {}
     rpc LastHeight(NullReq)returns (Response) {}
