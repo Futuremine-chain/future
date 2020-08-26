@@ -24,7 +24,7 @@ var genesisSuperList = types.Candidates{
 			PeerId: "16Uiu2HAmPQppQsHmVgJNqLPxTDNVy6ucuHt5i6eXMZ7Nn1Uz6Jwr",
 			Weight: 0,
 		},
-		/*{
+		{
 			Signer: arry.StringToAddress("FMcNASRUDr5symmsvQyWJ4iXFJYoEJLnPMz"),
 			PeerId: "16Uiu2HAmGCas2irGWZNmSsqhCpNXXxapTEEtAsBhHENrCZB3nPzj",
 			Weight: 0,
@@ -53,6 +53,6 @@ var genesisSuperList = types.Candidates{
 			Signer: arry.StringToAddress("FMnUqdciErY8UkxgQgVcVP2EDV9YTEiZE5g"),
 			PeerId: "16Uiu2HAmPYAvkHqmvVhDH7poHGfBWPFKfwycQ4jssThqYJUZ3NSf",
 			Weight: 0,
-		},*/
+		},
 	},
 }

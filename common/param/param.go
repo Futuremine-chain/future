@@ -8,11 +8,11 @@ import (
 
 const (
 	// Block interval period
-	BlockInterval = uint64(5)
+	BlockInterval = uint64(30)
 	// Re-election interval
-	CycleInterval = 60 * 60 * 24
+	CycleInterval = 60 * 60 * 24 * 3
 	// Maximum number of super nodes
-	SuperSize = 3
+	SuperSize = 9
 
 	DPosSize = SuperSize*2/3 + 1
 )
