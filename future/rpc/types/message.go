@@ -115,7 +115,7 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	return tx, nil
 }
 
-func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
+func MsgToRpcMsg(msg types.IMessage) (*RpcMessage, error) {
 	rpcMsg := &RpcMessage{
 		MsgHeader: &RpcMessageHeader{
 			MsgHash: msg.Hash().String(),
@@ -125,34 +125,34 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 			Fee:     msg.Fee(),
 			Time:    msg.Time(),
 			Signature: &RpcSignature{
-				Signature: hex.EncodeToString(msg.Header.Signature.SignatureBytes()),
-				PubKey:    hex.EncodeToString(msg.Header.Signature.PubicKey()),
+				Signature: msg.Signature(),
+				PubKey:    msg.PublicKey(),
 			}},
 		MsgBody: nil,
 	}
 	switch fmctypes.MessageType(msg.Type()) {
 	case fmctypes.Transaction:
 		rpcMsg.MsgBody = &RpcTransactionBody{
-			Token:  msg.Body.MsgToken().String(),
-			To:     msg.Body.MsgTo().String(),
-			Amount: msg.Body.MsgAmount(),
+			Token:  msg.MsgBody().MsgToken().String(),
+			To:     msg.MsgBody().MsgTo().String(),
+			Amount: msg.MsgBody().MsgAmount(),
 		}
 	case fmctypes.Token:
-		body, ok := msg.Body.(*fmctypes.TokenBody)
+		body, ok := msg.MsgBody().(*fmctypes.TokenBody)
 		if !ok {
 			return nil, errors.New("message type error")
 		}
 
 		rpcMsg.MsgBody = &RpcTokenBody{
-			Address:        msg.Body.MsgToken().String(),
-			Receiver:       msg.Body.MsgTo().String(),
+			Address:        msg.MsgBody().MsgToken().String(),
+			Receiver:       msg.MsgBody().MsgTo().String(),
 			Name:           body.Name,
 			Shorthand:      body.Shorthand,
 			IncreaseIssues: body.IncreaseIssues,
-			Amount:         msg.Body.MsgAmount(),
+			Amount:         msg.MsgBody().MsgAmount(),
 		}
 	case fmctypes.Candidate:
-		body, ok := msg.Body.(*fmctypes.CandidateBody)
+		body, ok := msg.MsgBody().(*fmctypes.CandidateBody)
 		if !ok {
 			return nil, errors.New("message type error")
 		}
@@ -162,7 +162,7 @@ func MsgToRpcMsg(msg *fmctypes.Message) (*RpcMessage, error) {
 	case fmctypes.Cancel:
 		rpcMsg.MsgBody = &RpcCancelBody{}
 	case fmctypes.Vote:
-		rpcMsg.MsgBody = &RpcVoteBody{To: msg.Body.MsgTo().String()}
+		rpcMsg.MsgBody = &RpcVoteBody{To: msg.MsgBody().MsgTo().String()}
 
 	}
 

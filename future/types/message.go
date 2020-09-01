@@ -1,8 +1,12 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	message2 "github.com/Futuremine-chain/future/future/rpc/message"
+	types2 "github.com/Futuremine-chain/future/future/rpc/types"
+	"github.com/Futuremine-chain/future/future/rpc/types/message"
 	"github.com/Futuremine-chain/future/tools/arry"
 	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/future/tools/crypto/hash"
@@ -57,6 +61,14 @@ func (m *Message) MsgAmount() uint64 {
 	return m.Body.MsgAmount()
 }
 
+func (m *Message) Signature() string {
+	return m.Header.Signature.SignatureString()
+}
+
+func (m *Message) PublicKey() string {
+	return m.Header.Signature.PubKeyString()
+}
+
 func (m *Message) ToRlp() types.IRlpMessage {
 	rlpMsg := &RlpMessage{}
 	rlpMsg.MsgHeader = m.Header
@@ -95,7 +107,10 @@ func (m *Message) CheckCoinBase(fee uint64, coinbase uint64) error {
 
 func (m *Message) checkHash() error {
 	newMsg := m.copy()
-	newMsg.SetHash()
+	err := newMsg.SetHash()
+	if err != nil {
+		return err
+	}
 	if newMsg.Hash().IsEqual(m.Hash()) {
 		return nil
 	}
@@ -115,10 +130,15 @@ func (m *Message) SignMsg(key *secp256k1.PrivateKey) error {
 	return nil
 }
 
-func (m *Message) SetHash() {
+func (m *Message) SetHash() error {
 	m.Header.Hash = arry.Hash{}
 	m.Header.Signature = &Signature{}
-	m.Header.Hash = hash.Hash(m.Bytes())
+	mHash, err := message2.MessageHash(m)
+	if err != nil {
+		return err
+	}
+	m.Header.Hash = mHash
+	return nil
 }
 
 func (m *Message) SignMessage(key *secp256k1.PrivateKey) error {

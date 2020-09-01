@@ -10,4 +10,6 @@ type IMessageHeader interface {
 	Fee() uint64
 	Time() uint64
 	IsCoinBase() bool
+	Signature() string
+	PublicKey() string
 }
