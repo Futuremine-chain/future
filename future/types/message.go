@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	message2 "github.com/Futuremine-chain/future/future/rpc/message"
-	types2 "github.com/Futuremine-chain/future/future/rpc/types"
-	"github.com/Futuremine-chain/future/future/rpc/types/message"
 	"github.com/Futuremine-chain/future/tools/arry"
 	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
 	"github.com/Futuremine-chain/future/tools/crypto/hash"
@@ -133,11 +130,16 @@ func (m *Message) SignMsg(key *secp256k1.PrivateKey) error {
 func (m *Message) SetHash() error {
 	m.Header.Hash = arry.Hash{}
 	m.Header.Signature = &Signature{}
-	mHash, err := message2.MessageHash(m)
+	rpcMsg, err := MsgToRpcMsg(m)
 	if err != nil {
 		return err
 	}
-	m.Header.Hash = mHash
+	mBytes, err := json.Marshal(rpcMsg)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(mBytes))
+	m.Header.Hash = hash.Hash(mBytes)
 	return nil
 }
 

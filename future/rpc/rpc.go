@@ -128,11 +128,11 @@ func (r *Rpc) GetAccount(_ context.Context, address *AddressReq) (*Response, err
 }
 
 func (r *Rpc) SendMessageRaw(ctx context.Context, code *SendMessageCodeReq) (*Response, error) {
-	var rpcMsg *rpctypes.RpcMessage
+	var rpcMsg *fmctypes.RpcMessage
 	if err := json.Unmarshal(code.Code, &rpcMsg); err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
-	tx, err := rpctypes.RpcMsgToMsg(rpcMsg)
+	tx, err := fmctypes.RpcMsgToMsg(rpcMsg)
 	if err != nil {
 		return NewResponse(Err_Params, nil, err.Error()), nil
 	}
@@ -151,7 +151,7 @@ func (r *Rpc) GetMessage(ctx context.Context, hash *HashReq) (*Response, error) 
 	if err != nil {
 		return NewResponse(Err_Chain, nil, err.Error()), nil
 	}
-	rpcMsg, _ := rpctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
+	rpcMsg, _ := fmctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
 	bytes, _ := json.Marshal(rpcMsg)
 
 	return NewResponse(Success, bytes, ""), nil

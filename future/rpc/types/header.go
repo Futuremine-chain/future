@@ -6,18 +6,18 @@ import (
 )
 
 type RpcHeader struct {
-	Version   uint32        `json:"version"`
-	Hash      string        `json:"hash"`
-	PreHash   string        `json:"parenthash"`
-	MsgRoot   string        `json:"txroot"`
-	ActRoot   string        `json:"actroot"`
-	TokenRoot string        `json:"tokenroot"`
-	DPosRoot  string        `json:"dposroot"`
-	Height    uint64        `json:"height"`
-	Time      time.Time     `json:"time"`
-	Cycle     uint64        `json:"cycle"`
-	Signer    string        `json:"signer"`
-	Signature *RpcSignature `json:"signature"`
+	Version   uint32              `json:"version"`
+	Hash      string              `json:"hash"`
+	PreHash   string              `json:"parenthash"`
+	MsgRoot   string              `json:"txroot"`
+	ActRoot   string              `json:"actroot"`
+	TokenRoot string              `json:"tokenroot"`
+	DPosRoot  string              `json:"dposroot"`
+	Height    uint64              `json:"height"`
+	Time      time.Time           `json:"time"`
+	Cycle     uint64              `json:"cycle"`
+	Signer    string              `json:"signer"`
+	Signature *types.RpcSignature `json:"signature"`
 }
 
 func HeaderToRpcHeader(header *types.Header) *RpcHeader {
@@ -33,7 +33,7 @@ func HeaderToRpcHeader(header *types.Header) *RpcHeader {
 		Time:      time.Unix(int64(header.Time), 0),
 		Cycle:     header.Cycle,
 		Signer:    header.Signer.String(),
-		Signature: &RpcSignature{
+		Signature: &types.RpcSignature{
 			Signature: header.Signature.SignatureString(),
 			PubKey:    header.Signature.PubKeyString(),
 		},

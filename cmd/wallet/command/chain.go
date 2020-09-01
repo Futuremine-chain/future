@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/Futuremine-chain/future/future/common/kit/message"
 	"github.com/Futuremine-chain/future/future/rpc"
-	rpctypes "github.com/Futuremine-chain/future/future/rpc/types"
 	"github.com/Futuremine-chain/future/future/types"
 	amount2 "github.com/Futuremine-chain/future/tools/amount"
 	"github.com/Futuremine-chain/future/tools/crypto/ecc/secp256k1"
@@ -240,7 +239,7 @@ func signMsg(msg *types.Message, key string) error {
 }
 
 func sendMsg(msg *types.Message) (*rpc.Response, error) {
-	rpcMsg, err := rpctypes.MsgToRpcMsg(msg)
+	rpcMsg, err := types.MsgToRpcMsg(msg)
 	if err != nil {
 		return nil, err
 	}

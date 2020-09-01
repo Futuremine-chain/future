@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	fmctypes "github.com/Futuremine-chain/future/future/types"
 	"github.com/Futuremine-chain/future/tools/arry"
 	"github.com/Futuremine-chain/future/types"
 )
@@ -14,13 +13,13 @@ type IRpcMessageBody interface {
 }
 
 type RpcMessageHeader struct {
-	MsgHash   string               `json:"msghash"`
-	Type      fmctypes.MessageType `json:"type"`
-	From      string               `json:"from"`
-	Nonce     uint64               `json:"nonce"`
-	Fee       uint64               `json:"fee"`
-	Time      uint64               `json:"time"`
-	Signature *RpcSignature        `json:"signscript"`
+	MsgHash   string        `json:"msghash"`
+	Type      MessageType   `json:"type"`
+	From      string        `json:"from"`
+	Nonce     uint64        `json:"nonce"`
+	Fee       uint64        `json:"fee"`
+	Time      uint64        `json:"time"`
+	Signature *RpcSignature `json:"signscript"`
 }
 
 type RpcMessage struct {
@@ -38,7 +37,7 @@ type RpcSignature struct {
 	PubKey    string `json:"pubkey"`
 }
 
-func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
+func RpcMsgToMsg(rpcMsg *RpcMessage) (*Message, error) {
 	var err error
 	if rpcMsg.MsgHeader == nil {
 		return nil, errors.New("message header is nil")
@@ -49,7 +48,7 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	}
 	var msgBody types.IMessageBody
 	switch rpcMsg.MsgHeader.Type {
-	case fmctypes.Transaction:
+	case Transaction:
 		body := &RpcTransactionBody{}
 		bytes, err := json.Marshal(rpcMsg.MsgBody)
 		if err != nil {
@@ -60,7 +59,7 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 			return nil, err
 		}
 		msgBody, err = RpcTransactionBodyToBody(body)
-	case fmctypes.Token:
+	case Token:
 		body := &RpcTokenBody{}
 		bytes, err := json.Marshal(rpcMsg.MsgBody)
 		if err != nil {
@@ -71,7 +70,7 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 			return nil, err
 		}
 		msgBody, err = RpcTokenBodyToBody(body)
-	case fmctypes.Candidate:
+	case Candidate:
 		body := &RpcCandidateBody{}
 		bytes, err := json.Marshal(rpcMsg.MsgBody)
 		if err != nil {
@@ -82,9 +81,9 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 			return nil, err
 		}
 		msgBody, err = RpcCandidateBodyToBody(body)
-	case fmctypes.Cancel:
-		msgBody = &fmctypes.CancelBody{}
-	case fmctypes.Vote:
+	case Cancel:
+		msgBody = &CancelBody{}
+	case Vote:
 		body := &RpcVoteBody{}
 		bytes, err := json.Marshal(rpcMsg.MsgBody)
 		if err != nil {
@@ -100,8 +99,8 @@ func RpcMsgToMsg(rpcMsg *RpcMessage) (*fmctypes.Message, error) {
 	if err != nil {
 		return nil, fmt.Errorf("wrong message hash %s", rpcMsg.MsgHeader.MsgHash)
 	}
-	tx := &fmctypes.Message{
-		Header: &fmctypes.MsgHeader{
+	tx := &Message{
+		Header: &MsgHeader{
 			Hash:      hash,
 			Type:      rpcMsg.MsgHeader.Type,
 			From:      arry.StringToAddress(rpcMsg.MsgHeader.From),
@@ -119,7 +118,7 @@ func MsgToRpcMsg(msg types.IMessage) (*RpcMessage, error) {
 	rpcMsg := &RpcMessage{
 		MsgHeader: &RpcMessageHeader{
 			MsgHash: msg.Hash().String(),
-			Type:    fmctypes.MessageType(msg.Type()),
+			Type:    MessageType(msg.Type()),
 			From:    addressToString(msg.From()),
 			Nonce:   msg.Nonce(),
 			Fee:     msg.Fee(),
@@ -130,15 +129,15 @@ func MsgToRpcMsg(msg types.IMessage) (*RpcMessage, error) {
 			}},
 		MsgBody: nil,
 	}
-	switch fmctypes.MessageType(msg.Type()) {
-	case fmctypes.Transaction:
+	switch MessageType(msg.Type()) {
+	case Transaction:
 		rpcMsg.MsgBody = &RpcTransactionBody{
 			Token:  msg.MsgBody().MsgToken().String(),
 			To:     msg.MsgBody().MsgTo().String(),
 			Amount: msg.MsgBody().MsgAmount(),
 		}
-	case fmctypes.Token:
-		body, ok := msg.MsgBody().(*fmctypes.TokenBody)
+	case Token:
+		body, ok := msg.MsgBody().(*TokenBody)
 		if !ok {
 			return nil, errors.New("message type error")
 		}
@@ -151,17 +150,17 @@ func MsgToRpcMsg(msg types.IMessage) (*RpcMessage, error) {
 			IncreaseIssues: body.IncreaseIssues,
 			Amount:         msg.MsgBody().MsgAmount(),
 		}
-	case fmctypes.Candidate:
-		body, ok := msg.MsgBody().(*fmctypes.CandidateBody)
+	case Candidate:
+		body, ok := msg.MsgBody().(*CandidateBody)
 		if !ok {
 			return nil, errors.New("message type error")
 		}
 		rpcMsg.MsgBody = &RpcCandidateBody{
 			PeerId: body.Peer.String(),
 		}
-	case fmctypes.Cancel:
+	case Cancel:
 		rpcMsg.MsgBody = &RpcCancelBody{}
-	case fmctypes.Vote:
+	case Vote:
 		rpcMsg.MsgBody = &RpcVoteBody{To: msg.MsgBody().MsgTo().String()}
 
 	}
@@ -169,7 +168,7 @@ func MsgToRpcMsg(msg types.IMessage) (*RpcMessage, error) {
 	return rpcMsg, nil
 }
 
-func RpcSignatureToSignature(rpcSignScript *RpcSignature) (*fmctypes.Signature, error) {
+func RpcSignatureToSignature(rpcSignScript *RpcSignature) (*Signature, error) {
 	if rpcSignScript == nil {
 		return nil, errors.New("signature is nil")
 	}
@@ -184,30 +183,30 @@ func RpcSignatureToSignature(rpcSignScript *RpcSignature) (*fmctypes.Signature, 
 	if err != nil {
 		return nil, err
 	}
-	return &fmctypes.Signature{
+	return &Signature{
 		Bytes:  signature,
 		PubKey: pubKey,
 	}, nil
 }
 
-func RpcTransactionBodyToBody(rpcBody *RpcTransactionBody) (*fmctypes.TransactionBody, error) {
+func RpcTransactionBodyToBody(rpcBody *RpcTransactionBody) (*TransactionBody, error) {
 	if rpcBody == nil {
 		return nil, errors.New("wrong transaction body")
 	}
 
-	return &fmctypes.TransactionBody{
+	return &TransactionBody{
 		TokenAddress: arry.StringToAddress(rpcBody.Token),
 		Receiver:     arry.StringToAddress(rpcBody.To),
 		Amount:       rpcBody.Amount,
 	}, nil
 }
 
-func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*fmctypes.TokenBody, error) {
+func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*TokenBody, error) {
 	if rpcBody == nil {
 		return nil, errors.New("wrong token body")
 	}
 
-	return &fmctypes.TokenBody{
+	return &TokenBody{
 		TokenAddress:   arry.StringToAddress(rpcBody.Address),
 		Receiver:       arry.StringToAddress(rpcBody.Receiver),
 		Name:           rpcBody.Name,
@@ -217,26 +216,26 @@ func RpcTokenBodyToBody(rpcBody *RpcTokenBody) (*fmctypes.TokenBody, error) {
 	}, nil
 }
 
-func RpcCandidateBodyToBody(rpcBody *RpcCandidateBody) (*fmctypes.CandidateBody, error) {
+func RpcCandidateBodyToBody(rpcBody *RpcCandidateBody) (*CandidateBody, error) {
 	if rpcBody == nil {
 		return nil, errors.New("wrong candidate body")
 	}
-	body := &fmctypes.CandidateBody{}
+	body := &CandidateBody{}
 	copy(body.Peer[:], rpcBody.PeerIdBytes())
 	return body, nil
 }
 
-func RpcVoteBodyToBody(rpcBody *RpcVoteBody) (*fmctypes.VoteBody, error) {
+func RpcVoteBodyToBody(rpcBody *RpcVoteBody) (*VoteBody, error) {
 	if rpcBody == nil {
 		return nil, errors.New("wrong vote body")
 	}
 
-	return &fmctypes.VoteBody{To: arry.StringToAddress(rpcBody.To)}, nil
+	return &VoteBody{To: arry.StringToAddress(rpcBody.To)}, nil
 }
 
 func addressToString(address arry.Address) string {
-	if address.IsEqual(fmctypes.CoinBase) {
-		return fmctypes.CoinBase.String()
+	if address.IsEqual(CoinBase) {
+		return CoinBase.String()
 	}
 	return address.String()
 }
