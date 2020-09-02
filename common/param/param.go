@@ -220,7 +220,7 @@ type PreCirculation struct {
 
 var PreCirculations = []PreCirculation{
 	{
-		Address: "FMizWwybDdxE9wWtbeiukj4ixcnMGLaT5La",
+		Address: "FMhJy6XEUKR2hYJ8SdWkoi5YosVxzjqdEyu",
 		Note:    "",
 		Amount:  38000000 * AtomsPerCoin,
 	},
