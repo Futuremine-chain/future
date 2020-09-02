@@ -138,7 +138,6 @@ func (m *Message) SetHash() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(mBytes))
 	m.Header.Hash = hash.Hash(mBytes)
 	return nil
 }
