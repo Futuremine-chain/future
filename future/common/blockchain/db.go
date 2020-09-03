@@ -12,6 +12,7 @@ type IChainDB interface {
 	LastHeight() (uint64, error)
 	GetMessage(hash arry.Hash) (*types.RlpMessage, error)
 	GetMessages(txRoot arry.Hash) ([]*types.RlpMessage, error)
+	GetMsgIndex(hash arry.Hash) (*types.MsgIndex, error)
 	GetHeaderHeight(height uint64) (*types.Header, error)
 	GetHeaderHash(hash arry.Hash) (*types.Header, error)
 	GetConfirmedHeight(height uint64) (uint64, error)

@@ -8,6 +8,7 @@ import (
 type MsgIndex struct {
 	MsgRoot arry.Hash
 	Index   uint32
+	Height  uint64
 }
 
 func DecodeTxIndex(bytes []byte) (*MsgIndex, error) {
@@ -22,4 +23,8 @@ func DecodeTxIndex(bytes []byte) (*MsgIndex, error) {
 func (t *MsgIndex) Bytes() []byte {
 	bytes, _ := rlp.EncodeToBytes(t)
 	return bytes
+}
+
+func (t *MsgIndex) GetHeight() uint64 {
+	return t.Height
 }

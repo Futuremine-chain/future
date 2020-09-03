@@ -15,6 +15,7 @@ type IChain interface {
 	GetHeaderHeight(uint64) (types.IHeader, error)
 	GetHeaderHash(arry.Hash) (types.IHeader, error)
 	GetMessage(arry.Hash) (types.IMessage, error)
+	GetMessageIndex(hash arry.Hash) (types.IMessageIndex, error)
 	CycleLastHash(uint64) (arry.Hash, error)
 
 	GetRlpBlockHeight(uint64) (types.IRlpBlock, error)

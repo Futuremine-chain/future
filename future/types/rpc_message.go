@@ -25,11 +25,13 @@ type RpcMessageHeader struct {
 type RpcMessage struct {
 	MsgHeader *RpcMessageHeader `json:"msgheader"`
 	MsgBody   IRpcMessageBody   `json:"msgbody"`
-	/*TxBody        *RpcTransactionBody `json:"txbody"`
-	TokenBody     *RpcTokenBody       `json:"tokenbody"`
-	CandidateBody *RpcCandidateBody   `json:"candidatebody"`
-	CancelBody    *RpcCancelBody      `json:"cancelbody"`
-	VoteBody      *RpcVoteBody        `json:"votebody"`*/
+}
+
+type RpcMessageWithHeight struct {
+	MsgHeader *RpcMessageHeader `json:"msgheader"`
+	MsgBody   IRpcMessageBody   `json:"msgbody"`
+	Height    uint64            `json:"height"`
+	Confirmed bool              `json:"confirmed"`
 }
 
 type RpcSignature struct {

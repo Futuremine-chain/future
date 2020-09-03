@@ -6,3 +6,7 @@ type IMessage interface {
 	ToRlp() IRlpMessage
 	Check() error
 }
+
+type IMessageIndex interface {
+	GetHeight() uint64
+}

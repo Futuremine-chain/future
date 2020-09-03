@@ -87,7 +87,7 @@ func (b *ChainDB) GetHeaderHash(hash arry.Hash) (*types.Header, error) {
 	return types.DecodeHeader(bytes)
 }
 
-func (b *ChainDB) GetTxIndex(hash arry.Hash) (*types.MsgIndex, error) {
+func (b *ChainDB) GetMsgIndex(hash arry.Hash) (*types.MsgIndex, error) {
 	bytes, err := b.db.GetFromBucket(_txIndex, hash.Bytes())
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (b *ChainDB) GetMessages(txRoot arry.Hash) ([]*types.RlpMessage, error) {
 }
 
 func (b *ChainDB) GetMessage(hash arry.Hash) (*types.RlpMessage, error) {
-	txIndex, err := b.GetTxIndex(hash)
+	txIndex, err := b.GetMsgIndex(hash)
 	if err != nil {
 		return nil, err
 	}

@@ -151,8 +151,20 @@ func (r *Rpc) GetMessage(ctx context.Context, hash *HashReq) (*Response, error) 
 	if err != nil {
 		return NewResponse(Err_Chain, nil, err.Error()), nil
 	}
+	index, err := r.chain.GetMessageIndex(hashArry)
+	if err != nil {
+		return NewResponse(Err_Chain, nil, fmt.Sprintf("%s is not exist", hash.Hash)), nil
+	}
+	confirmed := r.chain.LastConfirmed()
+	height := index.GetHeight()
 	rpcMsg, _ := fmctypes.MsgToRpcMsg(msg.(*fmctypes.Message))
-	bytes, _ := json.Marshal(rpcMsg)
+	rsMsg := &fmctypes.RpcMessageWithHeight{
+		MsgHeader: rpcMsg.MsgHeader,
+		MsgBody:   rpcMsg.MsgBody,
+		Height:    height,
+		Confirmed: confirmed >= height,
+	}
+	bytes, _ := json.Marshal(rsMsg)
 
 	return NewResponse(Success, bytes, ""), nil
 }

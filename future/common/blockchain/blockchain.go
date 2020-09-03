@@ -246,6 +246,17 @@ func (b *FMCChain) GetMessage(hash arry.Hash) (types.IMessage, error) {
 	return rlpTx.ToMessage(), nil
 }
 
+func (b *FMCChain) GetMessageIndex(hash arry.Hash) (types.IMessageIndex, error) {
+	msgIndex, err := b.db.GetMsgIndex(hash)
+	if err != nil {
+		return nil, err
+	}
+	if msgIndex.Height > b.LastHeight() {
+		return nil, errors.New("not exist")
+	}
+	return msgIndex, nil
+}
+
 func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.checkBlock(block); err != nil {
 		return err

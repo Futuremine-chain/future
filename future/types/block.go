@@ -74,7 +74,11 @@ func (b *Block) CheckMsgRoot() bool {
 func (b *Block) GetMsgIndexs() map[arry.Hash]*MsgIndex {
 	mapLocation := make(map[arry.Hash]*MsgIndex)
 	for index, tx := range b.MsgList() {
-		mapLocation[tx.Hash()] = &MsgIndex{MsgRoot: b.MsgRoot(), Index: uint32(index)}
+		mapLocation[tx.Hash()] = &MsgIndex{
+			MsgRoot: b.MsgRoot(),
+			Index:   uint32(index),
+			Height:  b.Height(),
+		}
 	}
 	return mapLocation
 }
