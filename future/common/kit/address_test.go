@@ -17,3 +17,7 @@ func TestGenerateAddress(t *testing.T) {
 	}
 	fmt.Println(GenerateTokenAddress(param.MainNet, addr, "SA"))
 }
+
+func TestCheckAddress(t *testing.T) {
+	fmt.Println(CheckAddress("testnet", "FmcoinEaterAddressDontSend000000000"))
+}

@@ -23,7 +23,7 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.2.4"
+	Version = "0.2.5"
 )
 
 const (
@@ -62,7 +62,9 @@ type TokenParam struct {
 	MinCoinCount          float64
 	MaxCoinCount          float64
 	MinimumTransfer       uint64
+	Consume               uint64
 	MainToken             arry.Address
+	EaterAddress          arry.Address
 }
 
 type PrivateParam struct {
@@ -119,6 +121,7 @@ var TestNetParam = &Param{
 		PreCirculation:        38000000 * AtomsPerCoin,
 		Circulation:           248034687.5 * AtomsPerCoin,
 		CoinBase:              100 * AtomsPerCoin,
+		Consume:               1e4 * AtomsPerCoin,
 		EveryChangeCoinHeight: 1051201,
 		CoinCoefficient:       -0.5,
 		Proportion:            10000,
@@ -126,6 +129,7 @@ var TestNetParam = &Param{
 		MaxCoinCount:          9 * 1e10,
 		MinimumTransfer:       0.0001 * AtomsPerCoin,
 		MainToken:             arry.StringToAddress("FM"),
+		EaterAddress:          arry.StringToAddress("FmcoinEaterAddressDontSend000000000"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    TestNet + "_FUTURE_CHAIN",
@@ -174,6 +178,7 @@ var MainNetParam = &Param{
 		PreCirculation:        38000000 * AtomsPerCoin,
 		Circulation:           248034687.5 * AtomsPerCoin,
 		CoinBase:              100 * AtomsPerCoin,
+		Consume:               1e4 * AtomsPerCoin,
 		EveryChangeCoinHeight: 1051201,
 		CoinCoefficient:       -0.5,
 		Proportion:            10000,
@@ -181,6 +186,7 @@ var MainNetParam = &Param{
 		MaxCoinCount:          9 * 1e10,
 		MinimumTransfer:       0.0001 * AtomsPerCoin,
 		MainToken:             arry.StringToAddress("FM"),
+		EaterAddress:          arry.StringToAddress("FMcoinEaterAddressDontSend000000000"),
 	},
 	P2pParam: &P2pParam{
 		NetWork:    MainNet + "_FUTURE_CHAIN",

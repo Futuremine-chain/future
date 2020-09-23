@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Futuremine-chain/future/common/config"
 	"github.com/Futuremine-chain/future/future/db/status/act_db"
+	fmtypes "github.com/Futuremine-chain/future/future/types"
 	"github.com/Futuremine-chain/future/tools/arry"
 	"github.com/Futuremine-chain/future/tools/utils"
 	"github.com/Futuremine-chain/future/types"
@@ -99,6 +100,27 @@ func (a *ActStatus) ToMessage(msg types.IMessage, height uint64) error {
 	err = toAct.ToMessage(msg, height)
 	if err != nil {
 		return err
+	}
+
+	// publish token need consume FM
+	if fmtypes.MessageType(msg.Type()) == fmtypes.Token {
+		if msg.MsgBody().MsgTo() == config.Param.EaterAddress {
+			err = toAct.EaterMessage(msg, height)
+			if err != nil {
+				return err
+			}
+		} else {
+			eater := a.db.Account(config.Param.EaterAddress)
+			err := eater.UpdateLocked(a.confirmed)
+			if err != nil {
+				return err
+			}
+			err = eater.EaterMessage(msg, height)
+			if err != nil {
+				return err
+			}
+			a.setAccount(eater)
+		}
 	}
 
 	a.setAccount(toAct)

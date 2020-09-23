@@ -55,6 +55,9 @@ func (t *TokenRecord) Check(msg types.IMessage) error {
 	if t.Shorthand != body.Shorthand {
 		return errors.New("token shorthand is not consistent")
 	}
+	if t.Name != body.Name {
+		return errors.New("token name is not consistent")
+	}
 	if !t.Address.IsEqual(body.TokenAddress) {
 		return errors.New("token address is not consistent")
 	}

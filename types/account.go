@@ -9,6 +9,7 @@ type IAccount interface {
 	UpdateLocked(confirmed uint64) error
 	FromMessage(msg IMessage, height uint64) error
 	ToMessage(msg IMessage, height uint64) error
+	EaterMessage(msg IMessage, height uint64) error
 	Check(msg IMessage, strict bool) error
 	Bytes() []byte
 	GetAddress() arry.Address

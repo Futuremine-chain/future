@@ -123,6 +123,13 @@ func (a *Account) addToken(msg types.IMessage, height uint64) error {
 	mainAccount.Balance -= fees
 	mainAccount.LockedOut += fees
 
+	consume := config.Param.Consume
+	if mainAccount.Balance < consume {
+		return fmt.Errorf("insufficient balance, %d FM is required to publish tokens", consume)
+	}
+	mainAccount.Balance -= consume
+	mainAccount.LockedOut += consume
+
 	a.Tokens.Set(mainAccount)
 	a.Nonce = msg.Nonce()
 	a.JournalOut.Add(msg, height)
@@ -210,7 +217,28 @@ func (a *Account) ToMessage(msg types.IMessage, height uint64) error {
 		}
 	}
 	a.Tokens.Set(tokenAccount)
-	a.JournalIn.Add(msg, height)
+	a.JournalIn.Add(body.MsgAmount(), height, body.MsgToken().String())
+	return nil
+}
+
+func (a *Account) EaterMessage(msg types.IMessage, height uint64) error {
+	if !a.Exist() {
+		a.Address = config.Param.EaterAddress
+	}
+
+	mainAccount, ok := a.Tokens.Get(config.Param.MainToken.String())
+	if ok {
+		mainAccount.LockedIn += config.Param.Consume
+	} else {
+		mainAccount = &TokenAccount{
+			Address:   config.Param.MainToken.String(),
+			Balance:   0,
+			LockedIn:  config.Param.Consume,
+			LockedOut: 0,
+		}
+	}
+	a.Tokens.Set(mainAccount)
+	a.JournalIn.Add(config.Param.Consume, height, config.Param.MainToken.String())
 	return nil
 }
 
@@ -233,7 +261,7 @@ func (a *Account) toTokenChange(msg types.IMessage, height uint64) error {
 	}
 
 	a.Tokens.Set(tokenAccount)
-	a.JournalIn.Add(msg, height)
+	a.JournalIn.Add(body.MsgAmount(), height, body.MsgToken().String())
 	return nil
 }
 
@@ -278,13 +306,25 @@ func (a *Account) Check(msg types.IMessage, strict bool) error {
 			return a.checkTokenBalance(msg, body)
 		}
 	case Token:
-		return a.checkFees(msg)
+		return a.checkConsume(msg)
 	default:
 		if msg.MsgBody().MsgAmount() != 0 {
 			return errors.New("wrong amount")
 		}
 		return a.checkFees(msg)
 	}
+}
+
+func (a *Account) checkConsume(msg types.IMessage) error {
+	main := config.Param.MainToken.String()
+	consume := msg.Fee() + config.Param.Consume
+	token, ok := a.Tokens.Get(main)
+	if !ok {
+		return fmt.Errorf("insufficient balance, %d FM is required to publish tokens", consume)
+	} else if token.Balance < consume {
+		return fmt.Errorf("insufficient balance, %d FM is required to publish tokens", consume)
+	}
+	return nil
 }
 
 // Verify the account balance of the primary transaction, the transaction
@@ -498,10 +538,7 @@ func newJournalIn() *journalIn {
 	return &journalIn{Ins: &InList{}}
 }
 
-func (j *journalIn) Add(msg types.IMessage, height uint64) {
-	body := msg.MsgBody()
-	amount := body.MsgAmount()
-	tokenAddr := body.MsgToken().String()
+func (j *journalIn) Add(amount uint64, height uint64, tokenAddr string) {
 	in, ok := j.Ins.Get(height, tokenAddr)
 	if ok {
 		in.Amount += amount

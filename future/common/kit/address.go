@@ -51,8 +51,14 @@ func CheckAddress(net string, address string) bool {
 	ver := []byte{}
 	switch net {
 	case param.MainNet:
+		if address == param.MainNetParam.EaterAddress.String() {
+			return true
+		}
 		ver = append(ver, param.MainNetParam.PubKeyHashAddrID[0:]...)
 	case param.TestNet:
+		if address == param.TestNetParam.EaterAddress.String() {
+			return true
+		}
 		ver = append(ver, param.TestNetParam.PubKeyHashAddrID[0:]...)
 	default:
 		return false
