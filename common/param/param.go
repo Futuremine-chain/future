@@ -23,7 +23,7 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.2.5"
+	Version = "0.2.6"
 )
 
 const (
