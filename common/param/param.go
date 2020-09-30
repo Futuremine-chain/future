@@ -23,9 +23,8 @@ const (
 	// Testnet logo
 	TestNet = "testnet"
 
-	Version = "0.2.6"
+	Version = "0.2.7"
 )
-
 const (
 	MaxReadBytes = 1024 * 10
 	MaxReqBytes  = MaxReadBytes * 1000

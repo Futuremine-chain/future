@@ -20,7 +20,7 @@ func init() {
 	// FMgzPJfbVqY1dWWXcguqJas9VvDKQZHYoE1
 	for _, s := range []string{
 		//"/ip4/18.163.21.69/tcp/19100/ipfs/16Uiu2HAmLxC6SFTQfoy68wGGfU8rt7joSVPBab6jQ4kN2kZuNfc4",
-		"/ip4/18.163.21.69/tcp/19100/ipfs/16Uiu2HAkwcv1msi1fhPkjga7MyzSUBjme7tdHP6usba1zRLEyH1r",
+		"/ip4/18.163.21.69/tcp/19100/ipfs/16Uiu2HAmCqGE6sNZC9FHEkJ2YbkBGQmEsmgHomVa2TSuMTQZ67T7",
 	} {
 		ma, err := multiaddr.NewMultiaddr(s)
 		if err != nil {
