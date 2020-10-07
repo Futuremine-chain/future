@@ -124,8 +124,8 @@ func (t *MsgManagement) NeedPackaged(count int) []types.IMessage {
 }
 
 func (t *MsgManagement) StagnantMsgs() []types.IMessage {
-	t.mutex.RLock()
-	defer t.mutex.RUnlock()
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 
 	return t.ready.StagnantMsgs()
 }
