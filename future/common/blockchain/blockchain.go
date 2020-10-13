@@ -270,6 +270,14 @@ func (b *FMCChain) Insert(block types.IBlock) error {
 	if err := b.status.Change(block.BlockBody().MsgList(), block); err != nil {
 		return err
 	}
+	msgs := block.BlockBody().MsgList()
+	for _, msg := range msgs {
+		if b.poolDeleteMsg != nil {
+			b.poolDeleteMsg(msg)
+		} else {
+			log.Error("Need to register message pool delete function", "module", module)
+		}
+	}
 	b.saveBlock(block)
 	return nil
 }
@@ -402,8 +410,8 @@ func (b *FMCChain) checkBlock(block types.IBlock) error {
 }
 
 func (b *FMCChain) checkMsgs(msgs []types.IMessage, height uint64) error {
-	address := make(map[string]bool)
-	for _, msg := range msgs {
+	address := make(map[string]int)
+	for i, msg := range msgs {
 		if msg.IsCoinBase() {
 			if err := b.checkCoinBase(msg, fmctypes.CalculateFee(msgs), height); err != nil {
 				return err
@@ -412,16 +420,14 @@ func (b *FMCChain) checkMsgs(msgs []types.IMessage, height uint64) error {
 			if err := b.checkMsg(msg); err != nil {
 				return err
 			}
-			if b.poolDeleteMsg != nil {
-				b.poolDeleteMsg(msg)
-			} else {
-				log.Warn("Need to register message pool delete function")
-			}
 		}
 		from := msg.From().String()
-		if _, ok := address[from]; !ok {
-			address[from] = true
+		if lastIndex, ok := address[from]; !ok {
+			address[from] = i
 		} else {
+			log.Warn("Repeat address block", "module", module,
+				"preMsg", msgs[lastIndex],
+				"curMsg", msg)
 			return errors.New("one address in a block can only send one transaction")
 		}
 	}

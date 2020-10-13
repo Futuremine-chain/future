@@ -117,8 +117,8 @@ func (t *MsgManagement) DeleteEnd(newTx types.IMessage) {
 }
 
 func (t *MsgManagement) NeedPackaged(count int) []types.IMessage {
-	t.mutex.RLock()
-	defer t.mutex.RUnlock()
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 
 	return t.ready.NeedPackaged(count)
 }
