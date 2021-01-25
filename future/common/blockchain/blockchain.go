@@ -68,7 +68,7 @@ func (b *FMCChain) NextHeader(time uint64) (types.IHeader, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
 
-	preHeader, err := b.GetHeaderHeight(b.lastHeight)
+	preHeader, err := b.db.GetHeaderHeight(b.lastHeight)
 	if err != nil {
 		return nil, err
 	}
